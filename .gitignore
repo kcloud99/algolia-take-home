@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.DS_Store
+
+# Secrets — only .env.example is committed
+.env
+.env.local
+.env.*.local
+
+# Private working notes, not part of the submission
+.claude/strategy.md
+.claude/implementation-prompt.md
+.claude/outcome.md
+docs/algolia-primer.md

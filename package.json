@@ -1,0 +1,25 @@
+{
+  "name": "opentable-restaurant-discovery",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Restaurant search and discovery prototype on Algolia — Solutions Engineer assignment",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "data:build": "tsx scripts/build-records.ts",
+    "index:config": "tsx scripts/configure-index.ts",
+    "index:push": "tsx scripts/push-records.ts",
+    "index:test": "tsx scripts/test-relevance.ts",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
