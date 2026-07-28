@@ -6,6 +6,7 @@
  */
 import { assertCleanJoin, joinOnObjectId } from './lib/join.js';
 import { loadCsvRows, loadJsonRestaurants } from './lib/load-sources.js';
+import { normalizePhone, normalizePostalCode, normalizeScalars } from './lib/normalize-scalars.js';
 
 const jsonRecords = loadJsonRestaurants();
 const { rows: csvRows, trimmedFields } = loadCsvRows();
@@ -22,3 +23,21 @@ const dupes = join.duplicateJsonIds.length + join.duplicateCsvIds.length;
 console.log(
   `joined ${join.joined.length}/${jsonRecords.length}, ${orphans} orphans, ${dupes} dupes`,
 );
+
+// ── scalars ────────────────────────────────────────────────────────────────
+const scalars = join.joined.map((joined) => normalizeScalars(joined));
+
+// Counted as "values the normalizer had to change", which is the honest definition
+// of how much cleanup each field actually needed.
+const zipsNormalized = join.joined.filter(
+  ({ json }) => normalizePostalCode(json.postal_code) !== json.postal_code,
+).length;
+const phonesCleaned = join.joined.filter(
+  ({ csv }) => normalizePhone(csv.phone_number) !== csv.phone_number,
+).length;
+const priceConflicts = scalars.filter((fields) => fields.price_conflict).length;
+const conflictRate = ((priceConflicts / scalars.length) * 100).toFixed(1);
+
+console.log(`zip+4 normalized: ${zipsNormalized}`);
+console.log(`phone display values cleaned: ${phonesCleaned}`);
+console.log(`price conflicts: ${priceConflicts} (${conflictRate}%)`);
