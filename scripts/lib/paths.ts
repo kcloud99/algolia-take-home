@@ -12,4 +12,6 @@ export const paths = {
   rawRestaurantsCsv: join(repoRoot, 'data', 'raw', 'restaurants_info.csv'),
   /** Pipeline output: the exact records pushed to Algolia. Committed for reviewability. */
   outRecords: join(repoRoot, 'data', 'out', 'records.json'),
+  /** Algolia credentials. Gitignored; `.env.example` is the committed template. */
+  envFile: join(repoRoot, '.env'),
 } as const;

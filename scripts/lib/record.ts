@@ -11,8 +11,13 @@ import type { JoinedRestaurant } from './types.js';
 import { deriveVibeTags } from './vibes.js';
 import type { VibeContext, VibeTag } from './vibes.js';
 
-/** One Algolia record. Flat apart from `location` and `_geoloc`, which the engine requires nested. */
-export interface RestaurantRecord {
+/**
+ * One Algolia record. Flat apart from `location` and `_geoloc`, which the engine requires nested.
+ *
+ * A `type` rather than an `interface` so it satisfies the client's `Record<string, unknown>`
+ * parameter — TypeScript gives implicit index signatures to type aliases but not to interfaces.
+ */
+export type RestaurantRecord = {
   objectID: string;
 
   // identity
@@ -60,7 +65,7 @@ export interface RestaurantRecord {
   image_url: string;
   payment_options: string[];
   cash_only: boolean;
-}
+};
 
 export interface RecordContext {
   quality: QualityContext;
