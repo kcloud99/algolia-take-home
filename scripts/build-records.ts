@@ -11,6 +11,9 @@ import { loadCsvRows, loadJsonRestaurants } from './lib/load-sources.js';
 import { normalizePhone, normalizePostalCode, normalizeScalars } from './lib/normalize-scalars.js';
 import { computeQualityContext, deriveQualityFields } from './lib/quality.js';
 import type { QualityFields } from './lib/quality.js';
+import { deriveLocationFields } from './lib/location.js';
+import { computeVibeContext, deriveVibeTags } from './lib/vibes.js';
+import type { VibeTag } from './lib/vibes.js';
 
 const jsonRecords = loadJsonRestaurants();
 const { rows: csvRows, trimmedFields } = loadCsvRows();
@@ -152,6 +155,64 @@ function printTopTen(label: string, ranked: { name: string; fields: QualityField
       `    ${fields.stars_count.toFixed(1)}★ ${String(fields.reviews_count).padStart(6)} reviews  ` +
         `bayes ${fields.bayesian_rating.toFixed(1)}  ${name}`,
     );
+  }
+}
+
+// ── location hierarchy and vibe tags ───────────────────────────────────────
+const vibeContext = computeVibeContext(csvRows);
+const places = join.joined.map((joined) => {
+  const location = deriveLocationFields(joined);
+  const cuisine = deriveCuisineFields(joined.csv.food_type);
+  const qualityFields = deriveQualityFields(joined.csv, qualityContext);
+  return {
+    location,
+    vibe_tags: deriveVibeTags(
+      {
+        diningStyle: joined.csv.dining_style,
+        priceTier: normalizeScalars(joined).price_tier,
+        bayesianRating: qualityFields.bayesian_rating,
+        reviewsCount: qualityFields.reviews_count,
+        cuisineGroup: cuisine.cuisine_group,
+      },
+      vibeContext,
+    ),
+  };
+});
+
+console.log(
+  `\nlocation: ${new Set(places.map((p) => p.location.location.lvl0)).size} areas -> ` +
+    `${new Set(places.map((p) => p.location.location.lvl1)).size} cities -> ` +
+    `${new Set(places.map((p) => p.location.location.lvl2)).size} neighborhood paths`,
+);
+
+const tagCounts = countBy(places.flatMap((p) => p.vibe_tags), (tag) => tag);
+const untagged = places.filter((p) => p.vibe_tags.length === 0).length;
+console.log(
+  `vibe tags (thresholds from data: crowd-favorite >= ${vibeContext.crowdFavouriteReviews} reviews, ` +
+    `hidden-gem < ${vibeContext.underTheRadarReviews}):`,
+);
+for (const [tag, count] of [...tagCounts].sort((a, b) => b[1] - a[1])) {
+  const share = (count / places.length) * 100;
+  const outOfBounds = share > 40 || share < 1 ? '  <<< OUT OF BOUNDS' : '';
+  console.log(`  ${tag.padEnd(18)}${String(count).padStart(5)}  ${share.toFixed(1)}%${outOfBounds}`);
+}
+console.log(
+  `  ${'(no tag)'.padEnd(18)}${String(untagged).padStart(5)}  ` +
+    `${((untagged / places.length) * 100).toFixed(1)}%`,
+);
+
+assertTagsWithinBounds(tagCounts, places.length);
+
+/**
+ * A tag on 40%+ of the index does not distinguish anything; a tag under 1% is a dead facet
+ * value. Both make the discovery UI worse, so the build enforces the band.
+ */
+function assertTagsWithinBounds(counts: Map<VibeTag, number>, total: number): void {
+  for (const [tag, count] of counts) {
+    const share = (count / total) * 100;
+    if (share > 40 || share < 1) {
+      throw new Error(`vibe tag "${tag}" covers ${share.toFixed(1)}% of records; must be 1-40%`);
+    }
   }
 }
 

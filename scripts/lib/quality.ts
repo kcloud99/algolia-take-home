@@ -105,7 +105,7 @@ export function parseReviewCount(value: string): number {
 }
 
 /** Nearest-rank percentile: the smallest value at or above which `p`% of the data sits. */
-function percentile(values: number[], p: number): number {
+export function percentile(values: number[], p: number): number {
   const sorted = [...values].sort((a, b) => a - b);
   const index = Math.floor((p / 100) * sorted.length);
   const value = sorted[Math.min(index, sorted.length - 1)];
