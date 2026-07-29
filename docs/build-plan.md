@@ -85,6 +85,7 @@ Vite + React + TypeScript + Tailwind, with React InstantSearch v7.
 | Step | Deliverable |
 |---|---|
 | 3.1 | App shell wired to Algolia — working before pretty |
+| 3.1a | Source and bundle the cuisine image set — must land before the cards below |
 | 3.2 | Restaurant card and results grid |
 | 3.3 | Refinements, sorting, and an always-visible summary of what is currently applied |
 | 3.4 | Federated autocomplete: restaurants, cuisines, cities, recent searches |
