@@ -12,4 +12,5 @@ dist/
 .claude/implementation-prompt.md
 .claude/outcome.md
 .claude/phase-2-handoff.md
+.claude/phase-3-handoff.md
 docs/algolia-primer.md
