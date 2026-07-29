@@ -11,6 +11,8 @@
 import type { IndexSettings } from 'algoliasearch';
 
 import { client, indexName } from './lib/algolia.js';
+import { rules } from './lib/rules.js';
+import { synonyms } from './lib/synonyms.js';
 
 const indexSettings: IndexSettings = {
   // ── What is searchable, and how strongly ────────────────────────────────
@@ -151,7 +153,21 @@ const { taskID } = await client.setSettings({ indexName, indexSettings });
 // Settings are applied asynchronously. Without this wait, the verification below — and any
 // relevance test that follows — reads the previous configuration.
 await client.waitForTask({ indexName, taskID });
-console.log(`applied settings to "${indexName}" (task ${taskID})\n`);
+console.log(`applied settings to "${indexName}" (task ${taskID})`);
+
+// `replaceExisting*` makes both of these a full replacement rather than a merge, so this file is
+// the single source of truth: deleting an entry here deletes it from the index.
+const synonymTask = await client.saveSynonyms({
+  indexName,
+  synonymHit: synonyms,
+  replaceExistingSynonyms: true,
+});
+await client.waitForTask({ indexName, taskID: synonymTask.taskID });
+console.log(`applied ${synonyms.length} synonyms`);
+
+const ruleTask = await client.saveRules({ indexName, rules, clearExistingRules: true });
+await client.waitForTask({ indexName, taskID: ruleTask.taskID });
+console.log(`applied ${rules.length} rules\n`);
 
 // ── Verify against the live index, rather than trusting the write ─────────
 const applied = await client.getSettings({ indexName });
