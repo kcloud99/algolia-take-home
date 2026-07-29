@@ -83,6 +83,68 @@ const indexSettings: IndexSettings = {
   // `ranking` is deliberately left at the Algolia default:
   //   typo -> geo -> words -> filters -> proximity -> attribute -> exact -> custom
   // Reordering it is how you break a hundred queries you did not test to fix the one you did.
+
+  // ── Typo tolerance ──────────────────────────────────────────────────────
+  // The two word-size thresholds are Algolia's defaults, set explicitly because they are
+  // load-bearing here rather than incidental: `benihanna` is 9 characters so it gets the two
+  // typos it needs, and `melting pott` gets one on a short word.
+  typoTolerance: true,
+  minWordSizefor1Typo: 4,
+  minWordSizefor2Typos: 8,
+  // Otherwise `Latitude 41` matches `Latitude 45`, and a diner searching a postal code or a street
+  // number gets neighbouring numbers back. Digits are exact or they are wrong.
+  allowTyposOnNumericTokens: false,
+
+  // ── Query strategy ──────────────────────────────────────────────────────
+  // Only the last word is a prefix, which is the correct as-you-type behaviour: `capital gr`
+  // finds The Capital Grille while `gr capital` does not pull in every restaurant starting "gr".
+  queryType: 'prefixLast',
+
+  // When a multi-word query would return nothing, retry with every word optional. The `words`
+  // criterion then ranks by how many query terms each record matched, so the best partial overlap
+  // wins instead of the diner getting an empty page. Chosen over `lastWords` because our queries
+  // are conversational ("italian in soho") rather than brand-first.
+  removeWordsIfNoResults: 'allOptional',
+
+  // Measured, not assumed. 438 restaurant names use "&" and 190 spell out "and", so a diner typing
+  // "bar and grill" was seeing 22 of the 67 matching restaurants — a silently truncated page,
+  // which is more dangerous than an empty one because nobody reports it. Making the word optional
+  // returns all 67 while the `words` criterion still ranks the literal "and" spellings first.
+  // `removeWordsIfNoResults` cannot fix this: that query already had results, so it never fires.
+  // The same test on "the" changed no query for the better, so "the" is not in this list.
+  optionalWords: ['and'],
+
+  ignorePlurals: true,
+
+  // Reversed from the original design, on evidence. The design said `false`, reasoning that 375
+  // names begin with a stop word so stripping them would hide The Melting Pot and The Capital
+  // Grille. Measured, that does not happen — those records still match on their distinctive
+  // words, and both queries return an identical top 3 either way.
+  //
+  // What `false` does cost is conversational location queries, which are the discovery persona's
+  // whole behaviour. With stop words kept, "italian in soho" returns 1,069 hits led by
+  // In Vino Wine Bar: it matches "in" + "italian" for a word count of 2, exactly tying the SoHo
+  // restaurants that match "soho" + "italian", so being genuinely in SoHo confers no advantage.
+  // Removing stop words returns 20 hits, all of them Italian restaurants in SoHo.
+  //
+  // The residual cost, stated honestly: "the kitchen" keeps the right result at #1 but drops that
+  // brand's Denver and Boulder locations out of the top 3. Chain grouping collapses them to one
+  // row anyway, and losing rank is cheaper than losing a whole class of query.
+  removeStopWords: true,
+
+  // Several text-processing features are language-aware and quietly no-op without these.
+  queryLanguages: ['en'],
+  indexLanguages: ['en'],
+
+  // `multiWordsSynonym` is the addition: without it "small plates" matching via synonym loses the
+  // exact criterion to a single-word coincidence.
+  alternativesAsExact: ['ignorePlurals', 'singleWordSynonym', 'multiWordsSynonym'],
+
+  // `separatorsToIndex` is deliberately absent, against the original design, which called for
+  // "&'-" because 438 names carry an ampersand and 942 an apostrophe. Measured across all 27 test
+  // queries it changed one query by one hit and no ordering at all. Both characters are already
+  // stripped from queries and records alike, so they match without help; indexing a separator only
+  // pays when the character is itself the distinguishing token, as in "C++" or "AT&T".
 };
 
 const { taskID } = await client.setSettings({ indexName, indexSettings });
