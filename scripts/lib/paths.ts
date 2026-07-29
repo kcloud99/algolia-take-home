@@ -14,4 +14,8 @@ export const paths = {
   outRecords: join(repoRoot, 'data', 'out', 'records.json'),
   /** Algolia credentials. Gitignored; `.env.example` is the committed template. */
   envFile: join(repoRoot, '.env'),
+  /** The relevance test queries, pre-registered before any result was observed. */
+  relevanceQueries: join(repoRoot, 'docs', 'relevance-queries.json'),
+  /** Where the relevance harness writes its report and snapshot. */
+  docs: join(repoRoot, 'docs'),
 } as const;
