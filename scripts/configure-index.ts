@@ -147,6 +147,68 @@ const indexSettings: IndexSettings = {
   // queries it changed one query by one hit and no ordering at all. Both characters are already
   // stripped from queries and records alike, so they match without help; indexing a separator only
   // pays when the character is itself the distinguishing token, as in "C++" or "AT&T".
+
+  // ── Display ─────────────────────────────────────────────────────────────
+  attributesToHighlight: ['name', 'cuisines', 'neighborhood', 'city'],
+  hitsPerPage: 24,
+  maxValuesPerFacet: 100,
+
+  // ── Facet display, decided by the index rather than the frontend ─────────
+  // `renderingContent` lets the ordering of facets change without a deploy, which is the same
+  // argument as Rules: the team that owns the experience should not need engineering to reorder a
+  // sidebar. InstantSearch's DynamicWidgets consumes this automatically.
+  renderingContent: {
+    facetOrdering: {
+      // Cuisine first because it is how people choose a restaurant; location last because the
+      // map and the "near me" control already cover it.
+      facets: {
+        order: ['cuisine_group', 'price_range', 'rating_bucket', 'vibe_tags', 'dining_style', 'location.lvl0'],
+      },
+      values: {
+        // The load-bearing one. Price bands are an ordered scale, and alphabetically
+        // "$30 and under" < "$31 to $50" < "$50 and over" only by luck — "$100 and over" would
+        // sort to the front. Pinning the order makes it correct by construction rather than by
+        // coincidence.
+        price_range: {
+          order: ['$30 and under', '$31 to $50', '$50 and over'],
+          sortRemainingBy: 'hidden',
+        },
+        // Home Style is 26 records out of 5,000. A facet value that matches 0.5% of the index is
+        // a dead end for the diner who clicks it.
+        dining_style: { hide: ['Home Style'], sortRemainingBy: 'count' },
+        cuisine_group: { sortRemainingBy: 'count' },
+        vibe_tags: { sortRemainingBy: 'count' },
+      },
+    },
+  },
+
+  // ── Sorting ─────────────────────────────────────────────────────────────
+  // Virtual rather than standard replicas: Relevant Sort applies the sort while keeping relevant
+  // results near the top, which is what a diner actually means by "sort by rating". They also cost
+  // nothing against the record quota, where standard replicas duplicate all 5,000 records.
+  // Named off `indexName` so a scratch index gets its own replicas instead of colliding.
+  replicas: [
+    `virtual(${indexName}_rating_desc)`,
+    `virtual(${indexName}_reviews_desc)`,
+    `virtual(${indexName}_price_asc)`,
+  ],
+};
+
+/**
+ * A virtual replica takes its sort from its own `customRanking`; the rest of the configuration is
+ * inherited from the primary and cannot be overridden here.
+ *
+ * The trade-off worth naming: Relevant Sort is not an exhaustive sort. `price_asc` will not
+ * guarantee the strictly cheapest restaurant first, because relevance still participates. For a
+ * discovery UI that is the right call — but if a diner genuinely wants "cheapest, no exceptions",
+ * a standard replica is the honest answer.
+ */
+const replicaSorts: Record<string, string[]> = {
+  [`${indexName}_rating_desc`]: ['desc(bayesian_rating)', 'desc(popularity_score)'],
+  // Raw review count rather than the log-scaled score: someone sorting by "most reviewed" is
+  // asking a literal question and expects the literal answer.
+  [`${indexName}_reviews_desc`]: ['desc(reviews_count)'],
+  [`${indexName}_price_asc`]: ['asc(price_tier)', 'desc(bayesian_rating)'],
 };
 
 const { taskID } = await client.setSettings({ indexName, indexSettings });
@@ -167,7 +229,19 @@ console.log(`applied ${synonyms.length} synonyms`);
 
 const ruleTask = await client.saveRules({ indexName, rules, clearExistingRules: true });
 await client.waitForTask({ indexName, taskID: ruleTask.taskID });
-console.log(`applied ${rules.length} rules\n`);
+console.log(`applied ${rules.length} rules`);
+
+// The replica indices exist only after the primary's `replicas` setting lands, so their sorts are
+// configured second rather than in the call above.
+for (const [replicaName, customRanking] of Object.entries(replicaSorts)) {
+  const task = await client.setSettings({
+    indexName: replicaName,
+    indexSettings: { customRanking },
+  });
+  await client.waitForTask({ indexName: replicaName, taskID: task.taskID });
+  console.log(`  ${replicaName} -> ${customRanking.join(', ')}`);
+}
+console.log('');
 
 // ── Verify against the live index, rather than trusting the write ─────────
 const applied = await client.getSettings({ indexName });
