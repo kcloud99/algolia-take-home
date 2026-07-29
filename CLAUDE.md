@@ -71,7 +71,7 @@ Raw: `project-files/dataset/restaurants_list.json` (5,000 records) and `restaura
 | Finding | Detail | Consequence |
 |---|---|---|
 | **Chains are hidden** | Exact-duplicate names: only 21 pairs, all in *different* cities. But splitting names on a whitespace-padded dash reveals **158 brand families over 604 restaurants**, and **113 brands have 2+ locations in one metro** (Atria's ×8 Pittsburgh, Perry's ×6 Houston, Dinosaur Bar ×6 NY, Stanford's ×5 Portland) | Derive `chain_name`; use `distinct`. Directly answers persona 1's third pain |
-| **Ratings are a trap** | `stars_count` mean 4.29; **4,086 of 5,000 round to 4**. Only 21 hit 5.0 — and **15 of those have <20 reviews** | Never `desc(stars_count)`. Bayesian smoothing required |
+| **Ratings are a trap** | `stars_count` mean **4.294**; **4,435 of 5,000 (89%) sit in the 4★ bucket** (`floor(stars) == 4`). Only 21 hit 5.0 — and **15 of those have <20 reviews**; the naive top 10 is 5.0s from 2, 3 and 5 reviews | Never `desc(stars_count)`. Bayesian smoothing required |
 | **Reviews are heavy-tailed** | 1 → 12,669; median 336, p90 1,355, p99 3,528 | Log-scale and bucket, never use raw |
 | **All images are dead** | Every `image_url` 302s to a 2.2 KB generic placeholder on `cdn.otstatic.com` | Must enrich. Also: tell the customer |
 | **Price sources disagree** | JSON `price` (2–4, never 1) vs CSV `price_range` conflict on **220 records (4.4%)** | Pick `price_range` as canonical; flag conflicts |

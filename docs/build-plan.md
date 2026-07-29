@@ -122,10 +122,11 @@ to 207 brands, but 20 of those are collisions rather than chains — `Town` in C
 in Honolulu are not the same business. Because grouped results show one row per brand, a false
 brand hides a real restaurant, so the rule requires positive evidence before it groups anything.
 
-**Ratings cannot be used raw.** 4,086 of 5,000 restaurants round to 4 stars, and 15 of the 21
-perfect 5.0 scores come from fewer than 20 reviews. Sorting by raw rating would surface the
-least-evidenced restaurants first. A Bayesian shrinkage estimator solves this, and it is rounded
-to one decimal *deliberately* so that records still tie and the next ranking signal can act.
+**Ratings cannot be used raw.** 4,435 of 5,000 restaurants — 89% — sit in the four-star bucket,
+and 15 of the 21 perfect 5.0 scores come from fewer than 20 reviews. Sorting by raw rating opens
+the page with 5.0s from two, three and five reviews. A Bayesian shrinkage estimator solves this,
+and it is rounded to one decimal *deliberately* so that records still tie and the next ranking
+signal can act.
 
 **Geo needs bucketing, not just a centre point.** Distance is the second criterion in Algolia's
 ranking formula, and at its default 10 m granularity it becomes a strict distance sort that

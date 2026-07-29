@@ -145,8 +145,8 @@ rather than renumbering to 1–3, so our values stay comparable to their source 
 bayesian = (v / (v + m)) * R + (m / (v + m)) * C
   R = stars_count
   v = reviews_count
-  C = 4.294   (global mean across all 5,000)
-  m = 150     (≈ p25 of review counts)
+  C = 4.294   (global mean across all 5,000 — measured)
+  m = 140     (p25 of review counts — measured, computed at build time not hardcoded)
 
 bayesian_rating = round(bayesian, 1)
 ```
@@ -160,15 +160,22 @@ never tie on criterion 8a, and `popularity_score` would be dead code. This is th
 high-cardinality trap from [algolia-core.md](algolia-core.md) §5, and demonstrating that we
 avoided it deliberately is worth more than the extra precision.
 
+Measured result: **17 distinct `bayesian_rating` values** across 5,000 records, against 38
+distinct `popularity_score` values. That is the intended shape — the first attribute makes 17
+coarse buckets and the second genuinely decides inside them. Records tie even after both, which
+is visible in the build output: GW Fins (5,523 reviews) ranks below Restaurant August (4,668)
+because both round to a popularity score of 37.
+
 ### `popularity_score`
 `round(log10(reviews_count + 1) * 10)` → roughly 0–41. Review counts span 1 → 12,669 with a heavy
 tail (median 336, p99 3,528); raw values would let a handful of famous restaurants dominate every
 tie-break. Log-scaling compresses the tail; rounding creates ties.
 
 ### `rating_bucket`
-`floor(stars_count)` → the "4 stars & up" facet. Note that 4,086 of 5,000 land in bucket 4, so
-this facet is nearly useless as a filter and should be presented as **"X stars and up"**
-(a `NumericMenu`), not as discrete checkboxes.
+`floor(stars_count)` → the "4 stars & up" facet. Note that **4,435 of 5,000 (89%) land in
+bucket 4** — full distribution 1★ 3 · 2★ 11 · 3★ 530 · 4★ 4,435 · 5★ 21 — so this facet is nearly
+useless as a filter and should be presented as **"X stars and up"** (a `NumericMenu`), not as
+discrete checkboxes.
 
 ### `location.lvl0/1/2`
 `area > city > neighborhood`. Required because `neighborhood` alone is ambiguous — 185 records
@@ -376,8 +383,9 @@ sparse, disappointing pages.
 
 ## 7. Open questions to resolve during the build
 
-1. **`m` in the Bayesian formula.** 150 (≈p25) is the starting point. Test 336 (median) too —
-   higher `m` means more shrinkage and a flatter, more conservative ranking.
+1. **`m` in the Bayesian formula.** ~~150~~ **Resolved: 140**, computed as the p25 review count
+   at build time rather than hardcoded. Test 336 (median) if the ranking needs to be more
+   conservative — higher `m` means more shrinkage and a flatter ranking.
 2. **Rounding precision on `bayesian_rating`.** 1 decimal is the plan. If the top of the results
    feels arbitrary, that's a sign `popularity_score` is doing too much of the work and we should
    go to 2 decimals.
