@@ -85,8 +85,35 @@ Split `name` on a **whitespace-padded** dash — `/\s+[-–—]\s+/`. Never a ba
 Then count candidates across the dataset and **only promote to `chain_name` when count ≥ 2**.
 That guard is what keeps one-off names with a dash out of the chain logic.
 
-Yields 211 brands over 716 restaurants; 129 brands have 2+ locations in one metro. Powers
+Yields **158 brands over 604 restaurants; 113 brands have 2+ locations in one metro**. Powers
 `attributeForDistinct` and answers persona 1's third pain point.
+
+#### Why only suffixed names count — the deliberately conservative rule
+
+A restaurant is only considered part of a brand if its *own* name carries a location suffix.
+A bare `The Melting Pot`, sitting alongside twenty-six `The Melting Pot - <city>` records, is
+**not** counted as a member. That is a choice, and it is the conservative one. Two looser rules
+were measured against it:
+
+| Rule | Brands | Restaurants | Metro |
+|---|---|---|---|
+| **Suffixed names only** *(shipped)* | **158** | **604** | **113** |
+| Also treat an un-suffixed name matching a known brand as a member | 187 | 666 | 125 |
+| Treat any repeated whole name as a brand | 207 | 706 | 126 |
+
+The loosest rule buys 49 extra brands, but **20 of them are name collisions, not chains** —
+`Town` in Carbondale CO and `Town` in Honolulu become one brand, as do `Union` in Pasadena and
+`Union` in Mobile. Since `distinct` shows one record per brand, a false brand *hides a real
+restaurant* from the results. For a booking platform that is a worse failure than under-counting,
+so the rule requires positive evidence — an explicit location suffix — before it groups anything.
+
+Worth knowing: the choice changes none of the demo cases. Atria's ×8 Pittsburgh, Perry's ×6
+Houston, Dinosaur Bar ×6 NY, Stanford's ×5 Portland, Melting Pot ×26 and Ruth's Chris ×31 are
+identical under all three rules. The only thing at stake is the headline count.
+
+*Say it like this:* "I only group restaurants when the data gives me a reason to. If two
+restaurants merely share a name, that's a coincidence, not a chain — and grouping them would
+hide one of them from your diners."
 
 ### `cuisines[]` / `cuisine_group`
 `food_type` has 114 values with composites. Split on `/` and `,`, trim, dedupe →

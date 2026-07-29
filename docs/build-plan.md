@@ -112,9 +112,15 @@ These were settled before the build started, from an analysis pass over the raw 
 
 **Chains are the hidden structure in this dataset.** Exact-name matching finds almost none —
 only 21 duplicate names, all in different cities. Splitting names on a whitespace-padded dash
-reveals 211 brand families across 716 restaurants, and 129 of those brands have two or more
+reveals 158 brand families across 604 restaurants, and 113 of those brands have two or more
 locations in a *single* metro. That is precisely the third pain point in the discovery notes, so
 chain identity is a derived field and `distinct` grouping is a first-class feature.
+
+The grouping rule is deliberately conservative: a restaurant joins a brand only if its own name
+carries a location suffix. Looser rules that also group restaurants merely sharing a name find up
+to 207 brands, but 20 of those are collisions rather than chains — `Town` in Carbondale and `Town`
+in Honolulu are not the same business. Because grouped results show one row per brand, a false
+brand hides a real restaurant, so the rule requires positive evidence before it groups anything.
 
 **Ratings cannot be used raw.** 4,086 of 5,000 restaurants round to 4 stars, and 15 of the 21
 perfect 5.0 scores come from fewer than 20 reviews. Sorting by raw rating would surface the
