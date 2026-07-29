@@ -67,7 +67,8 @@ reviewed and explained on its own.
 | Step | Deliverable |
 |---|---|
 | 2.1 | Algolia client and push script (`replaceAllObjects`), pushed with **default settings only** |
-| 2.2 | Relevance test harness over a fixed query manifest → **`docs/relevance-baseline.md`** ⛔ *gate: no configuration is written before this exists* |
+| 2.1a | Write the query manifest — **before a single result is observed** |
+| 2.2 | Relevance test harness over that manifest → **`docs/relevance-baseline.md`** ⛔ *gate: no configuration is written before this exists* |
 | 2.3 | Searchable attributes, faceting, custom ranking |
 | 2.4 | Typo tolerance and query strategy |
 | 2.5 | Synonyms and query rules |
@@ -145,6 +146,10 @@ in sync.
 - **Nothing is configured before the baseline is captured.** Default-configuration results are
   unrecoverable once overwritten, and the before/after comparison is the evidence that the
   tuning was reasoned rather than guessed.
+- **The test queries are written before any results are seen.** Choosing them after looking at
+  output would let the configuration be tuned to flatter the test set, and the improvement would
+  measure nothing. The manifest is committed in its own step, ahead of the baseline run, and is
+  not edited afterwards — queries can be *added* later, but nothing that was tested is removed.
 - **Working before pretty.** The app is wired end-to-end and returning live results before any
   visual design work starts.
 - **Documentation is written inside its phase**, not reconstructed afterwards.
