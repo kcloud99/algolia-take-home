@@ -210,7 +210,7 @@ limit, with room to enrich further.
 
 | Purpose | Attributes |
 |---|---|
-| **Searchable** | `name`, `chain_name`, `cuisines`, `food_type`, `neighborhood`, `city`, `area`, `state`, `address` — in that order of importance, because the order *is* the ranking signal |
+| **Searchable** | `name`, then `cuisines` + `food_type`, then `neighborhood` + `city` + `area` + `state`, then `address` — in that order, because the order *is* the ranking signal. Justified below |
 | **Facetable** | `cuisines`, `cuisine_group`, `dining_style`, `price_range`, `price_tier`, `rating_bucket`, `chain_name`, `city`, `neighborhood`, `area`, `state`, `location.lvl0/1/2`, `vibe_tags` |
 | **Filter-only** | `payment_options`, `price_conflict`, `objectID` — filterable but never shown as a facet list |
 | **Ranking** | `bayesian_rating` then `popularity_score` as custom ranking; `_geoloc` for distance |
@@ -219,6 +219,45 @@ limit, with room to enrich further.
 
 Deliberately **not** searchable: URLs, image paths, postal codes and the numeric ranking fields.
 They add index size and produce bizarre matches.
+
+### Why the searchable attributes are in that order
+
+In Algolia, the order of `searchableAttributes` is not documentation — it *is* the **attribute**
+ranking criterion. A match in an earlier line beats a match in a later one, and attributes on the
+same line are treated as equally important. So the four tiers are a claim about what a word in the
+search box most likely means:
+
+```
+1.  unordered(name)
+2.  cuisines, food_type
+3.  neighborhood, city, area, state
+4.  address
+```
+
+**`name` first**, because a diner typing a restaurant name is trying to reach one specific
+restaurant, and nothing should outrank that. It is `unordered` so word position inside the name is
+ignored — someone typing "chris ruths" is looking for Ruth's Chris.
+
+**Cuisine above location** is the tier that does real work. If they were reversed, a restaurant
+*named* "Denver Chophouse" would outrank actual Italian restaurants in Denver for the query
+`italian denver`. Cuisine is the stronger signal of intent; location narrows it.
+
+**`cuisines` and `food_type` share a tier** because they are the same fact at two levels of
+precision — the split values and the raw source value. Neither should beat the other.
+
+**The four location fields share a tier** because their relative importance depends on the query,
+not on the schema. "SoHo" is a neighborhood and "Denver" is a city, and a diner typing either has
+been equally specific.
+
+**`address` last**, because street names generate coincidences — Church Street, Market Street,
+Union Avenue — and a coincidental street match should never displace a real name or cuisine match.
+
+**`chain_name` is not searchable at all**, despite being a derived field built for exactly this
+kind of matching. It was measured both ways against all 27 test queries and changed nothing: a
+brand name is always a substring of the restaurant name it came from, and `name` ranks earlier, so
+the name match wins the attribute criterion before `chain_name` is ever consulted. It stays
+*facetable*, which is what the brand facet and chain grouping actually need. Evidence in
+[`relevance-testing.md`](relevance-testing.md).
 
 The exact settings live in `scripts/configure-index.ts` — as code, committed and reviewable, never
 clicked into a dashboard.

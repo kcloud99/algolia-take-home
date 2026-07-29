@@ -1,0 +1,2110 @@
+{
+  "label": "tuned",
+  "capturedOn": "2026-07-29",
+  "indexName": "restaurants",
+  "settings": {
+    "minWordSizefor1Typo": 4,
+    "minWordSizefor2Typos": 8,
+    "hitsPerPage": 24,
+    "maxValuesPerFacet": 100,
+    "version": 1,
+    "searchableAttributes": [
+      "unordered(name)",
+      "cuisines,food_type",
+      "neighborhood,city,area,state",
+      "address"
+    ],
+    "numericAttributesToIndex": null,
+    "attributesToRetrieve": null,
+    "allowTyposOnNumericTokens": false,
+    "ignorePlurals": true,
+    "removeStopWords": true,
+    "distinct": false,
+    "unretrievableAttributes": null,
+    "optionalWords": [
+      "and"
+    ],
+    "queryLanguages": [
+      "en"
+    ],
+    "replicas": [
+      "virtual(restaurants_rating_desc)",
+      "virtual(restaurants_reviews_desc)",
+      "virtual(restaurants_price_asc)"
+    ],
+    "attributesForFaceting": [
+      "searchable(cuisines)",
+      "cuisine_group",
+      "dining_style",
+      "price_range",
+      "price_tier",
+      "rating_bucket",
+      "searchable(chain_name)",
+      "searchable(city)",
+      "searchable(neighborhood)",
+      "area",
+      "state",
+      "location.lvl0",
+      "location.lvl1",
+      "location.lvl2",
+      "vibe_tags",
+      "filterOnly(payment_options)",
+      "filterOnly(price_conflict)"
+    ],
+    "attributesToSnippet": null,
+    "attributesToHighlight": [
+      "name",
+      "cuisines",
+      "neighborhood",
+      "city"
+    ],
+    "paginationLimitedTo": 1000,
+    "attributeForDistinct": "chain_name",
+    "exactOnSingleWordQuery": "attribute",
+    "synonyms": [
+      [
+        "steak",
+        "steakhouse",
+        "chophouse"
+      ],
+      [
+        "tapas",
+        "small plates"
+      ],
+      [
+        "bbq",
+        "barbecue",
+        "barbeque",
+        "bar-b-q",
+        "bar-b-que"
+      ]
+    ],
+    "ranking": [
+      "typo",
+      "geo",
+      "words",
+      "filters",
+      "proximity",
+      "attribute",
+      "exact",
+      "custom"
+    ],
+    "customRanking": [
+      "desc(bayesian_rating)",
+      "desc(popularity_score)"
+    ],
+    "separatorsToIndex": "&'-",
+    "removeWordsIfNoResults": "allOptional",
+    "queryType": "prefixLast",
+    "highlightPreTag": "<em>",
+    "highlightPostTag": "</em>",
+    "typoTolerance": "true",
+    "alternativesAsExact": [
+      "ignorePlurals",
+      "singleWordSynonym",
+      "multiWordsSynonym"
+    ],
+    "indexLanguages": [
+      "en"
+    ],
+    "renderingContent": {
+      "facetOrdering": {
+        "facets": {
+          "order": [
+            "cuisine_group",
+            "price_range",
+            "rating_bucket",
+            "vibe_tags",
+            "dining_style",
+            "location.lvl0"
+          ]
+        },
+        "values": {
+          "cuisine_group": {
+            "sortRemainingBy": "count"
+          },
+          "dining_style": {
+            "hide": [
+              "Home Style"
+            ],
+            "sortRemainingBy": "count"
+          },
+          "price_range": {
+            "order": [
+              "$30 and under",
+              "$31 to $50",
+              "$50 and over"
+            ],
+            "sortRemainingBy": "hidden"
+          },
+          "vibe_tags": {
+            "sortRemainingBy": "count"
+          }
+        }
+      }
+    }
+  },
+  "results": [
+    {
+      "query": {
+        "id": "known-mamas-fish-house",
+        "category": "known-item",
+        "query": "Mama's Fish House",
+        "expect": "The single Paia, HI record at rank 1. It is the most-reviewed restaurant in the dataset (4.8 stars, 12,669 reviews), so it should be unmissable."
+      },
+      "nbHits": 1,
+      "processingTimeMS": 2,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Mama's Fish House",
+          "where": "Paia, HI",
+          "cuisine": "Hawaiian",
+          "stars": 4.8,
+          "reviews": 12669,
+          "bayesian": 4.8,
+          "popularity": 41,
+          "typos": 0,
+          "exactWords": 5,
+          "proximity": 4,
+          "words": 5
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "known-st-elmo",
+        "category": "known-item",
+        "query": "St. Elmo Steak House",
+        "expect": "The single Indianapolis record at rank 1. The period in \"St.\" must not fragment the match, and the generic words \"Steak House\" must not pull 328 steakhouses above it."
+      },
+      "nbHits": 2,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "St. Elmo Steak House",
+          "where": "Indianapolis, IN",
+          "cuisine": "Steak",
+          "stars": 4.6,
+          "reviews": 8199,
+          "bayesian": 4.6,
+          "popularity": 39,
+          "typos": 0,
+          "exactWords": 4,
+          "proximity": 3,
+          "words": 4
+        },
+        {
+          "rank": 2,
+          "name": "Sweet Waters Steak House",
+          "where": "Westfield, NJ",
+          "cuisine": "Steakhouse",
+          "stars": 4.5,
+          "reviews": 282,
+          "bayesian": 4.4,
+          "popularity": 25,
+          "typos": 1,
+          "exactWords": 3,
+          "proximity": 11,
+          "words": 4
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "misspelled-ruths-cris",
+        "category": "misspelled",
+        "query": "ruths cris",
+        "expect": "Ruth's Chris Steak House locations (31 in the dataset). Two errors: a dropped apostrophe and a missing letter in \"Chris\"."
+      },
+      "nbHits": 31,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Ruth's Chris Steak House - Downtown Honolulu",
+          "where": "Honolulu, HI",
+          "cuisine": "Steakhouse",
+          "stars": 4.6,
+          "reviews": 745,
+          "bayesian": 4.6,
+          "popularity": 29,
+          "typos": 2,
+          "exactWords": 0,
+          "proximity": 3,
+          "words": 2
+        },
+        {
+          "rank": 2,
+          "name": "Ruth's Chris Steak House - Pittsburgh",
+          "where": "Pittsburgh, PA",
+          "cuisine": "Steakhouse",
+          "stars": 4.7,
+          "reviews": 653,
+          "bayesian": 4.6,
+          "popularity": 28,
+          "typos": 2,
+          "exactWords": 0,
+          "proximity": 3,
+          "words": 2
+        },
+        {
+          "rank": 3,
+          "name": "Ruth's Chris Steak House - Destin",
+          "where": "Destin, FL",
+          "cuisine": "Steakhouse",
+          "stars": 4.7,
+          "reviews": 309,
+          "bayesian": 4.6,
+          "popularity": 25,
+          "typos": 2,
+          "exactWords": 0,
+          "proximity": 3,
+          "words": 2
+        },
+        {
+          "rank": 4,
+          "name": "Ruth's Chris Steak House - Baton Rouge",
+          "where": "Baton Rouge, LA",
+          "cuisine": "Steakhouse",
+          "stars": 4.8,
+          "reviews": 306,
+          "bayesian": 4.6,
+          "popularity": 25,
+          "typos": 2,
+          "exactWords": 0,
+          "proximity": 3,
+          "words": 2
+        },
+        {
+          "rank": 5,
+          "name": "Ruth's Chris Steak House - San Diego",
+          "where": "San Diego, CA",
+          "cuisine": "Steakhouse",
+          "stars": 4.5,
+          "reviews": 1376,
+          "bayesian": 4.5,
+          "popularity": 31,
+          "typos": 2,
+          "exactWords": 0,
+          "proximity": 3,
+          "words": 2
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "misspelled-melting-pott",
+        "category": "misspelled",
+        "query": "melting pott",
+        "expect": "The Melting Pot locations (26). One inserted letter on a short word, which is the hardest typo case because short words get the least tolerance."
+      },
+      "nbHits": 26,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "The Melting Pot - Tucson",
+          "where": "Tucson, AZ",
+          "cuisine": "Fondue",
+          "stars": 4.7,
+          "reviews": 415,
+          "bayesian": 4.6,
+          "popularity": 26,
+          "typos": 1,
+          "exactWords": 1,
+          "proximity": 1,
+          "words": 2
+        },
+        {
+          "rank": 2,
+          "name": "The Melting Pot - La Jolla",
+          "where": "San Diego, CA",
+          "cuisine": "Fondue",
+          "stars": 4.5,
+          "reviews": 1465,
+          "bayesian": 4.5,
+          "popularity": 32,
+          "typos": 1,
+          "exactWords": 1,
+          "proximity": 1,
+          "words": 2
+        },
+        {
+          "rank": 3,
+          "name": "The Melting Pot - OKC",
+          "where": "Oklahoma City, OK",
+          "cuisine": "Fondue",
+          "stars": 4.5,
+          "reviews": 1399,
+          "bayesian": 4.5,
+          "popularity": 31,
+          "typos": 1,
+          "exactWords": 1,
+          "proximity": 1,
+          "words": 2
+        },
+        {
+          "rank": 4,
+          "name": "The Melting Pot - Darien",
+          "where": "Darien, CT",
+          "cuisine": "Fondue",
+          "stars": 4.5,
+          "reviews": 611,
+          "bayesian": 4.5,
+          "popularity": 28,
+          "typos": 1,
+          "exactWords": 1,
+          "proximity": 1,
+          "words": 2
+        },
+        {
+          "rank": 5,
+          "name": "The Melting Pot - Rochester",
+          "where": "Rochester, NY",
+          "cuisine": "Fondue",
+          "stars": 4.5,
+          "reviews": 455,
+          "bayesian": 4.5,
+          "popularity": 27,
+          "typos": 1,
+          "exactWords": 1,
+          "proximity": 1,
+          "words": 2
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "misspelled-benihanna",
+        "category": "misspelled",
+        "query": "benihanna",
+        "expect": "Benihana locations (24). A single inserted letter in a nine-character word, so two typos are allowed and one is needed."
+      },
+      "nbHits": 24,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Benihana - Indianapolis",
+          "where": "Indianapolis, IN",
+          "cuisine": "Japanese",
+          "stars": 4.4,
+          "reviews": 602,
+          "bayesian": 4.4,
+          "popularity": 28,
+          "typos": 1,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 2,
+          "name": "Benihana - Scottsdale",
+          "where": "Scottsdale, AZ",
+          "cuisine": "Japanese",
+          "stars": 4.4,
+          "reviews": 514,
+          "bayesian": 4.4,
+          "popularity": 27,
+          "typos": 1,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 3,
+          "name": "Benihana - Sacramento",
+          "where": "Citrus Heights, CA",
+          "cuisine": "Japanese",
+          "stars": 4.4,
+          "reviews": 530,
+          "bayesian": 4.4,
+          "popularity": 27,
+          "typos": 1,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 4,
+          "name": "Benihana - Stuart",
+          "where": "Stuart, FL",
+          "cuisine": "Japanese",
+          "stars": 4.4,
+          "reviews": 409,
+          "bayesian": 4.4,
+          "popularity": 26,
+          "typos": 1,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 5,
+          "name": "Benihana - Sugar Land",
+          "where": "Sugar Land, TX",
+          "cuisine": "Japanese",
+          "stars": 4.4,
+          "reviews": 315,
+          "bayesian": 4.4,
+          "popularity": 25,
+          "typos": 1,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "concatenated-meltingpot",
+        "category": "concatenated",
+        "query": "meltingpot",
+        "expect": "The Melting Pot locations (26). This is word-splitting, not typo tolerance — a distinct engine feature and a common way users type on mobile."
+      },
+      "nbHits": 26,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "The Melting Pot - Tucson",
+          "where": "Tucson, AZ",
+          "cuisine": "Fondue",
+          "stars": 4.7,
+          "reviews": 415,
+          "bayesian": 4.6,
+          "popularity": 26,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 2,
+          "name": "The Melting Pot - La Jolla",
+          "where": "San Diego, CA",
+          "cuisine": "Fondue",
+          "stars": 4.5,
+          "reviews": 1465,
+          "bayesian": 4.5,
+          "popularity": 32,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 3,
+          "name": "The Melting Pot - OKC",
+          "where": "Oklahoma City, OK",
+          "cuisine": "Fondue",
+          "stars": 4.5,
+          "reviews": 1399,
+          "bayesian": 4.5,
+          "popularity": 31,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 4,
+          "name": "The Melting Pot - Darien",
+          "where": "Darien, CT",
+          "cuisine": "Fondue",
+          "stars": 4.5,
+          "reviews": 611,
+          "bayesian": 4.5,
+          "popularity": 28,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 5,
+          "name": "The Melting Pot - Rochester",
+          "where": "Rochester, NY",
+          "cuisine": "Fondue",
+          "stars": 4.5,
+          "reviews": 455,
+          "bayesian": 4.5,
+          "popularity": 27,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "concatenated-fogodechao",
+        "category": "concatenated",
+        "query": "fogodechao",
+        "expect": "Fogo de Chao locations (6). Three words concatenated, and the source name carries no accent so this is purely a splitting test."
+      },
+      "nbHits": 0,
+      "processingTimeMS": 1,
+      "hits": []
+    },
+    {
+      "query": {
+        "id": "prefix-buca",
+        "category": "prefix",
+        "query": "buca",
+        "expect": "Buca di Beppo locations. Should not be crowded out by Sambuca and other names merely containing the letters — Algolia prefixes match at word start, and this proves it."
+      },
+      "nbHits": 53,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Buca di Beppo - Albuquerque",
+          "where": "Albuquerque, NM",
+          "cuisine": "Italian",
+          "stars": 4.3,
+          "reviews": 408,
+          "bayesian": 4.3,
+          "popularity": 26,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 2,
+          "name": "Buca di Beppo - Castleton Square",
+          "where": "Indianapolis, IN",
+          "cuisine": "Italian",
+          "stars": 4.3,
+          "reviews": 414,
+          "bayesian": 4.3,
+          "popularity": 26,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 3,
+          "name": "Buca di Beppo - Kansas City",
+          "where": "Kansas City, MO",
+          "cuisine": "Italian",
+          "stars": 4.2,
+          "reviews": 1096,
+          "bayesian": 4.2,
+          "popularity": 30,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 4,
+          "name": "Buca di Beppo - Honolulu",
+          "where": "Honolulu, HI",
+          "cuisine": "Italian",
+          "stars": 4.2,
+          "reviews": 927,
+          "bayesian": 4.2,
+          "popularity": 30,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 5,
+          "name": "Buca di Beppo - Mira Mesa",
+          "where": "San Diego, CA",
+          "cuisine": "Italian",
+          "stars": 4.2,
+          "reviews": 612,
+          "bayesian": 4.2,
+          "popularity": 28,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "prefix-capital-gr",
+        "category": "prefix",
+        "query": "capital gr",
+        "expect": "The Capital Grille locations (11). Under queryType prefixLast only the trailing word is a prefix, which is the correct as-you-type behaviour."
+      },
+      "nbHits": 12,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "The Capital Grille - Plano",
+          "where": "Plano, TX",
+          "cuisine": "Seafood",
+          "stars": 4.7,
+          "reviews": 1245,
+          "bayesian": 4.7,
+          "popularity": 31,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 1,
+          "words": 2
+        },
+        {
+          "rank": 2,
+          "name": "The Capital Grille - Indianapolis",
+          "where": "Indianapolis, IN",
+          "cuisine": "Steakhouse",
+          "stars": 4.7,
+          "reviews": 1239,
+          "bayesian": 4.7,
+          "popularity": 31,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 1,
+          "words": 2
+        },
+        {
+          "rank": 3,
+          "name": "The Capital Grille - Denver",
+          "where": "Denver, CO",
+          "cuisine": "Steakhouse",
+          "stars": 4.6,
+          "reviews": 2010,
+          "bayesian": 4.6,
+          "popularity": 33,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 1,
+          "words": 2
+        },
+        {
+          "rank": 4,
+          "name": "The Capital Grille - Scottsdale",
+          "where": "Scottsdale, AZ",
+          "cuisine": "Steakhouse",
+          "stars": 4.6,
+          "reviews": 1149,
+          "bayesian": 4.6,
+          "popularity": 31,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 1,
+          "words": 2
+        },
+        {
+          "rank": 5,
+          "name": "The Capital Grille - Miami",
+          "where": "Miami, FL",
+          "cuisine": "Seafood",
+          "stars": 4.6,
+          "reviews": 1136,
+          "bayesian": 4.6,
+          "popularity": 31,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 1,
+          "words": 2
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "punctuation-wallse",
+        "category": "punctuation",
+        "query": "wallse",
+        "expect": "Wallsé (New York, 1 record) at rank 1, typed without the accent. Diacritic normalisation is on by default and costs no configuration — worth showing an Elasticsearch shop."
+      },
+      "nbHits": 1,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Wallsé",
+          "where": "New York, NY",
+          "cuisine": "Modern European",
+          "stars": 4.5,
+          "reviews": 993,
+          "bayesian": 4.5,
+          "popularity": 30,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "punctuation-mccormick",
+        "category": "punctuation",
+        "query": "mccormick and schmicks",
+        "expect": "McCormick & Schmick's locations (15). Tests the ampersand and the apostrophe together, plus \"and\" standing in for \"&\"."
+      },
+      "nbHits": 13,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "McCormick & Schmick's Seafood - Las Vegas",
+          "where": "Las Vegas, NV",
+          "cuisine": "Seafood",
+          "stars": 4.4,
+          "reviews": 1481,
+          "bayesian": 4.4,
+          "popularity": 32,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 2,
+          "words": 2
+        },
+        {
+          "rank": 2,
+          "name": "McCormick & Schmick's Seafood - Indianapolis",
+          "where": "Indianapolis, IN",
+          "cuisine": "Seafood",
+          "stars": 4.2,
+          "reviews": 2257,
+          "bayesian": 4.2,
+          "popularity": 34,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 2,
+          "words": 2
+        },
+        {
+          "rank": 3,
+          "name": "McCormick & Schmick's Seafood - Denver",
+          "where": "Denver, CO",
+          "cuisine": "Seafood",
+          "stars": 4.2,
+          "reviews": 1898,
+          "bayesian": 4.2,
+          "popularity": 33,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 2,
+          "words": 2
+        },
+        {
+          "rank": 4,
+          "name": "McCormick & Schmick's Harborside - Portland",
+          "where": "Portland, OR",
+          "cuisine": "Seafood",
+          "stars": 4.2,
+          "reviews": 2121,
+          "bayesian": 4.2,
+          "popularity": 33,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 2,
+          "words": 2
+        },
+        {
+          "rank": 5,
+          "name": "McCormick & Schmick's Seafood - Houston",
+          "where": "Houston, TX",
+          "cuisine": "Seafood",
+          "stars": 4.2,
+          "reviews": 1969,
+          "bayesian": 4.2,
+          "popularity": 33,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 2,
+          "words": 2
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "broad-sushi",
+        "category": "broad",
+        "query": "sushi",
+        "expect": "Sushi restaurants first (67 carry Sushi as their food type, 208 sit in the Japanese group). A one-word query is where custom ranking has to decide the order, so the top of this list is the test of whether quality signals are working."
+      },
+      "nbHits": 106,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Shari Sushi Lounge",
+          "where": "Orlando, FL",
+          "cuisine": "Sushi",
+          "stars": 4.7,
+          "reviews": 575,
+          "bayesian": 4.6,
+          "popularity": 28,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 2,
+          "name": "Sushi Sasabune Hawaii",
+          "where": "Honolulu, HI",
+          "cuisine": "Sushi",
+          "stars": 4.8,
+          "reviews": 329,
+          "bayesian": 4.6,
+          "popularity": 25,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 3,
+          "name": "Edoko Sushi",
+          "where": "Frisco, TX",
+          "cuisine": "Sushi",
+          "stars": 4.7,
+          "reviews": 324,
+          "bayesian": 4.6,
+          "popularity": 25,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 4,
+          "name": "Kabooki Sushi",
+          "where": "Orlando, FL",
+          "cuisine": "Sushi",
+          "stars": 4.7,
+          "reviews": 261,
+          "bayesian": 4.6,
+          "popularity": 24,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 5,
+          "name": "Sushi House",
+          "where": "Leawood, KS",
+          "cuisine": "Sushi",
+          "stars": 4.6,
+          "reviews": 242,
+          "bayesian": 4.5,
+          "popularity": 24,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "broad-bbq",
+        "category": "broad",
+        "query": "bbq",
+        "expect": "Barbecue restaurants. The dataset spells it \"Barbecue\" and never \"BBQ\", so before synonyms this should return almost nothing useful — that gap is the point of testing it."
+      },
+      "nbHits": 26,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Iron Starr Urban Barbecue - OKC",
+          "where": "Oklahoma City, OK",
+          "cuisine": "Barbecue",
+          "stars": 4.5,
+          "reviews": 524,
+          "bayesian": 4.5,
+          "popularity": 27,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 2,
+          "name": "Dinosaur Bar-B-Que - Harlem",
+          "where": "New York, NY",
+          "cuisine": "Barbecue",
+          "stars": 4.4,
+          "reviews": 2104,
+          "bayesian": 4.4,
+          "popularity": 33,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 3,
+          "name": "Dinosaur Bar-B-Que - Buffalo",
+          "where": "Buffalo, NY",
+          "cuisine": "Barbecue",
+          "stars": 4.4,
+          "reviews": 660,
+          "bayesian": 4.4,
+          "popularity": 28,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 4,
+          "name": "Dinosaur Bar-B-Que - Troy",
+          "where": "Troy, NY",
+          "cuisine": "Barbecue",
+          "stars": 4.5,
+          "reviews": 354,
+          "bayesian": 4.4,
+          "popularity": 26,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 5,
+          "name": "Dinosaur Bar-B-Que - Brooklyn",
+          "where": "Brooklyn, NY",
+          "cuisine": "Barbecue",
+          "stars": 4.3,
+          "reviews": 624,
+          "bayesian": 4.3,
+          "popularity": 28,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "broad-small-plates",
+        "category": "broad",
+        "query": "small plates",
+        "expect": "Tapas / Small Plates restaurants. A multi-word match that must still count as exact, otherwise a single-word coincidence outranks it on the exact criterion."
+      },
+      "nbHits": 51,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Espana Tapas & Wine Bar",
+          "where": "Saint James, NY",
+          "cuisine": "Spanish",
+          "stars": 4.6,
+          "reviews": 197,
+          "bayesian": 4.5,
+          "popularity": 23,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 1,
+          "words": 2
+        },
+        {
+          "rank": 2,
+          "name": "Andalucia Tapas Restaurant & Bar",
+          "where": "Houston, TX",
+          "cuisine": "Tapas / Small Plates",
+          "stars": 4.7,
+          "reviews": 191,
+          "bayesian": 4.5,
+          "popularity": 23,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 1,
+          "words": 2
+        },
+        {
+          "rank": 3,
+          "name": "Vino Italian Tapas & Wine Bar",
+          "where": "Honolulu, HI",
+          "cuisine": "Contemporary Italian",
+          "stars": 4.6,
+          "reviews": 169,
+          "bayesian": 4.5,
+          "popularity": 22,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 1,
+          "words": 2
+        },
+        {
+          "rank": 4,
+          "name": "BARcelona Tapas - Indianapolis",
+          "where": "Indianapolis, IN",
+          "cuisine": "Spanish",
+          "stars": 4.4,
+          "reviews": 1089,
+          "bayesian": 4.4,
+          "popularity": 30,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 1,
+          "words": 2
+        },
+        {
+          "rank": 5,
+          "name": "Nai Tapas",
+          "where": "New York, NY",
+          "cuisine": "Tapas / Small Plates",
+          "stars": 4.5,
+          "reviews": 342,
+          "bayesian": 4.4,
+          "popularity": 25,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 1,
+          "words": 2
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "ambiguous-town",
+        "category": "ambiguous",
+        "query": "town",
+        "expect": "The two restaurants literally named Town (Carbondale CO and Honolulu HI) should lead, ahead of the 78 names that merely contain the word. Also the case that justifies the conservative chain rule: these two share a name and are not a chain."
+      },
+      "nbHits": 532,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Town",
+          "where": "Carbondale, CO",
+          "cuisine": "Contemporary American",
+          "stars": 4.6,
+          "reviews": 180,
+          "bayesian": 4.5,
+          "popularity": 23,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 2,
+          "name": "Town",
+          "where": "Honolulu, HI",
+          "cuisine": "Contemporary American",
+          "stars": 4.3,
+          "reviews": 1387,
+          "bayesian": 4.3,
+          "popularity": 31,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 3,
+          "name": "Myron's at Alon Town Center",
+          "where": "San Antonio, TX",
+          "cuisine": "Steak",
+          "stars": 4.6,
+          "reviews": 964,
+          "bayesian": 4.6,
+          "popularity": 30,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 4,
+          "name": "Towne House Restaurant at Wine & Roses",
+          "where": "Lodi, CA",
+          "cuisine": "Californian",
+          "stars": 4.6,
+          "reviews": 752,
+          "bayesian": 4.6,
+          "popularity": 29,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 5,
+          "name": "Paulette's Restaurant at the River Inn of Harbor Town",
+          "where": "Memphis, TN",
+          "cuisine": "Global, International",
+          "stars": 4.4,
+          "reviews": 852,
+          "bayesian": 4.4,
+          "popularity": 29,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "ambiguous-downtown",
+        "category": "ambiguous",
+        "query": "downtown",
+        "expect": "185 records sit in a neighborhood called Downtown across 10 different cities. A flat result list cannot tell them apart; the location hierarchy is what makes this answerable."
+      },
+      "nbHits": 469,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Zodiac at Neiman Marcus – Downtown Dallas",
+          "where": "Dallas, TX",
+          "cuisine": "Contemporary American",
+          "stars": 4.7,
+          "reviews": 245,
+          "bayesian": 4.6,
+          "popularity": 24,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 2,
+          "name": "Pizza Rock - Downtown",
+          "where": "Las Vegas, NV",
+          "cuisine": "Pizzeria",
+          "stars": 4.6,
+          "reviews": 238,
+          "bayesian": 4.5,
+          "popularity": 24,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 3,
+          "name": "Morton's The Steakhouse - Houston - Downtown",
+          "where": "Houston, TX",
+          "cuisine": "Steakhouse",
+          "stars": 4.3,
+          "reviews": 780,
+          "bayesian": 4.3,
+          "popularity": 29,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 4,
+          "name": "Sushi Zushi - Downtown",
+          "where": "San Antonio, TX",
+          "cuisine": "Sushi",
+          "stars": 4.2,
+          "reviews": 87,
+          "bayesian": 4.3,
+          "popularity": 19,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 5,
+          "name": "McCormick & Schmick's Seafood - Houston - Downtown",
+          "where": "Houston, TX",
+          "cuisine": "Seafood",
+          "stars": 4.2,
+          "reviews": 1351,
+          "bayesian": 4.2,
+          "popularity": 31,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 0,
+          "words": 1
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "location-italian-soho",
+        "category": "location",
+        "query": "italian in soho",
+        "expect": "The 11 Italian restaurants in SoHo (44 records there overall). The stop word \"in\" must not break the query — this is why removeStopWords stays off and removeWordsIfNoResults matters."
+      },
+      "nbHits": 20,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Sant Ambroeus SoHo",
+          "where": "New York, NY",
+          "cuisine": "Italian",
+          "stars": 4.4,
+          "reviews": 87,
+          "bayesian": 4.3,
+          "popularity": 19,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 2,
+          "name": "San Marino Soho",
+          "where": "New York, NY",
+          "cuisine": "Italian",
+          "stars": 3.7,
+          "reviews": 140,
+          "bayesian": 4,
+          "popularity": 21,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 3,
+          "name": "Peasant",
+          "where": "New York, NY",
+          "cuisine": "Italian",
+          "stars": 4.5,
+          "reviews": 1645,
+          "bayesian": 4.5,
+          "popularity": 32,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 4,
+          "name": "Savore",
+          "where": "New York, NY",
+          "cuisine": "Italian",
+          "stars": 4.5,
+          "reviews": 439,
+          "bayesian": 4.5,
+          "popularity": 26,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 5,
+          "name": "Osteria Morini - New York",
+          "where": "New York, NY",
+          "cuisine": "Italian",
+          "stars": 4.4,
+          "reviews": 1646,
+          "bayesian": 4.4,
+          "popularity": 32,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 8,
+          "words": 2
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "location-seafood-portland",
+        "category": "location",
+        "query": "seafood portland",
+        "expect": "The 9 seafood restaurants in Portland, OR. Cuisine plus city with no filter applied, matching on text alone."
+      },
+      "nbHits": 23,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Portland Seafood Co. - Mall 205",
+          "where": "Portland, OR",
+          "cuisine": "Seafood",
+          "stars": 4,
+          "reviews": 238,
+          "bayesian": 4.1,
+          "popularity": 24,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 2,
+          "words": 2
+        },
+        {
+          "rank": 2,
+          "name": "Portland Seafood Co. - Washington Square",
+          "where": "Tigard, OR",
+          "cuisine": "Seafood",
+          "stars": 3.8,
+          "reviews": 147,
+          "bayesian": 4,
+          "popularity": 22,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 2,
+          "words": 2
+        },
+        {
+          "rank": 3,
+          "name": "Chart House Restaurant - Portland",
+          "where": "Portland, OR",
+          "cuisine": "Seafood",
+          "stars": 4.4,
+          "reviews": 2279,
+          "bayesian": 4.4,
+          "popularity": 34,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 4,
+          "name": "Fivespice Seafood & Wine Bar",
+          "where": "Lake Oswego, OR",
+          "cuisine": "Seafood",
+          "stars": 4.4,
+          "reviews": 495,
+          "bayesian": 4.4,
+          "popularity": 27,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 5,
+          "name": "McCormick & Schmick's Harborside - Portland",
+          "where": "Portland, OR",
+          "cuisine": "Seafood",
+          "stars": 4.2,
+          "reviews": 2121,
+          "bayesian": 4.2,
+          "popularity": 33,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 8,
+          "words": 2
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "location-italian-denver",
+        "category": "location",
+        "query": "italian denver",
+        "expect": "The 20 Italian restaurants in Denver. This is the automaticFacetFilters target: after the rule lands it should produce two facet filters and an empty text query, with the refinement visible in the UI so a diner can undo it."
+      },
+      "nbHits": 41,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Piatti - Denver",
+          "where": "Denver, CO",
+          "cuisine": "Italian",
+          "stars": 4.6,
+          "reviews": 1400,
+          "bayesian": 4.6,
+          "popularity": 31,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 2,
+          "name": "North - Denver",
+          "where": "Denver, CO",
+          "cuisine": "Italian",
+          "stars": 4.5,
+          "reviews": 1221,
+          "bayesian": 4.5,
+          "popularity": 31,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 3,
+          "name": "Paravicinis Italian Bistro",
+          "where": "Colorado Springs, CO",
+          "cuisine": "Italian",
+          "stars": 4.6,
+          "reviews": 615,
+          "bayesian": 4.5,
+          "popularity": 28,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 4,
+          "name": "Uniscali Modern Italian",
+          "where": "Castle Rock, CO",
+          "cuisine": "Italian",
+          "stars": 4.7,
+          "reviews": 104,
+          "bayesian": 4.5,
+          "popularity": 20,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 5,
+          "name": "Maggiano's - Denver Pavilions",
+          "where": "Denver, CO",
+          "cuisine": "Italian",
+          "stars": 4.4,
+          "reviews": 3070,
+          "bayesian": 4.4,
+          "popularity": 35,
+          "typos": 0,
+          "exactWords": 2,
+          "proximity": 8,
+          "words": 2
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "chain-atrias-pittsburgh",
+        "category": "chain-in-city",
+        "query": "atrias pittsburgh",
+        "expect": "The 8 Atria's in the Pittsburgh metro. Note only 3 carry Pittsburgh as their city — the rest are Mount Lebanon, Wexford, Gibsonia, McMurray and Murrysville — so matching on the metro rather than the city is what makes this complete. With chain grouping on it collapses to one row."
+      },
+      "nbHits": 8,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Atria's - Pleasant Hills",
+          "where": "Pittsburgh, PA",
+          "cuisine": "American",
+          "stars": 4.3,
+          "reviews": 445,
+          "bayesian": 4.3,
+          "popularity": 26,
+          "typos": 1,
+          "exactWords": 1,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 2,
+          "name": "Atria's - Peters Township",
+          "where": "McMurray, PA",
+          "cuisine": "American",
+          "stars": 4.3,
+          "reviews": 224,
+          "bayesian": 4.3,
+          "popularity": 24,
+          "typos": 1,
+          "exactWords": 1,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 3,
+          "name": "Atria's - O'Hara Township",
+          "where": "Pittsburgh, PA",
+          "cuisine": "American",
+          "stars": 4.3,
+          "reviews": 208,
+          "bayesian": 4.3,
+          "popularity": 23,
+          "typos": 1,
+          "exactWords": 1,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 4,
+          "name": "Atria's - Richland",
+          "where": "Gibsonia, PA",
+          "cuisine": "American",
+          "stars": 4.4,
+          "reviews": 106,
+          "bayesian": 4.3,
+          "popularity": 20,
+          "typos": 1,
+          "exactWords": 1,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 5,
+          "name": "Atria's - Murrysville",
+          "where": "Murrysville, PA",
+          "cuisine": "American",
+          "stars": 4.2,
+          "reviews": 277,
+          "bayesian": 4.2,
+          "popularity": 24,
+          "typos": 1,
+          "exactWords": 1,
+          "proximity": 8,
+          "words": 2
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "chain-perrys-houston",
+        "category": "chain-in-city",
+        "query": "perrys houston",
+        "expect": "The 6 Perry's Steakhouse & Grille in the Houston metro (7 total, one is San Antonio). Again only 3 are in the city of Houston. Perry's Union Street in San Francisco shares the name and must not be grouped with them."
+      },
+      "nbHits": 6,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Perry's Steakhouse & Grille - Champions",
+          "where": "Houston, TX",
+          "cuisine": "Steakhouse",
+          "stars": 4.7,
+          "reviews": 3145,
+          "bayesian": 4.7,
+          "popularity": 35,
+          "typos": 1,
+          "exactWords": 1,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 2,
+          "name": "Perry's Steakhouse & Grille - The Woodlands",
+          "where": "The Woodlands, TX",
+          "cuisine": "Steakhouse",
+          "stars": 4.6,
+          "reviews": 2392,
+          "bayesian": 4.6,
+          "popularity": 34,
+          "typos": 1,
+          "exactWords": 1,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 3,
+          "name": "Perry's Steakhouse & Grille - Clear Lake",
+          "where": "Houston, TX",
+          "cuisine": "Steakhouse",
+          "stars": 4.6,
+          "reviews": 2116,
+          "bayesian": 4.6,
+          "popularity": 33,
+          "typos": 1,
+          "exactWords": 1,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 4,
+          "name": "Perry's Steakhouse & Grille - Sugar Land",
+          "where": "Sugar Land, TX",
+          "cuisine": "Steakhouse",
+          "stars": 4.6,
+          "reviews": 1761,
+          "bayesian": 4.6,
+          "popularity": 32,
+          "typos": 1,
+          "exactWords": 1,
+          "proximity": 8,
+          "words": 2
+        },
+        {
+          "rank": 5,
+          "name": "Perry's Steakhouse & Grille - Cinco Ranch/Katy",
+          "where": "Katy, TX",
+          "cuisine": "Steakhouse",
+          "stars": 4.5,
+          "reviews": 2335,
+          "bayesian": 4.5,
+          "popularity": 34,
+          "typos": 1,
+          "exactWords": 1,
+          "proximity": 8,
+          "words": 2
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "intent-romantic",
+        "category": "intent",
+        "query": "romantic",
+        "expect": "Date-night restaurants. The word appears nowhere in the source data, so before rules this returns nothing useful. Should boost rather than hard-filter — romantic is a preference, not a requirement."
+      },
+      "nbHits": 1604,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Quince Restaurant",
+          "where": "San Francisco, CA",
+          "cuisine": "Californian",
+          "stars": 4.9,
+          "reviews": 1693,
+          "bayesian": 4.9,
+          "popularity": 32,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 2,
+          "name": "Mama's Fish House",
+          "where": "Paia, HI",
+          "cuisine": "Hawaiian",
+          "stars": 4.8,
+          "reviews": 12669,
+          "bayesian": 4.8,
+          "popularity": 41,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 3,
+          "name": "Restaurant August",
+          "where": "New Orleans, LA",
+          "cuisine": "Contemporary French",
+          "stars": 4.8,
+          "reviews": 4668,
+          "bayesian": 4.8,
+          "popularity": 37,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 4,
+          "name": "GW Fins",
+          "where": "New Orleans, LA",
+          "cuisine": "Seafood",
+          "stars": 4.8,
+          "reviews": 5523,
+          "bayesian": 4.8,
+          "popularity": 37,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 5,
+          "name": "Geronimo",
+          "where": "Santa Fe, NM",
+          "cuisine": "Fusion / Eclectic",
+          "stars": 4.8,
+          "reviews": 2858,
+          "bayesian": 4.8,
+          "popularity": 35,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "intent-cheap-eats",
+        "category": "intent",
+        "query": "cheap eats",
+        "expect": "Well-rated restaurants in the cheapest price band. \"cheap\" should be recognised as budget intent and removed from the text query, not matched literally."
+      },
+      "nbHits": 3125,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Fruition Restaurant",
+          "where": "Denver, CO",
+          "cuisine": "Comfort Food",
+          "stars": 4.8,
+          "reviews": 3481,
+          "bayesian": 4.8,
+          "popularity": 35,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 2,
+          "name": "Restaurant Orsay",
+          "where": "Jacksonville, FL",
+          "cuisine": "French",
+          "stars": 4.8,
+          "reviews": 1663,
+          "bayesian": 4.8,
+          "popularity": 32,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 3,
+          "name": "Cheever's Cafe",
+          "where": "Oklahoma City, OK",
+          "cuisine": "American",
+          "stars": 4.7,
+          "reviews": 2266,
+          "bayesian": 4.7,
+          "popularity": 34,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 4,
+          "name": "Vivace Restaurant",
+          "where": "Tucson, AZ",
+          "cuisine": "Italian",
+          "stars": 4.7,
+          "reviews": 2680,
+          "bayesian": 4.7,
+          "popularity": 34,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 5,
+          "name": "Etch",
+          "where": "Nashville, TN",
+          "cuisine": "Contemporary American",
+          "stars": 4.7,
+          "reviews": 2080,
+          "bayesian": 4.7,
+          "popularity": 33,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "intent-birthday-dinner",
+        "category": "intent",
+        "query": "birthday dinner",
+        "expect": "Special-occasion restaurants. Same shape as the date-night case: intent detected from a word that does not exist in the data."
+      },
+      "nbHits": 1604,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Quince Restaurant",
+          "where": "San Francisco, CA",
+          "cuisine": "Californian",
+          "stars": 4.9,
+          "reviews": 1693,
+          "bayesian": 4.9,
+          "popularity": 32,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 2,
+          "name": "Mama's Fish House",
+          "where": "Paia, HI",
+          "cuisine": "Hawaiian",
+          "stars": 4.8,
+          "reviews": 12669,
+          "bayesian": 4.8,
+          "popularity": 41,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 3,
+          "name": "Restaurant August",
+          "where": "New Orleans, LA",
+          "cuisine": "Contemporary French",
+          "stars": 4.8,
+          "reviews": 4668,
+          "bayesian": 4.8,
+          "popularity": 37,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 4,
+          "name": "GW Fins",
+          "where": "New Orleans, LA",
+          "cuisine": "Seafood",
+          "stars": 4.8,
+          "reviews": 5523,
+          "bayesian": 4.8,
+          "popularity": 37,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 5,
+          "name": "Geronimo",
+          "where": "Santa Fe, NM",
+          "cuisine": "Fusion / Eclectic",
+          "stars": 4.8,
+          "reviews": 2858,
+          "bayesian": 4.8,
+          "popularity": 35,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "zero-vegan-ramen",
+        "category": "zero-result",
+        "query": "vegan ramen",
+        "expect": "No record is both vegan and ramen, though both words exist separately (Vegan and Vegetarian food types; 12 ramen records). Should degrade to the best partial overlap rather than an empty page."
+      },
+      "nbHits": 94,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Axe",
+          "where": "Venice, CA",
+          "cuisine": "Vegan",
+          "stars": 4.3,
+          "reviews": 84,
+          "bayesian": 4.3,
+          "popularity": 19,
+          "typos": 0,
+          "exactWords": 1,
+          "proximity": 8,
+          "words": 1
+        },
+        {
+          "rank": 2,
+          "name": "Lawry's The Prime Rib - Las Vegas",
+          "where": "Las Vegas, NV",
+          "cuisine": "Prime Rib",
+          "stars": 4.6,
+          "reviews": 4139,
+          "bayesian": 4.6,
+          "popularity": 36,
+          "typos": 1,
+          "exactWords": 0,
+          "proximity": 8,
+          "words": 1
+        },
+        {
+          "rank": 3,
+          "name": "Ravenous Cafe",
+          "where": "Sacramento, CA",
+          "cuisine": "European",
+          "stars": 4.7,
+          "reviews": 255,
+          "bayesian": 4.6,
+          "popularity": 24,
+          "typos": 1,
+          "exactWords": 0,
+          "proximity": 8,
+          "words": 1
+        },
+        {
+          "rank": 4,
+          "name": "Mon Ami Gabi - Las Vegas - Main Dining Room",
+          "where": "Las Vegas, NV",
+          "cuisine": "French",
+          "stars": 4.5,
+          "reviews": 11014,
+          "bayesian": 4.5,
+          "popularity": 40,
+          "typos": 1,
+          "exactWords": 0,
+          "proximity": 8,
+          "words": 1
+        },
+        {
+          "rank": 5,
+          "name": "Maggiano's - Las Vegas",
+          "where": "Las Vegas, NV",
+          "cuisine": "Italian",
+          "stars": 4.5,
+          "reviews": 4244,
+          "bayesian": 4.5,
+          "popularity": 36,
+          "typos": 1,
+          "exactWords": 0,
+          "proximity": 8,
+          "words": 1
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "zero-michelin",
+        "category": "zero-result",
+        "query": "michelin",
+        "expect": "A genuine zero-result: the word appears nowhere in any field of any record. Nothing should be invented to fill the page — the empty state has to do the work."
+      },
+      "nbHits": 3,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Michelangelo",
+          "where": "Tucson, AZ",
+          "cuisine": "Italian",
+          "stars": 4.3,
+          "reviews": 199,
+          "bayesian": 4.3,
+          "popularity": 23,
+          "typos": 1,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 2,
+          "name": "Michel's at the Colony Surf",
+          "where": "Honolulu, HI",
+          "cuisine": "Contemporary French",
+          "stars": 4.6,
+          "reviews": 1363,
+          "bayesian": 4.6,
+          "popularity": 31,
+          "typos": 2,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        },
+        {
+          "rank": 3,
+          "name": "Michel",
+          "where": "Oakland, CA",
+          "cuisine": "French",
+          "stars": 4.3,
+          "reviews": 347,
+          "bayesian": 4.3,
+          "popularity": 25,
+          "typos": 2,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 1
+        }
+      ]
+    },
+    {
+      "query": {
+        "id": "empty-query",
+        "category": "empty",
+        "query": "",
+        "expect": "All 5,000 records, ordered entirely by custom ranking since there is no text to match on. This is the discovery landing page, so the top of this list is what a diner with no idea what they want sees first."
+      },
+      "nbHits": 5000,
+      "processingTimeMS": 1,
+      "hits": [
+        {
+          "rank": 1,
+          "name": "Russell's Steaks, Chops, and More",
+          "where": "Williamsville, NY",
+          "cuisine": "Steak",
+          "stars": 4.9,
+          "reviews": 2512,
+          "bayesian": 4.9,
+          "popularity": 34,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 2,
+          "name": "Quince Restaurant",
+          "where": "San Francisco, CA",
+          "cuisine": "Californian",
+          "stars": 4.9,
+          "reviews": 1693,
+          "bayesian": 4.9,
+          "popularity": 32,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 3,
+          "name": "Mama's Fish House",
+          "where": "Paia, HI",
+          "cuisine": "Hawaiian",
+          "stars": 4.8,
+          "reviews": 12669,
+          "bayesian": 4.8,
+          "popularity": 41,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 4,
+          "name": "Restaurant August",
+          "where": "New Orleans, LA",
+          "cuisine": "Contemporary French",
+          "stars": 4.8,
+          "reviews": 4668,
+          "bayesian": 4.8,
+          "popularity": 37,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        },
+        {
+          "rank": 5,
+          "name": "GW Fins",
+          "where": "New Orleans, LA",
+          "cuisine": "Seafood",
+          "stars": 4.8,
+          "reviews": 5523,
+          "bayesian": 4.8,
+          "popularity": 37,
+          "typos": 0,
+          "exactWords": 0,
+          "proximity": 0,
+          "words": 0
+        }
+      ]
+    }
+  ]
+}
