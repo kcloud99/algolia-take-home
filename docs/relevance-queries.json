@@ -1,0 +1,172 @@
+{
+  "about": "The relevance test manifest. Written before a single search result was observed, so the configuration cannot be tuned to flatter the test set. Run by scripts/test-relevance.ts (npm run index:test). Queries may be added later; nothing already tested is removed.",
+  "notes": [
+    "Categories are the query conditions the assignment names, plus the ones this dataset makes interesting: chains with several locations in one metro, and ambiguous neighborhood names.",
+    "Every count in an `expect` string was verified against data/out/records.json before this file was written.",
+    "Queries needing geo parameters are deliberately absent. Geo is the second ranking criterion, so switching it on would confound a before/after comparison of index settings. Location is tested here as text; `aroundLatLng` behaviour is tested in Phase 3, where the UI supplies the centre point."
+  ],
+  "queries": [
+    {
+      "id": "known-mamas-fish-house",
+      "category": "known-item",
+      "query": "Mama's Fish House",
+      "expect": "The single Paia, HI record at rank 1. It is the most-reviewed restaurant in the dataset (4.8 stars, 12,669 reviews), so it should be unmissable."
+    },
+    {
+      "id": "known-st-elmo",
+      "category": "known-item",
+      "query": "St. Elmo Steak House",
+      "expect": "The single Indianapolis record at rank 1. The period in \"St.\" must not fragment the match, and the generic words \"Steak House\" must not pull 328 steakhouses above it."
+    },
+    {
+      "id": "misspelled-ruths-cris",
+      "category": "misspelled",
+      "query": "ruths cris",
+      "expect": "Ruth's Chris Steak House locations (31 in the dataset). Two errors: a dropped apostrophe and a missing letter in \"Chris\"."
+    },
+    {
+      "id": "misspelled-melting-pott",
+      "category": "misspelled",
+      "query": "melting pott",
+      "expect": "The Melting Pot locations (26). One inserted letter on a short word, which is the hardest typo case because short words get the least tolerance."
+    },
+    {
+      "id": "misspelled-benihanna",
+      "category": "misspelled",
+      "query": "benihanna",
+      "expect": "Benihana locations (24). A single inserted letter in a nine-character word, so two typos are allowed and one is needed."
+    },
+    {
+      "id": "concatenated-meltingpot",
+      "category": "concatenated",
+      "query": "meltingpot",
+      "expect": "The Melting Pot locations (26). This is word-splitting, not typo tolerance — a distinct engine feature and a common way users type on mobile."
+    },
+    {
+      "id": "concatenated-fogodechao",
+      "category": "concatenated",
+      "query": "fogodechao",
+      "expect": "Fogo de Chao locations (6). Three words concatenated, and the source name carries no accent so this is purely a splitting test."
+    },
+    {
+      "id": "prefix-buca",
+      "category": "prefix",
+      "query": "buca",
+      "expect": "Buca di Beppo locations. Should not be crowded out by Sambuca and other names merely containing the letters — Algolia prefixes match at word start, and this proves it."
+    },
+    {
+      "id": "prefix-capital-gr",
+      "category": "prefix",
+      "query": "capital gr",
+      "expect": "The Capital Grille locations (11). Under queryType prefixLast only the trailing word is a prefix, which is the correct as-you-type behaviour."
+    },
+    {
+      "id": "punctuation-wallse",
+      "category": "punctuation",
+      "query": "wallse",
+      "expect": "Wallsé (New York, 1 record) at rank 1, typed without the accent. Diacritic normalisation is on by default and costs no configuration — worth showing an Elasticsearch shop."
+    },
+    {
+      "id": "punctuation-mccormick",
+      "category": "punctuation",
+      "query": "mccormick and schmicks",
+      "expect": "McCormick & Schmick's locations (15). Tests the ampersand and the apostrophe together, plus \"and\" standing in for \"&\"."
+    },
+    {
+      "id": "broad-sushi",
+      "category": "broad",
+      "query": "sushi",
+      "expect": "Sushi restaurants first (67 carry Sushi as their food type, 208 sit in the Japanese group). A one-word query is where custom ranking has to decide the order, so the top of this list is the test of whether quality signals are working."
+    },
+    {
+      "id": "broad-bbq",
+      "category": "broad",
+      "query": "bbq",
+      "expect": "Barbecue restaurants. The dataset spells it \"Barbecue\" and never \"BBQ\", so before synonyms this should return almost nothing useful — that gap is the point of testing it."
+    },
+    {
+      "id": "broad-small-plates",
+      "category": "broad",
+      "query": "small plates",
+      "expect": "Tapas / Small Plates restaurants. A multi-word match that must still count as exact, otherwise a single-word coincidence outranks it on the exact criterion."
+    },
+    {
+      "id": "ambiguous-town",
+      "category": "ambiguous",
+      "query": "town",
+      "expect": "The two restaurants literally named Town (Carbondale CO and Honolulu HI) should lead, ahead of the 78 names that merely contain the word. Also the case that justifies the conservative chain rule: these two share a name and are not a chain."
+    },
+    {
+      "id": "ambiguous-downtown",
+      "category": "ambiguous",
+      "query": "downtown",
+      "expect": "185 records sit in a neighborhood called Downtown across 10 different cities. A flat result list cannot tell them apart; the location hierarchy is what makes this answerable."
+    },
+    {
+      "id": "location-italian-soho",
+      "category": "location",
+      "query": "italian in soho",
+      "expect": "The 11 Italian restaurants in SoHo (44 records there overall). The stop word \"in\" must not break the query — this is why removeStopWords stays off and removeWordsIfNoResults matters."
+    },
+    {
+      "id": "location-seafood-portland",
+      "category": "location",
+      "query": "seafood portland",
+      "expect": "The 9 seafood restaurants in Portland, OR. Cuisine plus city with no filter applied, matching on text alone."
+    },
+    {
+      "id": "location-italian-denver",
+      "category": "location",
+      "query": "italian denver",
+      "expect": "The 20 Italian restaurants in Denver. This is the automaticFacetFilters target: after the rule lands it should produce two facet filters and an empty text query, with the refinement visible in the UI so a diner can undo it."
+    },
+    {
+      "id": "chain-atrias-pittsburgh",
+      "category": "chain-in-city",
+      "query": "atrias pittsburgh",
+      "expect": "The 8 Atria's in the Pittsburgh metro. Note only 3 carry Pittsburgh as their city — the rest are Mount Lebanon, Wexford, Gibsonia, McMurray and Murrysville — so matching on the metro rather than the city is what makes this complete. With chain grouping on it collapses to one row."
+    },
+    {
+      "id": "chain-perrys-houston",
+      "category": "chain-in-city",
+      "query": "perrys houston",
+      "expect": "The 6 Perry's Steakhouse & Grille in the Houston metro (7 total, one is San Antonio). Again only 3 are in the city of Houston. Perry's Union Street in San Francisco shares the name and must not be grouped with them."
+    },
+    {
+      "id": "intent-romantic",
+      "category": "intent",
+      "query": "romantic",
+      "expect": "Date-night restaurants. The word appears nowhere in the source data, so before rules this returns nothing useful. Should boost rather than hard-filter — romantic is a preference, not a requirement."
+    },
+    {
+      "id": "intent-cheap-eats",
+      "category": "intent",
+      "query": "cheap eats",
+      "expect": "Well-rated restaurants in the cheapest price band. \"cheap\" should be recognised as budget intent and removed from the text query, not matched literally."
+    },
+    {
+      "id": "intent-birthday-dinner",
+      "category": "intent",
+      "query": "birthday dinner",
+      "expect": "Special-occasion restaurants. Same shape as the date-night case: intent detected from a word that does not exist in the data."
+    },
+    {
+      "id": "zero-vegan-ramen",
+      "category": "zero-result",
+      "query": "vegan ramen",
+      "expect": "No record is both vegan and ramen, though both words exist separately (Vegan and Vegetarian food types; 12 ramen records). Should degrade to the best partial overlap rather than an empty page."
+    },
+    {
+      "id": "zero-michelin",
+      "category": "zero-result",
+      "query": "michelin",
+      "expect": "A genuine zero-result: the word appears nowhere in any field of any record. Nothing should be invented to fill the page — the empty state has to do the work."
+    },
+    {
+      "id": "empty-query",
+      "category": "empty",
+      "query": "",
+      "expect": "All 5,000 records, ordered entirely by custom ranking since there is no text to match on. This is the discovery landing page, so the top of this list is what a diner with no idea what they want sees first."
+    }
+  ]
+}
