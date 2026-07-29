@@ -206,7 +206,7 @@ third-party failure mode. Cheap, honest, and a good thing to flag to the prospec
 {
   "searchableAttributes": [
     "unordered(name)",                      // persona 1 lives here; unordered so "chris ruths" works
-    "unordered(chain_name)",                // brand match even when the suffix is noise
+    // chain_name removed — measured, changed 0 of 27 queries (see §8)
     "cuisines,food_type",                   // same tier — both are cuisine intent
     "neighborhood,city,area,state",         // "italian in soho" works without a filter
     "address"                               // lowest: street names are noisy
@@ -246,9 +246,10 @@ third-party failure mode. Cheap, honest, and a good thing to flag to the prospec
 
   "queryType": "prefixLast",
   "removeWordsIfNoResults": "allOptional",  // conversational queries degrade to best-overlap
+  "optionalWords": ["and"],                 // 438 names use "&", 190 spell it out — see §8
   "ignorePlurals": true,
-  "removeStopWords": false,                 // "The Palm", "The Kitchen" need their stop words
-  "separatorsToIndex": "&'-",               // 438 names have &, 942 have apostrophes
+  "removeStopWords": true,                  // reversed on measurement — see §8
+  // separatorsToIndex removed — measured, changed 1 query by 1 hit (see §8)
   "queryLanguages": ["en"],
   "indexLanguages": ["en"],
   "alternativesAsExact": ["ignorePlurals", "singleWordSynonym", "multiWordsSynonym"],
@@ -284,9 +285,10 @@ third-party failure mode. Cheap, honest, and a good thing to flag to the prospec
 
 ### Notes on specific choices
 
-**`removeStopWords: false`** — counter to the usual default. 366 names begin with "The", and
-*The Palm* / *The Kitchen* / *The Melting Pot* are real, searched-for names. Stripping stop words
-would make them harder to find, not easier. Worth calling out as a dataset-specific decision.
+**`removeStopWords: true`** — reversed during the build; the original reasoning is in §8 along with
+the measurement that overturned it. Short version: stripping stop words does *not* hide
+*The Melting Pot* or *The Capital Grille*, and keeping them broke every conversational location
+query.
 
 **`allowTyposOnNumericTokens: false`** — otherwise *Latitude 41* matches *Latitude 45*, and ZIP
 searches go sideways.
@@ -389,8 +391,65 @@ sparse, disappointing pages.
 2. **Rounding precision on `bayesian_rating`.** 1 decimal is the plan. If the top of the results
    feels arbitrary, that's a sign `popularity_score` is doing too much of the work and we should
    go to 2 decimals.
-3. **Is `chain_name` worth having in `searchableAttributes`?** It's mostly a substring of `name`.
-   Measure whether it changes any test query before keeping it.
+3. ~~**Is `chain_name` worth having in `searchableAttributes`?**~~ **Resolved: no.** Measured both
+   ways across all 27 test queries — 0 differed. See §8.
 4. **Should `vibe_tags` be searchable, not just facetable?** Cheaper than Rules, but risks
    matching `romantic` against restaurants where it's a weak inference. Rules are the safer
    default; revisit if the Rule coverage feels thin.
+
+---
+
+## 8. Settings the measurements overturned
+
+Three settings specified above were tested against the full 27-query manifest during Phase 2 rather
+than taken on trust. Two were removed and one was reversed. Each was measured by applying both
+variants to the live index and diffing every query's hit count and top 5.
+
+### `chain_name` in `searchableAttributes` — **removed**
+
+**0 of 27 queries differed.** Not a hit count, not an ordering. That's structural rather than
+lucky: a brand name is always a substring of the restaurant name it was derived from, and `name`
+sits on an earlier line, so the name match already wins the attribute criterion before
+`chain_name` is ever consulted. It remains in `attributesForFaceting`, which is what the brand
+facet and `searchForFacetValues` actually use.
+
+### `separatorsToIndex: "&'-"` — **removed**
+
+Specified because 438 names carry an ampersand and 942 an apostrophe. **One query differed, by one
+hit, with no ordering change.** Both characters are already stripped from queries *and* records, so
+they match without help — `bar & grill` and `bar grill` both return the same 67. Spot-checked the
+1,118 hyphenated names separately: `dinosaur bar-b-que`, `dinosaur bar b que`, `bar-b-que`,
+`cafe des beaux-arts` and `cafe des beaux arts` all resolve without it.
+
+Indexing a separator only pays when the character is itself the distinguishing token — `C++`,
+`AT&T`. Restaurant names don't work that way.
+
+### `removeStopWords: false` → **`true`**
+
+The original reasoning: 375 names begin with a stop word, so stripping them would hide
+*The Melting Pot* and *The Capital Grille*. **That does not reproduce** — both queries return an
+identical top 3 either way, because those records still match on their distinctive words.
+
+What `false` actually cost was every conversational location query. `italian in soho` returned
+**1,069 hits** led by *In Vino Wine Bar*, which matches "in" + "italian" for a word count of 2 —
+tying exactly with the SoHo restaurants matching "soho" + "italian". Being genuinely in SoHo
+conferred no advantage. With stop words removed it returns **20 hits, all Italian restaurants in
+SoHo**.
+
+This one is a real trade-off, not a free win. `the kitchen` keeps the correct result at #1 but
+drops that brand's Denver and Boulder locations out of the top 3 in favour of unrelated kitchens.
+Chain grouping collapses them to a single row anyway, and losing rank on one known-item query is
+cheaper than losing a whole class of discovery query.
+
+### `optionalWords: ["and"]` — **added**, replacing a planned synonym
+
+The plan called for an `and ↔ &` synonym. It would have required adding `&` to
+`separatorsToIndex` first, to manufacture a token purely so the synonym could point at it. The
+defect is one-directional: `&` is stripped, so `bar & grill` already finds all 67, but
+`bar and grill` returned **22 of 67** — a silently truncated page, which is worse than an empty one
+because nobody reports it. `optionalWords` returns all 67 while the **words** criterion still ranks
+the literal "and" spellings first. `removeWordsIfNoResults` cannot fix it: that query already had
+results, so the recovery never fires.
+
+The same test on `"the"` improved nothing — on `the palm` it widened 30 → 120 hits while pushing
+the actual *Palm Restaurant* chain down the page — so `"the"` was not added.

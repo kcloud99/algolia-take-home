@@ -79,7 +79,7 @@ Raw: `project-files/dataset/restaurants_list.json` (5,000 records) and `restaura
 | **Cuisine taxonomy is messy** | 114 `food_type` values incl. composites (`Creole / Cajun / Southern`, `Global, International`) and near-dupes (`American` 865 / `Contemporary American` 649; `Steak` 123 / `Steakhouse` 328) | Split into multi-value `cuisines[]` + a `cuisine_group` rollup |
 | **Neighborhoods are ambiguous** | 1,062 distinct; top value is **`Downtown` (185)** across many cities. 6 values also arrive whitespace-padded (`" Noblesville"`), which would split one neighborhood into two facet values | Hierarchical facet `area > city > neighborhood`; trim every CSV field on load |
 | **Geo coverage is lopsided** | All 5,000 US with valid `_geoloc`. NY 1,086 · CA 722 · TX 433 · CO 360 · **OR 193** — but **IL 3 · WA 3**. No Chicago, no Seattle | "Near me" must degrade gracefully. `aroundRadius: "all"`. Default to a dense market |
-| **Names are punctuation-heavy** | 942 apostrophes, 1,118 hyphens, 438 ampersands, 59 accented (`Wallsé`, `Tía Pol`, `Lüke`) | `separatorsToIndex`; diacritic normalization is a free demo win |
+| **Names are punctuation-heavy** | 942 apostrophes, 1,118 hyphens, 438 ampersands, 59 accented (`Wallsé`, `Tía Pol`, `Lüke`) | All match unaided — `separatorsToIndex` measured and dropped (`index-design.md` §8). Diacritic normalization is a free demo win |
 | Clean fields | `dining_style` 4 values · `price_range` 3 values · `payment_options` 9 (long tail: `Cash Only` = 7) · 62 ZIP+4 to normalize | Straightforward |
 
 Full record schema and per-field rationale: `docs/kb/index-design.md`.
