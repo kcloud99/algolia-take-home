@@ -9,6 +9,8 @@ import { CUISINE_GROUP_MEMBERS, deriveCuisineFields, splitCuisines } from './lib
 import { assertCleanJoin, joinOnObjectId } from './lib/join.js';
 import { loadCsvRows, loadJsonRestaurants } from './lib/load-sources.js';
 import { normalizePhone, normalizePostalCode, normalizeScalars } from './lib/normalize-scalars.js';
+import { computeQualityContext, deriveQualityFields } from './lib/quality.js';
+import type { QualityFields } from './lib/quality.js';
 
 const jsonRecords = loadJsonRestaurants();
 const { rows: csvRows, trimmedFields } = loadCsvRows();
@@ -102,6 +104,55 @@ for (const [brand, count] of [...countsByBrand].sort((a, b) => b[1] - a[1]).slic
     `  ${String(count).padStart(3)}  ${String(brand).padEnd(32)}` +
       `densest metro: ${densestArea?.[0]} (${densestArea?.[1]})`,
   );
+}
+
+// ── quality signals ────────────────────────────────────────────────────────
+const qualityContext = computeQualityContext(csvRows);
+const quality = join.joined.map(({ json, csv }) => ({
+  name: json.name,
+  fields: deriveQualityFields(csv, qualityContext),
+}));
+
+console.log(
+  `\nquality: C (global mean rating) = ${qualityContext.globalMeanRating.toFixed(3)}, ` +
+    `m (p25 review count) = ${qualityContext.confidenceThreshold}`,
+);
+console.log(
+  `  bayesian_rating: ${new Set(quality.map((q) => q.fields.bayesian_rating)).size} distinct values | ` +
+    `popularity_score: ${new Set(quality.map((q) => q.fields.popularity_score)).size} distinct values`,
+);
+
+const ratingBuckets = countBy(quality, ({ fields }) => fields.rating_bucket);
+console.log(
+  `  rating_bucket: ${[...ratingBuckets]
+    .sort((a, b) => a[0] - b[0])
+    .map(([bucket, count]) => `${bucket}★ ${count}`)
+    .join(', ')}`,
+);
+
+// The evidence for the ranking argument: what naive sorting actually returns, next to what
+// shrinkage returns. This comparison is the reason bayesian_rating exists.
+printTopTen(
+  'naive desc(stars_count)',
+  [...quality].sort((a, b) => b.fields.stars_count - a.fields.stars_count),
+);
+printTopTen(
+  'desc(bayesian_rating), desc(popularity_score)',
+  [...quality].sort(
+    (a, b) =>
+      b.fields.bayesian_rating - a.fields.bayesian_rating ||
+      b.fields.popularity_score - a.fields.popularity_score,
+  ),
+);
+
+function printTopTen(label: string, ranked: { name: string; fields: QualityFields }[]): void {
+  console.log(`\n  top 10 by ${label}:`);
+  for (const { name, fields } of ranked.slice(0, 10)) {
+    console.log(
+      `    ${fields.stars_count.toFixed(1)}★ ${String(fields.reviews_count).padStart(6)} reviews  ` +
+        `bayes ${fields.bayesian_rating.toFixed(1)}  ${name}`,
+    );
+  }
 }
 
 /** Fails the build if a name is treated as a chain, or split somewhere unintended. */
