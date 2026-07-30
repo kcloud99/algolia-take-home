@@ -1,6 +1,6 @@
 import { useInstantSearch } from 'react-instantsearch';
 
-import { useGrouping } from '../lib/grouping-context';
+import { useBoard } from '../lib/board-context';
 
 /**
  * The platform marker — a brand's location count, boxed, and the way into its other locations.
@@ -29,7 +29,7 @@ import { useGrouping } from '../lib/grouping-context';
  * refines on `chain_name`, so the rows that arrive are exactly the ones the count is counting.
  */
 export function PlatformMarker({ brand, locations }: { brand: string; locations: number }) {
-  const { ungroup } = useGrouping();
+  const { ungroup } = useBoard();
   const { setIndexUiState } = useInstantSearch();
 
   /**

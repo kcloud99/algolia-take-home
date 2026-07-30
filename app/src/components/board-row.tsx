@@ -5,10 +5,11 @@ import { CuisineTile } from './cuisine-tile';
 import { Distance } from './distance';
 import { PlatformMarker } from './platform-marker';
 import { PriceTier } from './price-tier';
+import { RankingEvidence } from './ranking-evidence';
 import { RatingGauge } from './rating-gauge';
 import { ReviewVolume } from './review-volume';
 import { hitDistance } from '../lib/geo';
-import { useGrouping } from '../lib/grouping-context';
+import { useBoard } from '../lib/board-context';
 import { formatLocality } from '../lib/locality';
 import type { Restaurant } from '../lib/restaurant';
 
@@ -33,7 +34,7 @@ import type { Restaurant } from '../lib/restaurant';
  */
 export function BoardRow({ hit, sendEvent }: { hit: Hit<Restaurant>; sendEvent: SendEventForHits }) {
   const locality = formatLocality(hit);
-  const { grouped } = useGrouping();
+  const { grouped, explain } = useBoard();
 
   return (
     <>
@@ -51,7 +52,7 @@ export function BoardRow({ hit, sendEvent }: { hit: Hit<Restaurant>; sendEvent: 
           of the first line on a phone — 100% less the 40px tile, its 8px gap and a little slack — so the
           name gets ~306px instead of the nothing it was left with. Measured: at 2.75rem the sum came to
           362px against a 358px row and the name wrapped to a line of its own, leaving the tile stranded. */}
-      <div className="order-2 min-w-0 flex-1 basis-[calc(100%-3.25rem)] min-[880px]:order-none min-[880px]:basis-auto">
+      <div className="order-2 min-w-0 flex-1 basis-[calc(100%-3.25rem)] min-[880px]:order-none min-[880px]:basis-0">
         {/* h2, not h3: the strip's logo is the page's h1 and there is no level between them. `title`
             because the longest names here are chain branches, whose suffix is the whole point. */}
         <h2
@@ -114,6 +115,10 @@ export function BoardRow({ hit, sendEvent }: { hit: Hit<Restaurant>; sendEvent: 
       >
         Reserve <span aria-hidden="true">→</span>
       </a>
+
+      {/* Last in the row and full width, so it reads as a footnote to the line above rather than another
+          cell competing with it. */}
+      {explain && <RankingEvidence hit={hit} />}
     </>
   );
 }

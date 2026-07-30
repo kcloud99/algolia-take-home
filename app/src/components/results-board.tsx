@@ -3,6 +3,7 @@ import { Hits, Pagination, useStats } from 'react-instantsearch';
 import { BoardRow } from './board-row';
 import { EmptyBoard } from './empty-board';
 import { SCALE_CEILING, SCALE_FLOOR } from './rating-gauge';
+import { useBoard } from '../lib/board-context';
 import type { Restaurant } from '../lib/restaurant';
 
 /**
@@ -27,10 +28,18 @@ import type { Restaurant } from '../lib/restaurant';
  * tile and name first, then the meta line inside that block, then the gauge, distance, price and Reserve.
  * DESIGN.md asks for two lines and was written before the distance column and the platform marker existed;
  * three keeps its actual requirement, which is that each line stays column-aligned across rows.
+ *
+ * **The row stays `flex-wrap` at every width**, and an earlier `min-[880px]:flex-nowrap` had to come out.
+ * Above 880px the cells never wrap on their own — they sum to 543px and the name shrinks to fill — so the
+ * only thing wrapping is a child that asks to, which is exactly what the ranking-evidence footnote does with
+ * `basis-full`. With `nowrap` it could not, so it rendered as a very wide *inline* cell and crushed every
+ * name on the board to four characters. The name's `basis-0` above 880px is what keeps a long name from
+ * triggering a wrap of its own: flexbox decides line breaks from hypothetical sizes before it shrinks
+ * anything, so a content-sized basis would break the row.
  */
 const HITS_CLASSES = {
   list: '',
-  item: 'flex flex-wrap items-center gap-x-2 gap-y-2 border-b border-hairline py-3 min-[880px]:flex-nowrap min-[880px]:gap-4',
+  item: 'flex flex-wrap items-center gap-x-2 gap-y-2 border-b border-hairline py-3 min-[880px]:gap-4',
 };
 
 export function ResultsBoard() {
@@ -69,10 +78,9 @@ const PAGINATION_CLASSES = {
  */
 function BoardHeader() {
   return (
-    <div
-      aria-hidden="true"
-      className="hidden items-center gap-4 border-b border-ink py-2 font-mono text-[0.625rem] tracking-[0.08em] text-steel uppercase min-[880px]:flex"
-    >
+    // Not `aria-hidden` any more: the column labels are decorative, but the toggle in the last cell is a
+    // real control and hiding it from assistive tech to keep the labels quiet is the wrong trade.
+    <div className="hidden items-center gap-4 border-b border-ink py-2 font-mono text-[0.625rem] tracking-[0.08em] text-steel uppercase min-[880px]:flex">
       {/* The gauge's non-zero baseline is stated here, once. A bar with an undisclosed floor overstates
           differences; disclosed, it is an instrument scale. */}
       <span className="w-[104px] shrink-0">
@@ -83,7 +91,31 @@ function BoardHeader() {
       <span className="w-[68px] shrink-0">Away</span>
       <span className="w-[42px] shrink-0">Price</span>
       <span className="w-[88px] shrink-0">Reviews</span>
-      <span className="w-[104px] shrink-0" />
+      {/* The trailing spacer over the Reserve column, spent on the one control that belongs with the board's
+          metadata rather than with the diner's controls. "Why is this result here?" is a question about the
+          engine, so it sits among the column labels and not beside Sort.
+
+          Desktop only, and by construction rather than by choice: this whole header is hidden below 880px,
+          where the row stacks. A ranking-criteria footnote per row is a debrief tool read on a laptop. */}
+      <span className="flex w-[104px] shrink-0 justify-end">
+        <ExplainToggle />
+      </span>
     </div>
+  );
+}
+
+function ExplainToggle() {
+  const { explain, toggleExplain } = useBoard();
+
+  return (
+    <button
+      type="button"
+      onClick={toggleExplain}
+      aria-pressed={explain}
+      title="Show the ranking criteria that placed each row"
+      className={`font-mono text-[0.625rem] tracking-[0.08em] uppercase hover:text-signal-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal ${explain ? 'text-signal' : 'text-steel'}`}
+    >
+      {explain ? 'Hide why' : 'Why?'}
+    </button>
   );
 }

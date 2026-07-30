@@ -10,7 +10,7 @@ import { RouteStrip } from './components/route-strip';
 import { SignagePanel } from './components/signage-panel';
 import { VirtualRefinement } from './components/virtual-refinement';
 import { geoSearchParameters } from './lib/geo';
-import { GroupingProvider } from './lib/grouping-context';
+import { BoardProvider } from './lib/board-context';
 import { insightsClient } from './lib/insights';
 import { indexName, searchClient } from './lib/search-client';
 import { useSearchCentre } from './lib/use-search-centre';
@@ -51,9 +51,14 @@ export function App() {
   // collapsing a brand to one row is the deliberate act of someone who already knows which brand.
   const [grouped, setGrouped] = useState(false);
 
-  // Stable, because it goes into a context: a fresh function each render would re-memoise the value and
+  // Off by default and deliberately not a diner control: it renders the ranking criteria behind each row,
+  // which is a debrief tool. It costs no extra request — `getRankingInfo` is already on for every query.
+  const [explain, setExplain] = useState(false);
+
+  // Stable, because both go into a context: a fresh function each render would re-memoise the value and
   // push a new context object to every row on every render.
   const ungroup = useCallback(() => setGrouped(false), []);
+  const toggleExplain = useCallback(() => setExplain((previous) => !previous), []);
 
   return (
     <InstantSearch
@@ -100,11 +105,16 @@ export function App() {
               same results and nothing else changes. It renders itself only on arrival. */}
           <DiscoveryHeader />
 
-          {/* Only the board needs to know how it is arranged, or to change it — see
-              `grouping-context.tsx` for why this is a context rather than a prop. */}
-          <GroupingProvider grouped={grouped} ungroup={ungroup}>
+          {/* Only the board needs to know how it is arranged, or to change it — see `board-context.tsx`
+              for why this is a context rather than a prop. */}
+          <BoardProvider
+            grouped={grouped}
+            ungroup={ungroup}
+            explain={explain}
+            toggleExplain={toggleExplain}
+          >
             <ResultsBoard />
-          </GroupingProvider>
+          </BoardProvider>
         </main>
       </div>
     </InstantSearch>
