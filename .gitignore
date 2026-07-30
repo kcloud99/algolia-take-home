@@ -13,6 +13,9 @@ dist/
 .claude/outcome.md
 .claude/phase-2-handoff.md
 .claude/phase-3-handoff.md
+.claude/phase-3b-handoff.md
+# Verification harness for interactive UI — a tool, not a deliverable
+.claude/tools/
 docs/algolia-primer.md
 # Product framing and the phase 3 surface spec. Both discuss the scorecard and the interview panel,
 # which is working context rather than something a reviewer should be reading. DESIGN.md is
