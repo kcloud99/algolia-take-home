@@ -1,7 +1,10 @@
 import { InstantSearch } from 'react-instantsearch';
 
 import { BoardStrip } from './components/board-strip';
+import { RelevantSortNotice } from './components/relevant-sort-notice';
 import { ResultsBoard } from './components/results-board';
+import { RouteStrip } from './components/route-strip';
+import { SignagePanel } from './components/signage-panel';
 import { indexName, searchClient } from './lib/search-client';
 
 /**
@@ -31,10 +34,20 @@ export function App() {
       future={{ preserveSharedStateOnUnmount: true }}
     >
       <BoardStrip />
+      <RouteStrip />
 
-      <main className="mx-auto max-w-[1240px] px-4 py-6">
-        <ResultsBoard />
-      </main>
+      <div className="mx-auto flex max-w-[1240px] gap-8 px-4 py-6">
+        {/* The rail is desktop-only for now. Step 3.8 moves it behind a bottom sheet rather than
+            leaving a 280px column to collapse badly on a phone. */}
+        <aside className="hidden w-[280px] shrink-0 lg:block" aria-label="Refine results">
+          <SignagePanel />
+        </aside>
+
+        <main className="min-w-0 flex-1">
+          <RelevantSortNotice />
+          <ResultsBoard />
+        </main>
+      </div>
     </InstantSearch>
   );
 }

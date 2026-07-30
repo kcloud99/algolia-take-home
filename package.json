@@ -33,6 +33,7 @@
     "@fontsource/barlow": "^5.3.0",
     "@fontsource/barlow-semi-condensed": "^5.3.0",
     "algoliasearch": "^5.56.0",
+    "instantsearch.js": "^4.108.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-instantsearch": "^7.41.0"
