@@ -65,6 +65,170 @@
   --font-mono: 'Overpass Mono Variable', 'Courier New', monospace;
 }
 
+/**
+ * Autocomplete's own styling.
+ *
+ * The library ships a classic theme, which is rounded, soft-shadowed and belongs to a different world
+ * than this one — so it is not imported and these ~40 lines replace it. Autocomplete positions the
+ * panel itself with inline styles; what it does not provide is any appearance at all, which is why
+ * every rule below is structural rather than decorative.
+ *
+ * Class names come from the library (`aa-`) or from our own templates (`ac-`).
+ */
+@layer components {
+  .aa-Form {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing);
+    border: 1px solid var(--color-steel);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-porcelain);
+    padding-inline: calc(var(--spacing) * 3);
+  }
+
+  .aa-Form:focus-within {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 2px;
+  }
+
+  .aa-Input {
+    flex: 1;
+    min-width: 0;
+    padding-block: calc(var(--spacing) * 2);
+    color: var(--color-ink);
+  }
+
+  .aa-Input::placeholder {
+    color: var(--color-steel);
+  }
+
+  .aa-Input:focus {
+    outline: none; /* the ring lives on .aa-Form, so the border and outline cannot disagree */
+  }
+
+  /* Autocomplete uses type="search", which Chrome decorates with its own clear button — so the field
+     showed two × controls side by side. Autocomplete's own is the one that clears its state. */
+  .aa-Input::-webkit-search-cancel-button,
+  .aa-Input::-webkit-search-decoration {
+    appearance: none;
+  }
+
+  /* Autocomplete renders a submit and a clear button. Results arrive as you type, so submit is
+     redundant; clear is genuinely useful and stays. */
+  .aa-SubmitButton,
+  .aa-LoadingIndicator {
+    display: none;
+  }
+
+  .aa-ClearButton {
+    display: flex;
+    min-width: calc(var(--spacing) * 6);
+    justify-content: center;
+    color: var(--color-steel);
+  }
+
+  .aa-ClearButton:hover {
+    color: var(--color-ink);
+  }
+
+  /**
+   * `position: absolute` is load-bearing, not styling.
+   *
+   * Autocomplete appends the panel to `<body>` and positions it with inline `top`/`left` computed from
+   * the input's bounding box — but those declarations do nothing on a statically-positioned element,
+   * and `position` is one of the things the classic theme supplies. Without it the panel rendered in
+   * normal flow at the very bottom of the document, 2,178px down the page: present, correct, populated,
+   * and completely invisible.
+   */
+  .aa-Panel {
+    position: absolute;
+    z-index: 20;
+    border: 1px solid var(--color-hairline);
+    background-color: var(--color-porcelain);
+    color: var(--color-ink);
+  }
+
+  /* One group per source, rendered by Autocomplete's default panel layout. */
+  .aa-Source {
+    border-bottom: 1px solid var(--color-hairline);
+    padding-block: calc(var(--spacing) * 2);
+  }
+
+  .aa-Source:last-child {
+    border-bottom: 0;
+  }
+
+  .aa-SourceHeaderTitle {
+    display: block;
+    padding-inline: calc(var(--spacing) * 3);
+    padding-bottom: var(--spacing);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-steel);
+  }
+
+  /* The library draws a horizontal rule in the source header; the keyline above already does that. */
+  .aa-SourceHeaderLine {
+    display: none;
+  }
+
+  .aa-Item {
+    cursor: pointer;
+    padding-inline: calc(var(--spacing) * 3);
+  }
+
+  /* Autocomplete sets aria-selected as the keyboard moves, so hover and keyboard highlight match. */
+  .aa-Item[aria-selected='true'] {
+    background-color: var(--color-concourse);
+  }
+
+  .ac-row {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--spacing) * 3);
+    min-height: calc(var(--spacing) * 11); /* 44px touch target */
+  }
+
+  .ac-rowFigure {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.875rem;
+    color: var(--color-signal);
+  }
+
+  .ac-rowBody {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .ac-rowName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+
+  .ac-rowMeta {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.8125rem;
+    color: var(--color-steel);
+  }
+
+  .ac-rowCount {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.75rem;
+    color: var(--color-steel);
+  }
+}
+
 @layer base {
   body {
     background-color: var(--color-concourse);

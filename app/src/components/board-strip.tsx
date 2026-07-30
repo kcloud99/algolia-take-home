@@ -1,4 +1,6 @@
-import { SearchBox, useStats } from 'react-instantsearch';
+import { useStats } from 'react-instantsearch';
+
+import { FederatedSearch } from './federated-search';
 
 /**
  * The board strip: the dark band carrying the search field and the live readout.
@@ -26,22 +28,7 @@ export function BoardStrip() {
           <img src="/opentable-logo.png" alt="OpenTable restaurant search" width={36} height={36} className="size-9" />
         </h1>
 
-        <SearchBox
-          placeholder="Search restaurants, cuisines, neighborhoods"
-          // Deliberately not autofocused: on a phone that opens the keyboard before the diner has
-          // seen a single result, and the board is worth looking at first.
-          classNames={{
-            root: 'flex-1',
-            form: 'relative',
-            input:
-              'w-full rounded-sm border border-steel bg-porcelain px-3 py-2 text-ink placeholder:text-steel focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal',
-            submit: 'hidden',
-            reset:
-              'absolute right-2 top-1/2 -translate-y-1/2 text-steel hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal',
-            resetIcon: 'size-3 fill-current',
-            loadingIndicator: 'hidden',
-          }}
-        />
+        <FederatedSearch />
 
         <LiveReadout />
       </div>

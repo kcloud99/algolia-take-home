@@ -7,6 +7,9 @@ import { humanizeTag } from '../lib/labels';
 /** Facet attribute → the word a diner would use for it. */
 const ATTRIBUTE_LABELS: Record<string, string> = {
   cuisine_group: 'Cuisine',
+  // Refinable from autocomplete rather than the panel, but they still need a name in the summary.
+  cuisines: 'Cuisine',
+  city: 'City',
   price_range: 'Price',
   rating_bucket: 'Rating',
   vibe_tags: 'Good for',
