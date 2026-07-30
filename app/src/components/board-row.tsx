@@ -7,7 +7,7 @@ import { PriceTier } from './price-tier';
 import { RatingGauge } from './rating-gauge';
 import { ReviewVolume } from './review-volume';
 import { hitDistance } from '../lib/geo';
-import { useIsGrouped } from '../lib/grouping-context';
+import { useGrouping } from '../lib/grouping-context';
 import { formatLocality } from '../lib/locality';
 import type { Restaurant } from '../lib/restaurant';
 
@@ -31,7 +31,7 @@ import type { Restaurant } from '../lib/restaurant';
  */
 export function BoardRow({ hit }: { hit: Hit<Restaurant> }) {
   const locality = formatLocality(hit);
-  const grouped = useIsGrouped();
+  const { grouped } = useGrouping();
 
   return (
     <>

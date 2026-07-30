@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Configure, InstantSearch } from 'react-instantsearch';
 
 import { BoardStrip } from './components/board-strip';
@@ -6,6 +6,7 @@ import { RelevantSortNotice } from './components/relevant-sort-notice';
 import { ResultsBoard } from './components/results-board';
 import { RouteStrip } from './components/route-strip';
 import { SignagePanel } from './components/signage-panel';
+import { VirtualRefinement } from './components/virtual-refinement';
 import { geoSearchParameters } from './lib/geo';
 import { GroupingProvider } from './lib/grouping-context';
 import { indexName, searchClient } from './lib/search-client';
@@ -41,6 +42,10 @@ export function App() {
   // collapsing a brand to one row is the deliberate act of someone who already knows which brand.
   const [grouped, setGrouped] = useState(false);
 
+  // Stable, because it goes into a context: a fresh function each render would re-memoise the value and
+  // push a new context object to every row on every render.
+  const ungroup = useCallback(() => setGrouped(false), []);
+
   return (
     <InstantSearch
       searchClient={searchClient}
@@ -49,6 +54,11 @@ export function App() {
       future={{ preserveSharedStateOnUnmount: true }}
     >
       <Configure {...geoSearchParameters(centre)} distinct={grouped} />
+
+      {/* Refined by the platform marker on a grouped row, and by nothing else — 158 brands is not a list
+          anyone scrolls, so it has no place in the signage panel. Without the widget mounted the
+          refinement would update the URL and change no results at all. */}
+      <VirtualRefinement attribute="chain_name" />
 
       <BoardStrip />
       <RouteStrip
@@ -68,9 +78,9 @@ export function App() {
 
         <main className="min-w-0 flex-1">
           <RelevantSortNotice />
-          {/* Only the board needs to know how it is arranged — see `grouping-context.tsx` for why this
-              is a context rather than a prop. */}
-          <GroupingProvider grouped={grouped}>
+          {/* Only the board needs to know how it is arranged, or to change it — see
+              `grouping-context.tsx` for why this is a context rather than a prop. */}
+          <GroupingProvider grouped={grouped} ungroup={ungroup}>
             <ResultsBoard />
           </GroupingProvider>
         </main>

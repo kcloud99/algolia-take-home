@@ -1,8 +1,9 @@
 import { autocomplete } from '@algolia/autocomplete-js';
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches';
 import { useEffect, useRef } from 'react';
-import { useInstantSearch, useRefinementList, useSearchBox } from 'react-instantsearch';
+import { useInstantSearch, useSearchBox } from 'react-instantsearch';
 
+import { VirtualRefinement } from './virtual-refinement';
 import { citySource, cuisineSource, restaurantSource } from '../lib/autocomplete-sources';
 import type { AutocompleteActions } from '../lib/autocomplete-sources';
 
@@ -49,6 +50,14 @@ export function FederatedSearch() {
 
   // The query as it stood when the input mounted, so a shared URL arrives with its text in the box.
   const initialQueryRef = useRef(indexUiState.query ?? '');
+
+  /**
+   * The last query Autocomplete told us about, and the instance to tell things back to. Both exist for
+   * the sync effect below; Autocomplete exposes `setQuery` but no `getState`, so the only way to know
+   * whether the input already holds a value is to remember what it last reported.
+   */
+  const inputQueryRef = useRef(initialQueryRef.current);
+  const instanceRef = useRef<ReturnType<typeof autocomplete> | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) {
@@ -99,6 +108,7 @@ export function FederatedSearch() {
        */
       onStateChange({ state, prevState }) {
         if (state.query !== prevState.query) {
+          inputQueryRef.current = state.query;
           actions.setQuery(state.query);
         }
       },
@@ -115,8 +125,37 @@ export function FederatedSearch() {
       },
     });
 
-    return () => instance.destroy();
+    instanceRef.current = instance;
+
+    return () => {
+      instanceRef.current = null;
+      instance.destroy();
+    };
   }, []);
+
+  /**
+   * The one place the bridge runs the other way: when something *other than the input* changes the query,
+   * push it into the input.
+   *
+   * The bridge is otherwise deliberately one-directional, because two components writing one query is how
+   * you get an input that fights the user. This is not that. It fires only when InstantSearch's query has
+   * moved away from the value Autocomplete last reported, which a keystroke can never do — typing sets
+   * both to the same string on the same tick.
+   *
+   * It exists because the platform marker clears the query when it refines to a brand, and without this
+   * the box went on reading `mccormick` over a board that had no query at all. That is the same shape of
+   * defect as an unmounted refinement: the UI claiming state the search does not have. Autocomplete's own
+   * facet sources avoid it a different way, with `getItemInputValue: () => ''`, which only works for
+   * changes that originate inside Autocomplete.
+   */
+  useEffect(() => {
+    const query = indexUiState.query ?? '';
+
+    if (instanceRef.current && query !== inputQueryRef.current) {
+      inputQueryRef.current = query;
+      instanceRef.current.setQuery(query);
+    }
+  }, [indexUiState.query]);
 
   return (
     <>
@@ -129,32 +168,16 @@ export function FederatedSearch() {
 }
 
 /**
- * The three virtual widgets below draw nothing. They exist because **UI state alone does not search.**
+ * Draws nothing, and the search does not work without it — the same reason as `VirtualRefinement`,
+ * which now lives in its own file because three attributes need it.
  *
- * InstantSearch translates UI state into search parameters through its *mounted widgets*: each widget
- * owns a slice of the state and contributes the parameters for it. Nothing is mounted, nothing is
- * applied — silently, with no error.
- *
- * This is the trap in replacing `SearchBox` with Autocomplete. `SearchBox` was not only an input, it
- * was what claimed ownership of `uiState.query`. Removing it meant the query was dropped on both paths
- * at once: `?restaurants[query]=ruth` in a shared URL returned all 5,000 records, and typing into the
- * new input would have set state that never reached a search. The board looked completely healthy
- * while the search box did nothing at all.
+ * This is the specific trap in replacing `SearchBox` with Autocomplete. `SearchBox` was not only an
+ * input, it was what claimed ownership of `uiState.query`. Removing it meant the query was dropped on
+ * both paths at once: `?restaurants[query]=ruth` in a shared URL returned all 5,000 records, and typing
+ * into the new input would have set state that never reached a search. The board looked completely
+ * healthy while the search box did nothing at all.
  */
 function VirtualSearchBox() {
   useSearchBox();
-  return null;
-}
-
-/**
- * The same registration, for the two attributes autocomplete can refine on.
- *
- * `cuisines` (116 values) and `city` (948) are deliberately absent from the signage panel — neither is
- * a list anyone scrolls — so autocomplete is the only way in, and without this a selection would update
- * the URL and change nothing. Registering them is also what lets the route strip display and remove
- * them. `limit: 1` because no values are ever rendered; this exists for the state mapping alone.
- */
-function VirtualRefinement({ attribute }: { attribute: string }) {
-  useRefinementList({ attribute, limit: 1 });
   return null;
 }

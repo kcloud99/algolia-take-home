@@ -13,6 +13,8 @@ const ATTRIBUTE_LABELS: Record<string, string> = {
   // Refinable from autocomplete rather than the panel, but they still need a name in the summary.
   cuisines: 'Cuisine',
   city: 'City',
+  // Refined by the platform marker on a grouped row. The chip is how a diner gets back out of it.
+  chain_name: 'Brand',
   price_range: 'Price',
   rating_bucket: 'Rating',
   vibe_tags: 'Good for',
