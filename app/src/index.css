@@ -1,6 +1,21 @@
 @import 'tailwindcss';
 
 /**
+ * Fonts, self-hosted.
+ *
+ * Same argument as the imagery: a demo presented live on a call must not depend on a third party
+ * that can be slow or unreachable. These are npm packages, so the faces are bundled and versioned
+ * with the app rather than fetched from a CDN at load.
+ *
+ * Only the four faces the design system actually uses, and only the latin subset — which covers the
+ * 59 accented restaurant names in this dataset (Wallsé, Tía Pol, Lüke).
+ */
+@import '@fontsource/barlow-semi-condensed/latin-600.css'; /* display, headlines */
+@import '@fontsource/barlow-semi-condensed/latin-500.css'; /* titles */
+@import '@fontsource/barlow/latin-400.css'; /* body */
+@import '@fontsource-variable/overpass-mono/wght.css'; /* every number, and signage labels */
+
+/**
  * The design system's palette, as tokens. Transcribed from DESIGN.md — "The Concourse Board":
  * a bright signage concourse read against a dark, live departure board.
  *
@@ -42,11 +57,29 @@
   /* The Square Corner Rule, enforced by the token rather than by discipline: this is signage, so
      corners are square to barely-softened. Tailwind's default `sm` is 4px, which is too soft. */
   --radius-sm: 2px;
+
+  /* Three faces, three jobs. The condensed grotesque carries restaurant names at board density; the
+     normal-width sibling carries prose; the mono carries every number and every signage label. */
+  --font-display: 'Barlow Semi Condensed', 'Arial Narrow', sans-serif;
+  --font-sans: 'Barlow', system-ui, sans-serif;
+  --font-mono: 'Overpass Mono Variable', 'Courier New', monospace;
 }
 
 @layer base {
   body {
     background-color: var(--color-concourse);
     color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  /**
+   * The Tabular Rule, applied once at the root instead of remembered at every call site.
+   *
+   * Numbers on a departure board line up in columns because every digit occupies the same width.
+   * `font-variant-numeric: tabular-nums` is what makes that true, and a rating column where 4.4 and
+   * 4.1 are different widths is the specific thing this prevents.
+   */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
   }
 }

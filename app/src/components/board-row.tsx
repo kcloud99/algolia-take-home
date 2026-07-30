@@ -1,0 +1,54 @@
+import { CuisineTile } from './cuisine-tile';
+import { PriceTier } from './price-tier';
+import { RatingGauge } from './rating-gauge';
+import { ReviewVolume } from './review-volume';
+import { formatLocality } from '../lib/locality';
+import type { Restaurant } from '../lib/restaurant';
+
+/**
+ * One result, as a departure-board line.
+ *
+ * Column-aligned and separated by a hairline keyline rather than made into a card, which is the
+ * difference between a board and a grid of tiles. Every fixed-width cell is fixed so the columns line
+ * up down the page; only the name column is fluid, and it truncates rather than wrapping, because a
+ * row that changes height breaks the scan.
+ *
+ * The order runs quality → cuisine → identity → price → volume → action, so the two signals a diner
+ * uses to reject a row fast sit at the left edge where the eye already is.
+ */
+export function BoardRow({ hit }: { hit: Restaurant }) {
+  const locality = formatLocality(hit);
+
+  return (
+    <li className="flex items-center gap-4 border-b border-hairline py-3">
+      <RatingGauge corrected={hit.bayesian_rating} raw={hit.stars_count} />
+
+      <CuisineTile group={hit.cuisine_group} />
+
+      {/* min-w-0 is what lets the name truncate instead of forcing the row wider. */}
+      <div className="min-w-0 flex-1">
+        <h3 className="truncate font-display text-[1.375rem] leading-tight font-semibold">
+          {hit.name}
+        </h3>
+        <p className="truncate text-sm text-steel">
+          {hit.cuisine_group} · {locality} · {hit.dining_style}
+        </p>
+      </div>
+
+      <PriceTier tier={hit.price_tier} band={hit.price_range} />
+
+      <ReviewVolume reviews={hit.reviews_count} popularity={hit.popularity_score} />
+
+      {/* Deep-link out: there is no live inventory behind this, and pretending otherwise would be the
+          one dishonest thing on the page. The Insights conversion event attaches in step 3.9. */}
+      <a
+        href={hit.reserve_url}
+        target="_blank"
+        rel="noreferrer"
+        className="flex min-h-11 shrink-0 items-center gap-1.5 rounded-sm bg-signal px-4 font-mono text-xs tracking-[0.08em] text-porcelain uppercase hover:bg-signal-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
+      >
+        Reserve <span aria-hidden="true">→</span>
+      </a>
+    </li>
+  );
+}

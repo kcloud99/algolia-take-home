@@ -318,6 +318,7 @@ ingestion:
 | **The two files disagree on phone** | 95 | Different numbers, not formatting. Someone is calling the wrong restaurant. |
 | **Cuisine taxonomy has no controlled vocabulary** | 114 values | `American` and `Contemporary American` are separate; `Steak` and `Steakhouse` are separate. Splits your own inventory across near-duplicate labels. |
 | **Neighborhood names are ambiguous** | 1,062 values | 185 records in a neighborhood called "Downtown" across 10 cities. |
+| **`neighborhood` often just repeats `city`** | **2,500 (50.0%)**, plus 264 more that nest it | Exactly half your records have the two fields identical, so any UI printing both renders "Plano, Plano". The field is carrying no information on half the catalogue. |
 | **Ratings carry no confidence signal** | 15 of 21 perfect scores have <20 reviews | Any naive "top rated" view recommends the least-evidenced restaurants first. |
 | **Whitespace in reference data** | 6 values | Silently creates duplicate facet values. |
 
