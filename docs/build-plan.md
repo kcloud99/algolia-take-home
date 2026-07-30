@@ -37,7 +37,9 @@ Every feature below traces to one of those two rows.
 
 ## Phases
 
-Branch per phase, one commit per step, so each step is independently reviewable.
+One commit per step, so each step is independently reviewable. The work was done on a branch per phase;
+the history was linearised when the repository was re-rooted onto its own initial commit, so the two
+phase-merge commits are gone and the 46 step commits remain, in order.
 
 ### Phase 0 — Foundation
 
@@ -110,13 +112,12 @@ and `3.11a` fixed the discovery header appearing over a Rules-filtered board.
 **Three scope decisions taken at the start of the phase**, because the design brief and this plan
 disagreed and the disagreement was worth settling in writing rather than in code.
 
-1. **Geo stays; the map is cut.** The brief proposed dropping geo altogether. Graduated
+1. **Geo stays; the map is cut.** An earlier plan proposed dropping geo altogether. Graduated
    `aroundPrecision` is the headline relevance decision of the build — it is what stops criterion 2
    from strict-sorting by distance and silently disabling the custom ranking — and it costs a
    `<Configure>` block rather than a new surface. It is also what makes the chain demo work, since
    the `distinct` survivor is then the *nearest* branch. The **live map** is the expensive half and
-   is genuinely optional, so cutting it satisfies most of the brief's objection at almost no cost to
-   the story.
+   is genuinely optional, so cutting it answers most of that objection at almost no cost to the story.
 2. **Discovery is a state, not a page.** The empty query renders the same board with cuisine chips
    and a small `vibe_tags` mood row above it. No second route, no landing page. The explorer persona
    is half the assignment, so it could not be dropped; but it did not need a surface of its own.
@@ -142,7 +143,7 @@ three cases, and each has to earn it:
 **What this reversed.** An earlier version of the facet rail rendered `RefinementList` and
 `HierarchicalMenu` from their hooks — 156 lines of hand-written facet UI — to put thousands
 separators in the counts, which the widgets render raw (`1697`). That is a bad trade twice over: the
-brief explicitly scores avoiding over-engineering, and "I reimplemented the refinement list so the
+whole point is to avoid over-engineering, and "I reimplemented the refinement list so the
 counts had commas" is a poor answer to a customer asking why they should adopt a library that
 already solves disjunctive facet counts, URL state, and keyboard and ARIA behaviour. The widgets are
 back and the counts are unformatted.

@@ -2,21 +2,16 @@
 
 ## Abstract
 
-A take-home for an Algolia **Solutions Engineer** role. Build a restaurant search-and-discovery
-prototype for a simulated prospect (OpenTable) on Algolia: a data pipeline that joins and cleans
-two messy source files, a tuned index configuration, a modern search UI, and written answers to
-three "customer" support questions.
+A restaurant search-and-discovery prototype built on Algolia for a simulated prospect, OpenTable:
+a data pipeline that joins and cleans two messy source files, a tuned index configuration, a modern
+search UI, and written answers to three customer support questions.
 
-Two follow-up interviews depend on this artifact — a **technical debrief** (explain and defend
-every choice) and a **45-minute mock customer call** with interviewers role-playing OpenTable's
-CTO and CPO. Therefore: **everything here must be explainable out loud.** Cleverness we can't
-defend in one sentence is a liability, not a feature.
+**The governing constraint is that everything here must be explainable out loud.** Every derived field,
+every non-default setting and every visual decision has a stated reason, in this file or in `docs/`.
+Cleverness that cannot be defended in one sentence is a liability rather than a feature — which is why
+several measured-but-unjustifiable ideas were removed rather than kept.
 
-Repo: `git@github.com:kcloud99/algolia-take-home.git` — already our own repo; the assignment
-forbids forking theirs, and we didn't.
-
-**Owner:** Kyle McLeod · **Target effort:** ~10–14 hours (the scorecard asks how long it took, and
-separately penalizes over-engineering — efficiency is scored, heroics are not).
+**Owner:** Kyle McLeod
 
 ---
 
@@ -27,7 +22,7 @@ separately penalizes over-engineering — efficiency is scored, heroics are not)
 3. `docs/kb/index-design.md` — before writing the pipeline or the config script.
 4. `docs/kb/algolia-implementation.md` — before writing any client or UI code.
 5. `DESIGN.md` — the design system ("The Concourse Board"). Normative for anything visual.
-6. `.claude/strategy.md` — rubric mapping, demo narrative, build order. *(gitignored, private)*
+6. `docs/build-plan.md` — the step ladder, the scope decisions, and the "widgets first" rule.
 
 ---
 
@@ -63,8 +58,9 @@ Every feature decision traces back to one of these two rows. If it doesn't, cut 
 
 ## Source data — verified facts
 
-Raw: `project-files/dataset/restaurants_list.json` (5,000 records) and `restaurants_info.csv`
-(5,000 rows, **semicolon-delimited**). No nulls or empties in either file.
+Raw: `data/raw/restaurants_list.json` (5,000 records) and `data/raw/restaurants_info.csv`
+(5,000 rows, **semicolon-delimited**). No nulls or empties in either file. Both are untouched copies of
+the supplied files, versioned alongside the transform so the join is reproducible from a clone.
 
 **The join is clean:** 5,000/5,000 on `objectID`, no dupes, no orphans. Gotcha — `objectID` is an
 **int in JSON, a string in CSV**.
@@ -127,11 +123,11 @@ The ten things that must survive every session. Depth in `docs/kb/algolia-core.m
 
 ## Architecture
 
-**Decision: build fresh with React InstantSearch; keep `project-files/` as reference only.**
-The supplied scaffold is `algoliasearch-helper` + **parcel 1.9.7** with `"node": "^9.6.1"` — EOL,
-and demoing it would contradict the prospect's explicit ask for something modern. InstantSearch is
-what Algolia would actually recommend to OpenTable. Be ready to discuss the helper-level API
-anyway; they may probe it.
+**Decision: build fresh with React InstantSearch rather than on the supplied scaffold.**
+That scaffold is `algoliasearch-helper` + **parcel 1.9.7** with `"node": "^9.6.1"` — both long EOL, and
+demoing it would contradict the prospect's explicit ask for a *modern* experience. InstantSearch is what
+Algolia would actually recommend to OpenTable. The helper-level API is worth being able to discuss
+either way, since InstantSearch is built on it.
 
 | Layer | Choice |
 |---|---|
@@ -164,9 +160,9 @@ anyway; they may probe it.
     └── customer-questions.md
 ```
 
-**Scope discipline:** the rubric explicitly scores "avoid over-engineering." One index + virtual
-replicas, one pipeline, one app. No Next.js, no backend, no auth, no state library, no monorepo
-tooling.
+**Scope discipline:** one index plus virtual replicas, one pipeline, one app. No Next.js, no backend,
+no auth, no state library, no monorepo tooling. The scope of the problem does not require them, and
+unnecessary architecture is harder to hand over than no architecture.
 
 ---
 
@@ -194,14 +190,14 @@ npm run build           # production build
 - Clean and readable over clever. If it needs a paragraph to justify, it's probably wrong.
 - Secrets in `.env` (gitignored); only `.env.example` is committed.
 - **Record decisions as you make them** in `docs/data-decisions.md` / `docs/relevance-testing.md`.
-  Reconstructing rationale the night before the debrief is how debriefs go badly.
+  Rationale reconstructed after the fact is rationalisation, and it reads like it.
 
 ---
 
 ## Rules for Claude Code
 
-1. **Do not over-engineer.** It's an explicit scorecard line. Simplest thing that fully meets the
-   requirement, every time.
+1. **Do not over-engineer.** The simplest thing that fully meets the requirement, every time. If a
+   choice needs a paragraph to justify, it is probably the wrong choice.
 2. **Stick to official Algolia documentation and current APIs.** When unsure of a parameter name,
    default, or method signature, check `docs/kb/` first, then the live docs — don't guess. Algolia
    fails silently on several misconfigurations, so a wrong guess costs debugging time, not an error.
@@ -210,7 +206,7 @@ npm run build           # production build
    default-config results are unrecoverable once overwritten.
 5. Follow existing patterns in the repo before introducing new ones.
 6. Don't write or run tests unless asked.
-7. Ask for clarification rather than assuming — the scorecard rewards it, and so does the mock call.
+7. Ask for clarification rather than assuming. A stated assumption is fine; a silent one is not.
 8. Prioritize readability and explainability over performance micro-optimization. At 5,000 records
    nothing here is performance-bound.
 

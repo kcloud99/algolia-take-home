@@ -1,7 +1,8 @@
 # Index Design — Records & Settings
 
 The bridge from Algolia theory ([algolia-core.md](algolia-core.md)) to this build. Every derived
-field and every setting below has a stated reason, because the technical debrief will ask for one.
+field and every setting below has a stated reason, because a setting nobody can justify is a setting
+nobody can safely change.
 
 Source data facts this design responds to are in [CLAUDE.md](../../CLAUDE.md) §"Source data".
 
@@ -184,7 +185,8 @@ sit in a neighborhood literally called "Downtown," spread across many cities. Hi
 ### `vibe_tags[]`
 Heuristic rules over `dining_style` + `price_tier` + `cuisine_group` + `bayesian_rating`:
 `date-night`, `special-occasion`, `big-group`, `budget-friendly`, `casual`, `seafood-spot`, etc.
-Keep the rule set small and readable — it must be explainable in one sentence in the debrief.
+Keep the rule set small and readable — a rule that cannot be explained in one sentence is a rule the
+team owning relevance will be afraid to touch.
 
 *Assumption to state plainly:* derived, not ground truth. In production these come from menu
 data, review text, or an LLM enrichment pass.
