@@ -1,98 +1,293 @@
 @import 'tailwindcss';
 
 /**
- * Fonts, self-hosted.
+ * The face, self-hosted.
  *
- * Same argument as the imagery: a demo presented live on a call must not depend on a third party
- * that can be slow or unreachable. These are npm packages, so the faces are bundled and versioned
- * with the app rather than fetched from a CDN at load.
+ * Same argument as the imagery: a demo presented live on a call must not depend on a third party that
+ * can be slow or unreachable. This is an npm package, so the font is bundled and versioned with the
+ * app rather than fetched from a CDN at load.
  *
- * Only the four faces the design system actually uses, and only the latin subset — which covers the
- * 59 accented restaurant names in this dataset (Wallsé, Tía Pol, Lüke).
+ * One family, variable, latin subset — which covers the 59 accented restaurant names in this dataset
+ * (Wallsé, Tía Pol, Lüke). Libre Franklin is a Franklin Gothic: the American newspaper-and-guide
+ * grotesque. It carries a restaurant name at 28px with presence and an 11px tracked caps label without
+ * falling apart, which is the entire range this surface asks for.
+ *
+ * There is deliberately no second face and no monospace. The requirement was that figures align in
+ * columns; `font-variant-numeric: tabular-nums` delivers that in the text face. A mono was one way to
+ * get it, and it was also what made the previous system read as a terminal rather than a guide.
+ *
+ * **Declared here rather than imported from the package**, which is the one place this file does more
+ * work than a one-line import would. `@fontsource-variable/libre-franklin/wght.css` declares five
+ * subsets — latin, latin-ext, cyrillic, cyrillic-ext, vietnamese. A browser only *downloads* the one
+ * its `unicode-range` needs, so the runtime cost is identical either way, but the bundler emits all
+ * five into `dist/` (92 KB of woff2 for a US restaurant dataset). Latin covers every character in
+ * these 5,000 names, including the 59 accented ones. The block is copied verbatim from the package so
+ * it stays correct if the file moves.
  */
-@import '@fontsource/barlow-semi-condensed/latin-600.css'; /* display, headlines */
-@import '@fontsource/barlow-semi-condensed/latin-500.css'; /* titles */
-@import '@fontsource/barlow/latin-400.css'; /* body */
-@import '@fontsource-variable/overpass-mono/wght.css'; /* every number, and signage labels */
+@font-face {
+  font-family: 'Libre Franklin Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/libre-franklin/files/libre-franklin-latin-wght-normal.woff2')
+    format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 
 /**
- * The design system's palette, as tokens. Transcribed from DESIGN.md — "The Concourse Board":
- * a bright signage concourse read against a dark, live departure board.
+ * "The Guide" — the palette, as tokens. Transcribed from DESIGN.md.
  *
  * Tailwind v4 takes its theme from CSS rather than a JS config, so this file is the design system.
- * Declaring the palette as tokens means a colour used anywhere in the app is a colour named here.
+ * Declaring the palette as tokens means a color used anywhere in the app is a color named here.
  *
- * Tailwind's default spacing scale is already the 4px rhythm the design calls for
- * (4/8/12/16/24/32/48 = space-1/2/3/4/6/8/12), so no spacing tokens are needed.
+ * Tailwind's default spacing scale is already the 4px rhythm the design calls for, so no spacing
+ * tokens are needed.
  */
 @theme {
-  /* Neutrals — the concourse and the board it faces */
-  --color-ink: #14181b; /* board material and primary text — anthracite, not black */
-  --color-concourse: #ebede8; /* page ground — cool pale tile, explicitly not cream */
-  --color-porcelain: #fbfbf9; /* facet panel and any raised reading surface */
-  --color-steel: #59636c; /* secondary text, pictograms, metadata */
-  --color-hairline: #d7dad3; /* keylines, row dividers, input strokes */
+  /* Neutrals — paper stock and the ink on it */
+  --color-paper: #f4f3ef; /* page ground — uncoated stock, warm-neutral. Explicitly not cream. */
+  --color-card: #ffffff; /* raised reading surfaces; a ~4.5% luminance step off paper, visible */
+  --color-ink: #1a1a18; /* primary text — near-black, faintly warm. 15.7:1 on paper. */
+  --color-graphite: #5c5a54; /* secondary text, symbols, counts. 6.2:1 on paper. */
+  --color-rule: #e2e0d9; /* hairlines, entry dividers */
+  --color-rule-strong: #c9c6bc; /* input strokes, section rules, unfilled scale track */
 
-  /* The single interactive voice: active facets, links, focus, the primary action */
-  --color-signal: #0b4fa0;
-  --color-signal-deep: #083e7e;
+  /**
+   * The one accent, and it is the customer's: #DE3643 is sampled from the OpenTable mark supplied
+   * with the assignment, not chosen.
+   *
+   * `brand-deep` exists for a measured reason rather than as a hover convention. White on #DE3643
+   * measures 4.45:1 and misses the 4.5:1 floor for small text, so anything carrying a label — a
+   * filled button, a link — uses #B4232F, which measures 6.5:1 on white and 5.8:1 on paper.
+   */
+  --color-brand: #de3643;
+  --color-brand-deep: #b4232f;
+  --color-brand-wash: #fbeeef; /* selected facet, hovered entry — the accent at reading strength */
 
-  /* "Live" information only, and only on or beside the dark board */
-  --color-amber: #f5a623;
+  /* Semantic, sparing. Errors and zero-results only. */
+  --color-stop: #a8322a;
 
-  /* Semantic, sparing */
-  --color-stop: #c8352c; /* zero results and errors */
-  --color-go: #1e7a46; /* available / go affordances */
+  /* Softened-rectilinear: enough to read as a modern interface, far short of a pill. */
+  --radius-sm: 3px;
 
-  /* Cuisine line bullets — data encoding keyed to `cuisine_group`, never decoration */
-  --color-line-american: #1f5fbf;
-  --color-line-italian: #d24a2c;
-  --color-line-asian: #1e8e6a;
-  --color-line-french: #6a3b8f;
-  --color-line-seafood: #167a86;
-  --color-line-steak: #8a2d34;
-  --color-line-latin: #c98a12;
-  --color-line-other: #6b7680;
+  /**
+   * The only two shadows in the system, and both are functional rather than decorative: something
+   * genuinely floats above something else. DESIGN.md's Flat Paper Rule allows exactly these.
+   */
+  --shadow-panel-lift: 0 2px 16px rgb(26 26 24 / 0.1);
+  --shadow-sheet-lift: 0 -8px 32px rgb(26 26 24 / 0.16);
 
-  /* The Square Corner Rule, enforced by the token rather than by discipline: this is signage, so
-     corners are square to barely-softened. Tailwind's default `sm` is 4px, which is too soft. */
-  --radius-sm: 2px;
+  --font-sans: 'Libre Franklin Variable', system-ui, sans-serif;
 
-  /* The only shadow in the system. DESIGN.md's Flat Concourse Rule allows exactly one exception, and
-     it is functional: the mobile filter sheet has to read as floating above the board it covers. */
-  --shadow-sheet-lift: 0 -8px 32px rgb(20 24 27 / 0.18);
+  /**
+   * The one authored moment. Algolia returns in single-digit milliseconds, and a list that swaps with
+   * no acknowledgment hides that speed rather than demonstrating it.
+   */
+  --ease-guide: cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-  /* Three faces, three jobs. The condensed grotesque carries restaurant names at board density; the
-     normal-width sibling carries prose; the mono carries every number and every signage label. */
-  --font-display: 'Barlow Semi Condensed', 'Arial Narrow', sans-serif;
-  --font-sans: 'Barlow', system-ui, sans-serif;
-  --font-mono: 'Overpass Mono Variable', 'Courier New', monospace;
+@layer base {
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    /* Franklin Gothic is a text face; at UI sizes it wants the optical correction on. */
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /**
+   * The Tabular Rule, applied once at the root instead of remembered at every call site.
+   *
+   * Numbers in a guide's index line up because every digit occupies the same width. A score column
+   * where 4.4 and 4.1 are different widths is the specific thing this prevents.
+   */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /**
+   * Entries enter with a rise and a fade, staggered across the first ten.
+   *
+   * The stagger is capped rather than applied per index because beyond ten rows nobody is watching the
+   * animation, and an un-capped stagger on 24 hits ends up animating content the diner has already
+   * scrolled past. The delay is set inline from the hit's position; this is the curve.
+   */
+  @keyframes entry-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /**
+   * Applied to the widget's own `<li>` rather than to anything this build renders, because the `<li>`
+   * is the element React mounts and unmounts. Entries are keyed by `objectID`, so an entry that
+   * survives a refinement keeps its element and does not re-animate, while the ones that actually
+   * changed do — which is the honest version of this effect rather than replaying the whole list.
+   *
+   * The stagger is capped at ten. Past that nobody is watching, and an uncapped stagger on 24 hits
+   * spends its last 250ms animating rows below the fold.
+   */
+  .ais-Hits-item {
+    animation: entry-in 200ms var(--ease-guide) both;
+  }
+
+  .ais-Hits-item:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  .ais-Hits-item:nth-child(2) {
+    animation-delay: 18ms;
+  }
+  .ais-Hits-item:nth-child(3) {
+    animation-delay: 36ms;
+  }
+  .ais-Hits-item:nth-child(4) {
+    animation-delay: 54ms;
+  }
+  .ais-Hits-item:nth-child(5) {
+    animation-delay: 72ms;
+  }
+  .ais-Hits-item:nth-child(6) {
+    animation-delay: 90ms;
+  }
+  .ais-Hits-item:nth-child(7) {
+    animation-delay: 108ms;
+  }
+  .ais-Hits-item:nth-child(8) {
+    animation-delay: 126ms;
+  }
+  .ais-Hits-item:nth-child(9) {
+    animation-delay: 144ms;
+  }
+  .ais-Hits-item:nth-child(n + 10) {
+    animation-delay: 162ms;
+  }
+
+  /* Motion is an enhancement here, never the thing that makes content appear. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
 /**
  * Autocomplete's own styling.
  *
  * The library ships a classic theme, which is rounded, soft-shadowed and belongs to a different world
- * than this one — so it is not imported and these ~40 lines replace it. Autocomplete positions the
+ * than this one — so it is not imported and the rules below replace it. Autocomplete positions the
  * panel itself with inline styles; what it does not provide is any appearance at all, which is why
- * every rule below is structural rather than decorative.
+ * many of these rules are structural rather than decorative.
  *
  * Class names come from the library (`aa-`) or from our own templates (`ac-`).
  */
 @layer components {
+  /**
+   * The refinement controls.
+   *
+   * These are two rules rather than twenty Tailwind utilities repeated across the rail, the mobile
+   * sheet, the rating filter and the grouping toggle — a checkbox that looks different in the sheet
+   * than in the rail is the specific defect this prevents. `appearance: none` removes the native
+   * control *and* its check, so the mark comes back as a background image; a `::after` is not
+   * available on a replaced element.
+   */
+  .facet-box,
+  .facet-radio {
+    height: 1rem;
+    width: 1rem;
+    flex-shrink: 0;
+    appearance: none;
+    border: 1px solid var(--color-rule-strong);
+    background-color: var(--color-card);
+    transition:
+      background-color 120ms ease,
+      border-color 120ms ease;
+  }
+
+  .facet-box {
+    border-radius: 2px;
+  }
+
+  .facet-radio {
+    border-radius: 50%;
+  }
+
+  .facet-box:hover,
+  .facet-radio:hover {
+    border-color: var(--color-graphite);
+  }
+
+  .facet-box:checked,
+  .facet-radio:checked {
+    border-color: var(--color-brand-deep);
+    background-color: var(--color-brand-deep);
+  }
+
+  .facet-box:checked {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.75 8.4 6.6 11.2 12.25 5.2'/%3E%3C/svg%3E");
+  }
+
+  .facet-radio:checked {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='3' fill='%23fff'/%3E%3C/svg%3E");
+  }
+
+  /**
+   * The selected option that narrows nothing — "Any rating", which is checked on every arriving page.
+   * The accent means the result set has been narrowed, so the default state gets the neutral fill and
+   * still reads unambiguously as the selected radio.
+   */
+  .facet-radio--neutral:checked {
+    border-color: var(--color-graphite);
+    background-color: var(--color-graphite);
+  }
+
+  .facet-box:focus-visible,
+  .facet-radio:focus-visible {
+    outline: 2px solid var(--color-brand-deep);
+    outline-offset: 2px;
+  }
+
+  /**
+   * The field is the masthead's centrepiece, so it is sized and weighted like one: a tall white
+   * rectangle on paper, with a rule that goes to ink on focus rather than a colored halo.
+   */
   .aa-Form {
     display: flex;
     align-items: center;
-    gap: var(--spacing);
-    border: 1px solid var(--color-steel);
+    gap: calc(var(--spacing) * 2.5);
+    border: 1px solid var(--color-rule-strong);
     border-radius: var(--radius-sm);
-    background-color: var(--color-porcelain);
-    padding-inline: calc(var(--spacing) * 3);
+    background-color: var(--color-card);
+    padding-inline: calc(var(--spacing) * 4);
+    transition:
+      border-color 120ms ease,
+      box-shadow 120ms ease;
+  }
+
+  .aa-Form:hover {
+    border-color: var(--color-graphite);
   }
 
   .aa-Form:focus-within {
-    outline: 2px solid var(--color-signal);
-    outline-offset: 2px;
+    border-color: var(--color-ink);
+    /* An inset second stroke rather than an outline: it thickens the rule without moving the field. */
+    box-shadow: inset 0 0 0 1px var(--color-ink);
+  }
+
+  .aa-InputWrapperPrefix {
+    display: flex;
+    align-items: center;
+    color: var(--color-graphite);
   }
 
   /**
@@ -110,16 +305,17 @@
 
   .aa-Input {
     width: 100%;
-    padding-block: calc(var(--spacing) * 2);
+    padding-block: calc(var(--spacing) * 3.5);
+    font-size: 1rem;
     color: var(--color-ink);
   }
 
   .aa-Input::placeholder {
-    color: var(--color-steel);
+    color: var(--color-graphite);
   }
 
   .aa-Input:focus {
-    outline: none; /* the ring lives on .aa-Form, so the border and outline cannot disagree */
+    outline: none; /* the ring lives on .aa-Form, so the border and the focus state cannot disagree */
   }
 
   /* Autocomplete uses type="search", which Chrome decorates with its own clear button — so the field
@@ -129,9 +325,21 @@
     appearance: none;
   }
 
-  /* Autocomplete renders a submit and a clear button. Results arrive as you type, so submit is
-     redundant; clear is genuinely useful and stays. */
-  .aa-SubmitButton,
+  /**
+   * The submit button is the magnifier, and it stays — as a mark rather than as a control.
+   *
+   * Results arrive as you type, so pressing it does nothing a keystroke has not already done. It was
+   * hidden for exactly that reason and had to come back: at the width this field is given, a bare
+   * rectangle with a placeholder floating in it does not read as a search field. The glyph is what
+   * says what the box is for, and it costs nothing to leave the button working underneath it.
+   */
+  .aa-SubmitButton {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    color: var(--color-graphite);
+  }
+
   .aa-LoadingIndicator {
     display: none;
   }
@@ -140,7 +348,8 @@
     display: flex;
     min-width: calc(var(--spacing) * 6);
     justify-content: center;
-    color: var(--color-steel);
+    color: var(--color-graphite);
+    transition: color 120ms ease;
   }
 
   .aa-ClearButton:hover {
@@ -156,17 +365,32 @@
    * normal flow at the very bottom of the document, 2,178px down the page: present, correct, populated,
    * and completely invisible.
    */
+  /**
+   * Capped rather than left to match the input. Autocomplete sizes the panel to the field, and the
+   * field is given the full measure — so at desktop the suggestions filled 640px of an 800px box and
+   * the rest was empty white. The panel is a list of names; it only needs to be as wide as the names.
+   *
+   * **The `!important` is the only one in this file and it is not laziness.** Autocomplete positions
+   * the panel by writing `left`, `right` and `max-width: unset` as *inline* styles on every render, so
+   * a plain `max-width` here is overridden before it can apply. Measured: computed width 802px against
+   * a declared 640px cap. An inline declaration can only be beaten this way.
+   */
   .aa-Panel {
     position: absolute;
-    z-index: 20;
-    border: 1px solid var(--color-hairline);
-    background-color: var(--color-porcelain);
+    z-index: 40;
+    max-width: 40rem !important;
+    margin-top: calc(var(--spacing) * 1.5);
+    overflow: hidden;
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-card);
+    box-shadow: var(--shadow-panel-lift);
     color: var(--color-ink);
   }
 
   /* One group per source, rendered by Autocomplete's default panel layout. */
   .aa-Source {
-    border-bottom: 1px solid var(--color-hairline);
+    border-bottom: 1px solid var(--color-rule);
     padding-block: calc(var(--spacing) * 2);
   }
 
@@ -176,13 +400,13 @@
 
   .aa-SourceHeaderTitle {
     display: block;
-    padding-inline: calc(var(--spacing) * 3);
-    padding-bottom: var(--spacing);
-    font-family: var(--font-mono);
-    font-size: 0.625rem;
-    letter-spacing: 0.08em;
+    padding-inline: calc(var(--spacing) * 4);
+    padding-bottom: calc(var(--spacing) * 1.5);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--color-steel);
+    color: var(--color-graphite);
   }
 
   /* The library draws a horizontal rule in the source header; the keyline above already does that. */
@@ -192,12 +416,12 @@
 
   .aa-Item {
     cursor: pointer;
-    padding-inline: calc(var(--spacing) * 3);
+    padding-inline: calc(var(--spacing) * 4);
   }
 
   /* Autocomplete sets aria-selected as the keyboard moves, so hover and keyboard highlight match. */
   .aa-Item[aria-selected='true'] {
-    background-color: var(--color-concourse);
+    background-color: var(--color-brand-wash);
   }
 
   .ac-row {
@@ -207,11 +431,13 @@
     min-height: calc(var(--spacing) * 11); /* 44px touch target */
   }
 
+  /* The score, carrying the same tabular treatment it has on an entry, so the panel and the index
+     agree about what a number looks like. */
   .ac-rowFigure {
-    font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
-    font-size: 0.875rem;
-    color: var(--color-signal);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-ink);
   }
 
   .ac-rowBody {
@@ -225,8 +451,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-family: var(--font-display);
     font-weight: 600;
+    letter-spacing: -0.01em;
   }
 
   .ac-rowMeta {
@@ -234,24 +460,31 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 0.8125rem;
-    color: var(--color-steel);
+    color: var(--color-graphite);
   }
 
   .ac-rowCount {
-    font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
-    font-size: 0.75rem;
-    color: var(--color-steel);
+    font-size: 0.8125rem;
+    color: var(--color-graphite);
+  }
+
+  /* Autocomplete's own highlight element, so a typo-tolerant match shows which characters landed. */
+  .aa-ItemContentTitle mark,
+  .ac-rowName mark {
+    background-color: transparent;
+    font-weight: 700;
+    color: var(--color-brand-deep);
   }
 
   /**
-   * Detached mode — the mobile search experience, and until now entirely unstyled.
+   * Detached mode — the mobile search experience.
    *
    * Below 680px Autocomplete swaps the inline field for a *button* that opens a full-screen overlay.
-   * That is the right behaviour on a phone: a dropdown pinned under a sticky dark header has almost no
-   * room, while an overlay gets the whole screen and lifts the keyboard away from the results. But it is
-   * a different set of class names, none of which the desktop rules above touch, so on a phone the
-   * search read as unstyled body text next to a bare magnifier.
+   * That is the right behaviour on a phone: a dropdown pinned under a sticky header has almost no
+   * room, while an overlay gets the whole screen and lifts the keyboard away from the results. But it
+   * is a different set of class names, none of which the desktop rules above touch, so on a phone the
+   * search read as unstyled body text next to a bare magnifier until somebody looked.
    *
    * The button has to look like the field it stands in for, or nobody presses it.
    */
@@ -259,20 +492,20 @@
     display: flex;
     width: 100%;
     align-items: center;
-    gap: calc(var(--spacing) * 2);
-    border: 1px solid var(--color-steel);
+    gap: calc(var(--spacing) * 2.5);
+    border: 1px solid var(--color-rule-strong);
     border-radius: var(--radius-sm);
-    background-color: var(--color-porcelain);
-    padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 3);
-    color: var(--color-steel);
+    background-color: var(--color-card);
+    padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+    color: var(--color-graphite);
     /* 44px, the minimum touch target, and this is the most important target on the page. */
-    min-height: calc(var(--spacing) * 11);
+    min-height: calc(var(--spacing) * 12);
   }
 
   .aa-DetachedSearchButtonIcon {
     display: flex;
     flex-shrink: 0;
-    color: var(--color-steel);
+    color: var(--color-graphite);
   }
 
   .aa-DetachedSearchButtonPlaceholder {
@@ -282,19 +515,19 @@
     font-size: 0.9375rem;
   }
 
-  /* The overlay owns the whole screen. `--aa-…` custom properties are how the library positions itself. */
+  /* The overlay owns the whole screen. */
   .aa-DetachedOverlay {
     position: fixed;
     inset: 0;
-    z-index: 30;
-    background-color: var(--color-concourse);
+    z-index: 50;
+    background-color: var(--color-paper);
   }
 
   .aa-DetachedContainer {
     display: flex;
     flex-direction: column;
     height: 100%;
-    background-color: var(--color-concourse);
+    background-color: var(--color-paper);
   }
 
   /* The search row inside the overlay: the field, and a way back out of it. */
@@ -303,8 +536,8 @@
     flex-shrink: 0;
     align-items: center;
     gap: calc(var(--spacing) * 2);
-    border-bottom: 1px solid var(--color-hairline);
-    background-color: var(--color-ink);
+    border-bottom: 1px solid var(--color-rule);
+    background-color: var(--color-paper);
     padding: calc(var(--spacing) * 3);
   }
 
@@ -316,12 +549,10 @@
   .aa-DetachedCancelButton {
     flex-shrink: 0;
     min-height: calc(var(--spacing) * 11);
-    padding-inline: var(--spacing);
-    font-family: var(--font-mono);
-    font-size: 0.625rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-porcelain);
+    padding-inline: calc(var(--spacing) * 2);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-brand-deep);
   }
 
   /* Inside the overlay the panel is the page, so it scrolls rather than floating over anything. */
@@ -330,8 +561,11 @@
     position: static;
     flex: 1;
     overflow-y: auto;
+    margin-top: 0;
     border: 0;
-    background-color: var(--color-concourse);
+    border-radius: 0;
+    background-color: var(--color-paper);
+    box-shadow: none;
   }
 
   .aa-DetachedContainer .aa-Item,
@@ -340,27 +574,8 @@
     min-height: calc(var(--spacing) * 12);
   }
 
-  /* Autocomplete puts this on <body> while detached mode is open; without it the board scrolls behind. */
+  /* Autocomplete puts this on <body> while detached mode is open; without it the page scrolls behind. */
   body.aa-Detached {
     overflow: hidden;
-  }
-}
-
-@layer base {
-  body {
-    background-color: var(--color-concourse);
-    color: var(--color-ink);
-    font-family: var(--font-sans);
-  }
-
-  /**
-   * The Tabular Rule, applied once at the root instead of remembered at every call site.
-   *
-   * Numbers on a departure board line up in columns because every digit occupies the same width.
-   * `font-variant-numeric: tabular-nums` is what makes that true, and a rating column where 4.4 and
-   * 4.1 are different widths is the specific thing this prevents.
-   */
-  .font-mono {
-    font-variant-numeric: tabular-nums;
   }
 }

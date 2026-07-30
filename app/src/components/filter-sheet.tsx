@@ -63,11 +63,11 @@ export function FilterSheet() {
         type="button"
         onClick={() => setIsOpen(true)}
         aria-expanded={isOpen}
-        className="flex min-h-11 shrink-0 items-center gap-2 rounded-sm border border-hairline bg-porcelain px-3 font-mono text-[0.625rem] tracking-[0.08em] text-ink uppercase hover:border-signal hover:text-signal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal xl:hidden"
+        className="flex min-h-11 shrink-0 items-center gap-2 rounded-sm border border-rule-strong bg-card px-3 text-[0.6875rem] font-semibold tracking-[0.1em] text-ink uppercase transition-colors duration-[120ms] hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-deep xl:hidden"
       >
         Filters
         {refinementCount > 0 && (
-          <span className="flex size-5 items-center justify-center rounded-sm bg-signal text-porcelain">
+          <span className="tabular flex size-5 items-center justify-center rounded-sm bg-brand-deep text-card">
             {refinementCount}
           </span>
         )}
@@ -82,24 +82,24 @@ export function FilterSheet() {
             aria-hidden="true"
             tabIndex={-1}
             onClick={() => setIsOpen(false)}
-            className="fixed inset-0 z-30 bg-ink/40 xl:hidden"
+            className="fixed inset-0 z-40 bg-ink/40 xl:hidden"
           />
 
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Refine results"
-            className="fixed inset-x-0 bottom-0 z-40 flex max-h-[85vh] flex-col rounded-t-sm bg-porcelain shadow-[var(--shadow-sheet-lift)] xl:hidden"
+            className="fixed inset-x-0 bottom-0 z-50 flex max-h-[85vh] flex-col rounded-t-sm bg-paper shadow-[var(--shadow-sheet-lift)] xl:hidden"
           >
-            <div className="flex shrink-0 items-center justify-between border-b border-hairline px-4 py-3">
-              <h2 className="font-mono text-[0.625rem] tracking-[0.08em] text-steel uppercase">
+            <div className="flex shrink-0 items-center justify-between border-b border-rule px-4 py-3">
+              <h2 className="text-[0.6875rem] font-semibold tracking-[0.1em] text-ink uppercase">
                 Refine
               </h2>
               <button
                 ref={closeRef}
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="min-h-11 px-2 font-mono text-[0.625rem] tracking-[0.08em] text-signal uppercase hover:text-signal-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
+                className="min-h-11 px-2 text-[0.6875rem] font-semibold tracking-[0.1em] text-brand-deep uppercase transition-colors duration-[120ms] hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-deep"
               >
                 Done
               </button>
@@ -109,7 +109,7 @@ export function FilterSheet() {
                 facets is mounted while the sheet is open, which InstantSearch supports and
                 `future.preserveSharedStateOnUnmount` is set for: closing the sheet must not discard what
                 the diner just refined. */}
-            <div className="min-h-0 flex-1 overflow-y-auto">
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
               <SignagePanel />
             </div>
           </div>

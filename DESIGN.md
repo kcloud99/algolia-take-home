@@ -1,133 +1,217 @@
 ---
-name: OpenTable Restaurant Search — The Concourse Board
-description: A wayfinding-grade restaurant search experience — a bright transit concourse read against a dark, live departure board.
+name: OpenTable Restaurant Search — The Guide
+description: A restaurant guide's entry index, brought to the screen — typeset entries, a corrected score, and one accent taken from the customer's own mark.
 ---
 
-# Design System: OpenTable Restaurant Search — "The Concourse Board"
+# Design System: OpenTable Restaurant Search — "The Guide"
 
 ## Overview
 
-**Creative North Star: "The Concourse Board"**
+**Creative North Star: "The Guide"**
 
-A diner stands in a bright, calm transit concourse and looks up at a dark, luminous departure board to find the one right destination among hundreds. That is the whole system. Searching 5,000 restaurants is a *wayfinding* problem — orientation and disambiguation, not proximity — and the interface answers it in the visual language people already trust to route them through crowded places: station signage, departure boards, platform markers, tabular timetables, single-weight pictograms, directional arrows. The humble results list becomes a **board**; the facet rail becomes a **signage panel**; the chain problem becomes a **platform**.
+A diner opens a restaurant guide to the index and reads down it. Each restaurant is an **entry** —
+typeset, ranked, scored, and encoded with a symbol — not a row in a table. That is the whole system.
+The printed restaurant guide is the one artifact in this category that solved our exact problem
+before the web existed: it ranks thousands of restaurants, it carries **no photography at all**, and
+it makes them desirable anyway, using nothing but type, space, a score, and a symbol key.
 
-The system refuses the two ruts this category ships. It is not the generic InstantSearch results page: flat gray facets, a stock rating widget, undifferentiated rows. And it is not the AI-restaurant default of cream paper, high-contrast serif display, and a terracotta accent. Instead: a cool, high-legibility concourse ground; a bounded dark board reserved strictly for *live information*; one saturated enamel-blue signal that owns every interaction; and every number set in a tabular monospace so the whole surface aligns like a real board.
+That constraint is not theoretical here. Every one of the 5,000 supplied `image_url` values is dead
+(they 302 to a 2.2 KB placeholder), so a photo-led restaurant interface is impossible. The guide is
+what a photo-less restaurant surface looks like when it is *good* rather than apologetic.
 
-The register is **Operate with demo-grade polish** — expression never obscures the task, but the craft is unmistakable in the first viewport. Speed is part of the aesthetic: Algolia's sub-10ms response is rendered as a live board stat, not a footnote.
+The system refuses two ruts. It is not the generic InstantSearch results page — flat gray facets, a
+stock star widget, undifferentiated rows. And it is not the AI-restaurant default of cream paper,
+high-contrast serif display, and a terracotta accent: the ground here is a cool-neutral stock rather
+than cream, the display face is a Franklin Gothic rather than a serif, and the one accent is
+**#DE3643, sampled from the OpenTable mark that shipped with the assignment** — the customer's own
+red, not a chosen one.
+
+The register is **Operate with editorial polish** — expression never obscures the task, but a diner
+should want to read down the page. Speed is stated as a fact in the index line, not shouted in
+orange.
 
 **Reusable signature (the patterns every screen inherits):**
-- **Board strip** — a full-width dark Ink band carrying the search field and the live results/timing readout.
-- **Board row** — a result rendered as a column-aligned timetable line: rating gauge · NAME · cuisine bullet · neighborhood · price · review-volume bar. Hairline-separated, never a card.
-- **Rating gauge** — a segmented signage gauge showing the *corrected* (Bayesian) rating as the primary figure, raw stars + review count secondary.
-- **Signage panel** — the facet rail: tracked uppercase labels, single-weight pictograms, tabular counts.
-- **Platform** — the chain-disambiguation module: N locations folded into one authoritative entry with a directional cue.
-- **Route strip** — the persistent "active filters" line above results, read like a journey summary.
+- **Masthead** — a paper band carrying the mark, the search field at full width, and the location.
+- **Entry** — a result as a typeset guide entry: score · symbol · NAME · meta line · price · distance
+  · a Reserve that resolves on intent. Hairline-separated, never a card.
+- **Score** — the *corrected* (Bayesian) rating as a large tabular figure over a hairline scale rule;
+  raw stars and review count secondary, beneath.
+- **Symbol** — a single-weight cuisine pictogram in graphite, drawn on one geometric grid. A guide's
+  symbol key, not a colored tile.
+- **Refine rail** — the facet column: tracked caps group titles, hairline rules, tabular counts.
+- **Chain entry** — N locations folded into one authoritative entry with a bracketed count.
+- **Index line** — the persistent line above the entries: what is applied, how many, how fast.
 
 **Key Characteristics:**
-- Bright concourse ground, bounded dark board for live info only.
-- One interactive voice: Enamel Signal Blue.
-- Every number tabular, monospaced, column-aligned.
-- Flat by default — depth is material contrast and hairline keylines, never drop shadows.
-- Rectilinear signage geometry; corners are square, not soft.
+- Paper ground, true-white raised surfaces, real material contrast between them.
+- One accent, and it is the customer's: OpenTable red.
+- The restaurant's name is the largest thing on its entry. Always.
+- Every figure tabular and column-aligned — in the text face, not a monospace costume.
+- Flat by default — depth is material contrast and hairline rules, never drop shadows.
 - Corrected rating is the honest hero; raw stars are secondary.
 
 ## Colors
 
-A cool, high-legibility signage palette: a pale concourse ground, a bounded anthracite board, one enamel-blue system color, and a matte amber that lives only where information is "live." These values ship as Tailwind v4 `@theme` tokens in [`app/src/index.css`](app/src/index.css), which is the single place a colour in this app is named.
+A warm-neutral paper palette with a single brand accent. These ship as Tailwind v4 `@theme` tokens in
+[`app/src/index.css`](app/src/index.css), which is the single place a color in this app is named.
 
 ### Primary
-- **Enamel Signal Blue** (#0B4FA0): The single interactive voice. Active/selected facets, links, focus rings, the route strip, the primary "Reserve →" action, directional arrows. This is the "line color" that guides the diner. Hover/pressed deepens to **Enamel Deep** (#083E7E).
-
-### Secondary
-- **Board Amber** (#F5A623): The *live* accent — and only ever on or beside the dark board. The results-count and millisecond readout, the split-flap refresh highlight, the platform (chain) marker, the rating-gauge fill. Flat, matte board pigment; it never glows or blooms.
-
-### Tertiary — Cuisine Line Bullets
-A fixed lookup keyed to `cuisine_group`, drawn from transit line-color palettes, used *only* as small square bullets/tags so a diner can scan cuisine at a glance. Data encoding, never decoration. Representative set: American **Cobalt** (#1F5FBF), Italian **Vermillion** (#D24A2C), Japanese/Asian **Jade** (#1E8E6A), French **Aubergine** (#6A3B8F), Seafood **Teal** (#167A86), Steakhouse **Oxblood** (#8A2D34), Mexican/Latin **Marigold** (#C98A12), Café/Other **Slate** (#6B7680).
+- **OpenTable Red** (#DE3643): The single accent, sampled from the supplied logo. Owns the score
+  rule, the active refinement, the chain marker, and the Reserve action. Deepens to **Red Deep**
+  (#B4232F) for anything carrying small text — links, filled buttons, hover — because white on
+  #DE3643 measures 4.45:1 and misses the 4.5:1 floor, while white on #B4232F measures 6.5:1.
+- **Red Wash** (#FBEEEF): The accent at reading strength — the ground of an applied refinement chip,
+  the chain-location marker, and the autocomplete keyboard highlight.
 
 ### Neutral
-- **Ink** (#14181B): The board material and primary text — anthracite enamel, not pure black.
-- **Concourse** (#EBEDE8): The page ground — cool pale concrete / station tile. Explicitly not cream.
-- **Porcelain** (#FBFBF9): Facet panel and any raised reading surface — enamel white.
-- **Steel** (#59636C): Secondary text, pictograms, metadata.
-- **Hairline** (#D7DAD3): Keylines, rules, row dividers, input strokes.
+- **Paper** (#F4F3EF): The page ground — uncoated stock, warm-neutral, low chroma. Explicitly not
+  cream: cream carries a yellow cast, and cream-plus-serif is the exact default this world refuses.
+- **Card** (#FFFFFF): Raised reading surfaces — the search field, the filter sheet, a hovered entry.
+  True white against Paper is a ~4.5% luminance step, which is a material difference you can see.
+- **Ink** (#1A1A18): Primary text and the mark. Near-black, faintly warm. 15.7:1 on Paper.
+- **Graphite** (#5C5A54): Secondary text, symbols, counts, meta lines. 6.2:1 on Paper.
+- **Rule** (#E2E0D9): Hairlines, entry dividers, group separators.
+- **Rule Strong** (#C9C6BC): Input strokes, section rules, unfilled scale track.
 
 ### Semantic (sparing)
-- **Stop Red** (#C8352C): Zero-results / error states only.
-- **Go Green** (#1E7A46): "Available / go" affordances only.
+- **Stop** (#A8322A): Zero-results and errors only.
 
 ### Named Rules
-**The One Board Rule.** The dark Ink board is reserved for *live information* — the search field, the results/timing readout, and chain platforms. Browsing happens on the light concourse. The board's darkness is a signal that its contents are live; spend it nowhere else.
 
-**The One Voice Rule.** Enamel Signal Blue owns interaction, Board Amber owns "live," line bullets encode cuisine. No color is decorative. If an accent isn't doing one of those three jobs, it's wrong.
+**The One Accent Rule.** #DE3643 is the only color in the system that is not a neutral, and it is the
+customer's. It marks exactly four things: the score scale, an applied refinement, a chain's location
+count, and Reserve *once the diner is on the entry*. If red is doing anything else — a "show more"
+link, a section rule, a hover on something that is not an action — it is wrong.
+
+**The Applied-Only Rule.** The accent means the result set has been *narrowed*, so it is withheld from
+a selected control that narrows nothing. "Any rating" is checked on every arriving page; rendering it
+in red made the loudest thing in the rail the option that does nothing. Its radio takes the neutral
+fill and its label stays graphite.
+
+**The No-Confetti Rule.** Cuisine is encoded by a **symbol and a word**, never by color. Eight
+saturated cuisine tiles down the left edge of a results list is confetti that fights the one accent —
+it was measured on the previous system and removed. The pictograms survive in graphite; the color
+does not.
 
 ## Typography
 
-**Display Font:** Barlow Semi Condensed (with "Arial Narrow", sans-serif) — a condensed signage grotesque with California highway/rail lineage; carries the departure-board density of the board rows and restaurant names.
-**Body Font:** Barlow (with system-ui, sans-serif) — the normal-width sibling; workhorse legibility for descriptions and UI text, coherent with the display face.
-**Label/Mono Font:** Overpass Mono (with "Courier New", monospace) — derived from US Highway Gothic; carries *every number* and the small tracked uppercase signage labels.
+**One family: Libre Franklin (variable), with system-ui, sans-serif.** A Franklin Gothic — the
+American newspaper-and-guide grotesque. It carries a restaurant name at 28px with real presence and a
+tracked 11px caps label without falling apart, which is the whole range this surface needs.
 
-**Character:** Functional, confident, and unmistakably wayfinding. Condensed grotesque names read like a board; monospaced tabular figures make counts, ratings, and timings line up in columns the way a real timetable does. No serifs, no editorial flourish — this world earns its beauty through alignment and legibility.
+**No monospace.** The requirement was that figures align in columns, and `font-variant-numeric:
+tabular-nums` on Libre Franklin delivers exactly that. A mono face was one way to get it; it was also
+what made the previous system read as a terminal rather than a guide.
+
+**Character:** Editorial, American, sturdy. Confident at display size, invisible at body size. The
+beauty comes from scale contrast and alignment, not from ornament.
 
 ### Hierarchy
-- **Display** (Barlow Semi Condensed 600, clamp(2rem, 4vw, 3rem), 1.05): The board-strip identity and any section masthead.
-- **Headline** (Barlow Semi Condensed 600, 1.375rem, 1.1): Restaurant names in board rows — the primary scan target.
-- **Title** (Barlow Semi Condensed 500, 1.125rem, 1.2): Facet group headers, module titles.
-- **Body** (Barlow 400, 0.9375rem, 1.5): Descriptions and helper text; cap line length ~60ch.
-- **Label** (Overpass Mono 500, 0.75rem, letter-spacing 0.08em, UPPERCASE): Signage labels — "CUISINE", "RATING", "PLATFORM", filter chips.
-- **Figure** (Overpass Mono 500, tabular-nums): All numerics — ratings, review counts, prices, results count, ms timing.
+- **Display** (600, clamp(2rem, 3.2vw, 2.75rem), 1.05, -0.02em): Empty-state and section mastheads.
+- **Entry name** (600, 1.75rem desktop / 1.375rem mobile, 1.15, -0.02em): The primary scan target on
+  every entry. 1.875rem was measured and rejected — the name column is 556px at the desktop measure,
+  and the larger size truncates the branch off every long chain name for no visible gain.
+- **Score** (600, 1.875rem desktop / 1.5rem mobile, 1, tabular): The corrected rating figure.
+- **Title** (600, 1rem, 1.3): Module and group titles.
+- **Body** (400, 0.9375rem, 1.55): Prose and helper text; measure capped at ~68ch.
+- **Meta** (400, 0.875rem, 1.4): The entry's cuisine · neighborhood · style line, in Graphite.
+- **Label** (600, 0.6875rem, 0.1em tracking, UPPERCASE): Group titles, column heads, chips.
+- **Figure** (500, tabular-nums): Every numeric — scores, counts, prices, distances, timings.
 
 ### Named Rules
-**The Tabular Rule.** Every number renders in Overpass Mono with `font-variant-numeric: tabular-nums`, so ratings, counts, prices, and timings align in columns like a real board. A number set in the sans face is a lapse.
 
-**The No-Serif Rule.** No serif, no italic display, no cream ground. This world exists to refuse the restaurant-app default; a serif headline is the failure state, not a variation.
+**The Tabular Rule.** Every number renders with `font-variant-numeric: tabular-nums`, so scores,
+counts, prices, and distances align down the page. A ragged numeric column is the failure state.
+
+**The Name-Dominates Rule.** On any entry, the restaurant's name is the largest and heaviest element.
+No action, score, badge, or symbol may out-weigh it — the previous system's eight stacked saturated
+CTAs are the specific failure this rule exists to prevent.
 
 ## Layout
 
-A strict signage grid on a centered concourse (max content width ~1240px). Top to bottom: the full-width **board strip** (dark, sticky — search + live stats), the **route strip** (active filters), then a two-column body: a fixed **signage panel** (~280px) on the left and a fluid **results board** on the right.
+A centered measure (max content width 1180px) on paper. Top to bottom: the **masthead** (mark,
+full-width search field, location — sticky), the **index line** (applied refinements, count, timing,
+sort), then a two-column body: a **refine rail** (240px) on the left and the **entry index** on the
+right.
 
-Density is timetable-tight but never cramped: board rows are compact and baseline-aligned, separated by **hairline keylines** (not cards, not gaps-as-dividers), with generous gutter between the panel and the board. Spacing rhythm is a 4px base (steps 4 / 8 / 12 / 16 / 24 / 32 / 48), always more space above a section label than below it.
+Entries are generous, not dense: ~150px tall on desktop, hairline-separated, with the score in a
+fixed 92px left column so the figures align down the page. The name block is the only fluid cell.
+Spacing rhythm is a 4px base (4/8/12/16/24/32/48/64), always more space above a section label than
+below it.
 
-**Responsive.** The board strip stays sticky at every width, with the identity and the live readout sharing its first line on a phone. Two breakpoints matter, and both were measured against the row rather than taken from a device size:
+**Responsive.** The masthead stays sticky at every width.
 
-- **Below 880px the board row stacks.** Its fixed cells total 543px, so anything narrower starves the one cell allowed to shrink — the name. It stacks to three reading lines, not the two this section first specified: tile + name, then the meta line, then gauge · distance · price with **Reserve** pinned right. Two lines was written before the distance column and the platform marker existed; three keeps the requirement that actually matters, which is that each line stays column-aligned across rows. The review-volume meter is the one cell a phone does without.
-- **The signage panel appears at 1280px, not 1024px.** A 280px rail plus a 543px row needs the width; at 1024px the rail left the name column 137px wide, the same defect a phone had. Below that the panel moves behind a **"Filters" bottom-sheet** trigger carrying the applied-refinement count.
+- **Below 880px the entry stacks** to three reading lines: symbol + name, then the meta line, then
+  score · price · distance with Reserve pinned right. The review-count line is the one cell a phone
+  does without. 880px is measured against the entry's fixed cells, not taken from a device size.
+- **The name wraps below 880px and truncates above it.** Truncating costs a chain branch its suffix,
+  which is the exact disambiguation the known-item diner came for; above 880px the entries are a
+  column and a wrapping name would make them ragged, so there it truncates and `title` carries the
+  rest.
+- **The refine rail appears at 1280px.** A 240px rail plus the entry's fixed cells needs the width; at
+  1024px the rail starved the name column. Below that the rail moves behind a **Filters bottom-sheet**
+  carrying the applied-refinement count.
+- **Below 680px the search field becomes a full-screen overlay** rather than a dropdown, and the
+  browse chip rows become single swipeable rails that scroll inside themselves.
 
-Below 680px the search field becomes a full-screen overlay rather than a dropdown — a panel pinned under a sticky dark strip has almost no room on a phone, and the overlay lifts the keyboard away from the results. Discovery's chip rows become single swipeable rails that scroll inside themselves; wrapped, they cost more than 900px before the first result. All touch targets are ≥44px below the desktop breakpoint, and the search field remains reachable at all times.
+All touch targets are ≥44px below the desktop breakpoint, and the search field is reachable at all
+times.
 
 ## Elevation & Depth
 
-**Flat by default — the No-Glow Rule.** The concourse uses no drop shadows. Depth is conveyed two ways: the **material contrast** between the dark Ink board and the light concourse (the board reads as a physically distinct, illuminated surface), and **hairline keylines** that structure the board and panel. Board Amber and Signal Blue are matte pigments — they never carry a glow, bloom, or neon edge.
+**Flat by default.** Depth comes from two places: the **material step** between Paper and Card, and
+**hairline rules**. No drop shadows on entries, chips, panels, or buttons at rest.
 
-The single exception is functional: when the mobile **Filters bottom-sheet** overlays content, it rides on one soft ambient shadow plus a scrim, to signal it floats above the board.
-
-### Shadow Vocabulary
-- **Sheet-lift** (`box-shadow: 0 -8px 32px rgba(20,24,27,0.18)`): The mobile filter bottom-sheet only. Nowhere else.
+Two functional exceptions, both because something genuinely floats:
+- **Panel-lift** (`0 2px 16px rgb(26 26 24 / 0.10)`): the autocomplete panel over the page.
+- **Sheet-lift** (`0 -8px 32px rgb(26 26 24 / 0.16)`): the mobile filter bottom-sheet.
 
 ### Named Rules
-**The Flat Concourse Rule.** Surfaces are flat at rest. The only depth cues are Ink-vs-Concourse material contrast and hairline keylines; the only shadow in the system lifts the mobile filter sheet.
+
+**The Flat Paper Rule.** Surfaces are flat at rest. An entry's hover state is a *material* change
+(Paper → Card) plus its Reserve resolving to a filled accent button — never a lift and never a shadow.
+
+**The Resting-Action Rule.** A per-entry action is legible and focusable at rest but never filled.
+Twenty-four saturated CTAs down one edge is a column of buttons with restaurants attached, which is
+the specific inversion this system replaced. Reserve carries a hairline and ink text until the diner
+is on the entry, then fills.
 
 ## Shapes
 
-Rectilinear signage geometry. Corners are square to barely-softened (radius 0–2px): enamel-sign inputs, filter chips, and buttons use crisp 2px corners; the board strip and panels are hard rectangles. The **rating gauge** is a segmented linear bar (a signage gauge), never a pill or a row of variable-fill stars. The **review-volume bar** is a short horizontal meter. **Pictograms** are drawn on one geometric grid at a single stroke weight, in the world's own grammar — not lifted from an off-the-shelf icon set. The **platform (chain) marker** uses a bracketed platform-number motif (e.g. a boxed count with a directional arrow).
+Softened-rectilinear. Radius 3px on inputs, chips, buttons, and the raised entry surface — enough to
+read as a modern interface, far short of a pill. The **score scale** is a 2px hairline rule whose
+filled portion encodes position on the disclosed 3.0–5.0 range. The **review-volume meter** is a
+short log-scaled hairline. **Pictograms** are drawn on one geometric grid at a single stroke weight,
+in graphite — not lifted from an off-the-shelf icon set.
 
-### Named Rules
-**The Square Corner Rule.** This is signage: corners are square (0–2px). Rounded cards and pill chips belong to the default this world refuses.
+## Motion
+
+**One authored moment.** When results change, entries enter with a 6px rise and a fade, staggered
+~18ms each over the first ten, at 200ms `cubic-bezier(0.16, 1, 0.3, 1)`. This is the only orchestrated
+motion in the system, and it exists for a reason: Algolia returns in single-digit milliseconds, and a
+list that swaps with no acknowledgment hides the speed rather than demonstrating it.
+
+Everything else is a 120ms color or background transition on interactive elements. All motion is
+disabled under `prefers-reduced-motion: reduce`.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** render every number in Overpass Mono with tabular figures, column-aligned across rows.
-- **Do** reserve the dark Ink board strictly for live information — search, results/timing readout, chain platforms — and keep browsing on the light concourse.
-- **Do** use Enamel Signal Blue (#0B4FA0) as the single interactive voice (active facets, links, focus, primary action).
-- **Do** show the corrected (Bayesian) rating as the primary gauge figure, with raw stars + review count as secondary context.
-- **Do** separate results with hairline keylines (#D7DAD3), not cards or shadows.
-- **Do** draw pictograms in the signage grammar (single-weight, geometric) and map `cuisine_group` to the fixed line-bullet colors for scanning.
-- **Do** log-scale the review-volume bar — counts range 1 → 12,669, so a linear bar is unreadable.
+- **Do** make the restaurant's name the largest element on its entry.
+- **Do** render every number with tabular figures so the columns align down the page.
+- **Do** keep the accent to the four jobs the One Accent Rule names.
+- **Do** show the corrected (Bayesian) score as the primary figure, with raw stars and review count
+  secondary and the scale floor disclosed.
+- **Do** separate entries with hairline rules, not cards and not shadows.
+- **Do** draw cuisine pictograms in the guide's own grammar — single-weight, geometric, graphite.
+- **Do** log-scale the review-volume meter — counts run 1 → 12,669, so a linear bar is unreadable.
 
 ### Don't:
-- **Don't** use rounded cards, drop shadows, or glassmorphism; the concourse is flat, depth is material contrast + keylines.
-- **Don't** let Board Amber glow, bloom, or gain a neon edge — it is flat board pigment, only on or beside the dark board.
-- **Don't** introduce cream/parchment grounds or serif/italic display type — that is the exact default this world exists to refuse.
-- **Don't** scatter accent colors; if a color isn't owning interaction (blue), signaling "live" (amber), or encoding cuisine (bullets), remove it.
-- **Don't** present the local cuisine-keyed images as the restaurants' real photos — they are honest stand-ins for a dead image feed.
-- **Don't** sort or rank on raw stars; the corrected rating is the honest signal.
+- **Don't** reintroduce color-coded cuisine tiles, or any second accent.
+- **Don't** use drop shadows outside the two functional exceptions, or glassmorphism anywhere.
+- **Don't** introduce a cream ground, a serif display face, or a monospace UI face — cream + serif is
+  the category default this world refuses, and mono is what made the last one read as a terminal.
+- **Don't** let a Reserve button out-weigh the restaurant it books.
+- **Don't** present the cuisine symbols as the restaurants' real photos — they are an honest encoding
+  standing in for a dead image feed.
+- **Don't** sort or rank on raw stars; the corrected score is the honest signal.

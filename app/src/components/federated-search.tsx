@@ -6,6 +6,7 @@ import { useInstantSearch, useSearchBox } from 'react-instantsearch';
 import { VirtualRefinement } from './virtual-refinement';
 import { citySource, cuisineSource, restaurantSource } from '../lib/autocomplete-sources';
 import type { AutocompleteActions } from '../lib/autocomplete-sources';
+import type { SearchCentre } from '../lib/geo';
 
 /**
  * The search input, owned by Autocomplete.
@@ -17,8 +18,14 @@ import type { AutocompleteActions } from '../lib/autocomplete-sources';
  *
  * The bridge between the two libraries is one-directional and deliberately small: on select or submit,
  * push into InstantSearch's UI state. Everything else about the board keeps working the way it did.
+ *
+ * **`centre` is a prop for the same reason the bridge exists at all: Autocomplete issues its own
+ * requests and `<Configure>` does not reach them.** The board was location-aware and the dropdown above
+ * it was not, so a diner in Portland typing a chain name got suggestions from Honolulu while the board
+ * behind the dropdown showed Portland — the one place where the two surfaces are read together is
+ * exactly where they disagreed.
  */
-export function FederatedSearch() {
+export function FederatedSearch({ centre }: { centre: SearchCentre }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { setIndexUiState, indexUiState } = useInstantSearch();
 
@@ -28,6 +35,14 @@ export function FederatedSearch() {
    * would tear the input down mid-keystroke.
    */
   const actionsRef = useRef<AutocompleteActions>({ setQuery: () => {}, applyFacet: () => {} });
+
+  /**
+   * The centre, held the same way and for the same reason: the sources are built once, so they must read
+   * it per keystroke rather than close over the value they were handed on mount. Assigned during render
+   * rather than in an effect, so a source firing before effects have flushed still sees the current one.
+   */
+  const centreRef = useRef(centre);
+  centreRef.current = centre;
 
   actionsRef.current = {
     setQuery(query) {
@@ -123,7 +138,11 @@ export function FederatedSearch() {
       // panel layout groups them correctly — which means one less thing between the library and the
       // markup, and the sources stay self-describing.
       getSources() {
-        return [restaurantSource(actions), cuisineSource(actions), citySource(actions)];
+        return [
+          restaurantSource(actions, () => centreRef.current),
+          cuisineSource(actions),
+          citySource(actions),
+        ];
       },
     });
 
@@ -134,6 +153,17 @@ export function FederatedSearch() {
       instance.destroy();
     };
   }, []);
+
+  /**
+   * Re-ask for suggestions when the diner moves the centre, rather than waiting for the next keystroke.
+   *
+   * Without this the panel can be left holding suggestions for the city the diner just left — the same
+   * defect this change exists to fix, one interaction later. Cheap and safe: `refresh` re-runs the
+   * sources for the query already in the box, and is a no-op when the panel is closed.
+   */
+  useEffect(() => {
+    void instanceRef.current?.refresh();
+  }, [centre]);
 
   /**
    * The one place the bridge runs the other way: when something *other than the input* changes the query,

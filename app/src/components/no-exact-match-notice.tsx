@@ -47,8 +47,8 @@ export function NoExactMatchNotice() {
   }
 
   return (
-    <p className="mb-4 border-l-2 border-amber bg-porcelain px-3 py-2 text-sm text-steel">
-      <span className="mr-2 font-mono text-[0.625rem] tracking-[0.08em] uppercase">
+    <p className="mb-5 rounded-sm border border-rule bg-card px-3.5 py-2.5 text-sm text-graphite">
+      <span className="mr-2 text-[0.6875rem] font-semibold tracking-[0.1em] text-ink uppercase">
         Closest matches
       </span>
       Nothing here is spelled “{query.trim()}” — these are the closest restaurant names we found.

@@ -371,6 +371,58 @@ Also worth stating precisely, since it gets said out loud: Algolia's reference g
 `geoDistance` equals the true distance to the metre. Either way it is a metre-level strict distance
 sort, which is the point.
 
+### The dropdown was not placed at all — and `<Configure>` could never have fixed it
+
+The board was location-aware from the first geo commit. **The autocomplete dropdown above it was not**,
+and this went unnoticed because both surfaces looked individually plausible. Autocomplete is a separate
+library from InstantSearch: it issues its own requests through the raw client, so `<Configure>` — which
+is an InstantSearch widget — never touched them. Typing a chain name in Portland offered Honolulu over a
+board showing Portland, in the one place where the two are read together.
+
+Two changes, both measured from the New York default centre against the live index.
+
+**1. Send the board's geo parameters with the dropdown's restaurant query.** Same
+`aroundLatLng` / `aroundRadius: "all"` / `aroundPrecision` the board uses, read per keystroke so the
+location control moves both surfaces at once.
+
+| `ruth` | before (unplaced) | after (placed) |
+|---|---|---|
+| 1 | Ruth's Chris — Honolulu, HI | Ruth's Chris — Parsippany, NJ (25 mi) |
+| 2 | Ruth's Chris — Pittsburgh, PA | Ruth's Chris — Pittsburgh, PA (317 mi) |
+| 3 | Ruth's Chris — Destin, FL | Ruth's Chris — North Raleigh, NC (423 mi) |
+| 4 | Ruth's Chris — Baton Rouge, LA | Ruth's Chris — Cary, NC (428 mi) |
+| 5 | Ruth's Chris — San Diego, CA | Ruth's Chris — River Walk, San Antonio (1,584 mi) |
+
+The before column is not sorted by anything a diner can perceive. That is persona 1's third stated pain
+— *chains with multiple locations are hard to disambiguate* — reproduced exactly, in the one widget
+built to answer it.
+
+**2. `restrictSearchableAttributes: ['name']` on that query, which placing it made necessary.** Geo is
+criterion 2 and `attribute` is criterion 6, so once a query is placed, a nearby match in *any* searchable
+attribute outranks a distant match in the name. The index makes `neighborhood,city,area,state` searchable
+— right for the board, wrong for this dropdown. Placed but unrestricted, `ruth` from New York led with
+**three restaurants in Rutherford, NJ** (Cafe Matisse 8 mi, Paisano's 8 mi, Pink 7 mi) before the first
+Ruth's Chris. Correct by the formula and useless in the box.
+
+Restricting to `name` changed the result set for **2 of 8** test queries — `ruth`, which it fixes, and
+`italian`, which the Cuisine source in the same dropdown answers better anyway. `mccormick`, `la`,
+`grill`, `soho`, `capital gr` and `benihanna` were byte-identical. `soho` in particular still leads with
+Koi - Soho and Sant Ambroeus SoHo, because a neighborhood that famous is in the restaurant names. Nothing
+becomes unreachable: Enter searches the unrestricted board, so this narrows what is *suggested*, not what
+is *findable*.
+
+Verified in the browser across three markets — from Portland, `ruth` leads with Ruth's Chris Portland and
+`benihanna` with Benihana Beaverton; from Houston, Ruth's Chris Houston and Benihana Houston Downtown.
+
+**The cuisine and city facet sources were deliberately left unplaced, and that is measured too.** Sending
+them the geo parameters changes their output by nothing: `aroundRadius: "all"` keeps distance in the
+ranking and out of the filtering, and a facet search orders by count, not by rank. From New York, `por`
+returns `Portland (117) · Port Chester (2) · Port Jefferson (2) · La Porte (1)` with the parameters and
+without them, identically — adding them would be dead code that looked like a feature. Making them
+genuinely local needs a real radius, which is the wrong trade for both: at 50 km, `por` returns Port
+Chester and hides Portland, breaking the City source's only job (relocating), and cuisine counts would
+stop matching the board — the dropdown promising `American (198)` and opening a board of 882.
+
 ### Residual costs, stated
 
 - **A far-flung last row.** On page 1 of `steakhouse` from Portland, row 24 is a restaurant in Florida

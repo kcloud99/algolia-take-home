@@ -36,17 +36,17 @@ export function GroupingToggle({
 }) {
   return (
     <label
-      className="flex min-h-11 shrink-0 cursor-pointer items-center gap-2 sm:min-h-9"
-      title="Show one row per restaurant brand, choosing the best-ranked location"
+      className="flex min-h-11 shrink-0 cursor-pointer items-center gap-2.5 sm:min-h-9"
+      title="Show one entry per restaurant brand, choosing the best-ranked location"
     >
       <input
         type="checkbox"
         checked={grouped}
         onChange={(event) => onChange(event.target.checked)}
-        className="size-3.5 shrink-0 appearance-none rounded-sm border border-steel checked:border-signal checked:bg-signal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
+        className="facet-box"
       />
       <span
-        className={`font-mono text-[0.625rem] tracking-[0.08em] uppercase ${grouped ? 'text-signal' : 'text-steel'}`}
+        className={`text-[0.6875rem] font-semibold tracking-[0.1em] uppercase ${grouped ? 'text-brand-deep' : 'text-graphite'}`}
       >
         Group chains
       </span>

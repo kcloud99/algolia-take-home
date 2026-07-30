@@ -1,76 +1,77 @@
-import { useInstantSearch, useStats } from 'react-instantsearch';
-
 import { FederatedSearch } from './federated-search';
+import { LocationControl } from './location-control';
+import type { SearchCentre } from '../lib/geo';
+import type { CentreChoice } from '../lib/use-search-centre';
 
 /**
- * The board strip: the dark band carrying the search field and the live readout.
+ * The masthead: the mark, the search field, and where the index is searching from.
  *
- * This is the One Board Rule from DESIGN.md in one component. The dark Ink surface is reserved for
- * *live* information — what you typed and what came back — while browsing happens on the light
- * concourse below. Spending the dark surface anywhere else would make it mean nothing.
+ * On paper rather than on a dark band. The previous system spent a full-width anthracite strip here to
+ * signal "live information", which cost the page its calmest surface and made a black bar with a
+ * floating white input the first thing anyone saw. The field is the most important control on the page,
+ * so it is simply given the room and the weight — a tall white rectangle on paper, at the full width of
+ * the measure.
  *
  * Sticky, because the search field is the one control that must never be more than a glance away.
+ *
+ * **The location control lives here, not with the filters.** It answers "where am I searching from",
+ * which is a property of the search rather than a refinement of it — and the "Where" facet in the
+ * refine rail, which genuinely does filter, uses the same place names. Sitting them in one strip was
+ * the reason that distinction needed a paragraph of label copy to explain.
  *
  * The field itself is `FederatedSearch` — Autocomplete, which owns the input and must be the only thing
  * that does. `SearchBox` stood here until step 3.4 and was removed rather than kept alongside it.
  */
-export function BoardStrip() {
+export function BoardStrip({
+  centre,
+  locationChoice,
+  onChooseLocation,
+  locationNotice,
+}: {
+  /**
+   * The resolved centre, passed alongside the control's `choice` rather than derived from it. They are
+   * not the same thing: `choice` is what the `<select>` shows, `centre` is the coordinate a query is
+   * placed at, and only one of the two can be sent to Algolia. The search field needs the coordinate.
+   */
+  centre: SearchCentre;
+  locationChoice: CentreChoice;
+  onChooseLocation: (choice: CentreChoice) => void;
+  locationNotice: string | null;
+}) {
   return (
-    <header className="sticky top-0 z-10 bg-ink text-porcelain">
-      <div className="mx-auto flex max-w-[1240px] flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:gap-6">
-        {/* On a phone the identity and the readout share a line, so the sticky strip costs one row of
+    <header className="sticky top-0 z-30 border-b border-rule bg-paper">
+      <div className="mx-auto flex max-w-[1180px] flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:gap-5">
+        {/* On a phone the mark and the location share a line, so the sticky masthead costs two rows of
             height instead of three. A sticky header that eats 40% of a 844px viewport is not a header. */}
         <div className="flex items-center justify-between gap-4 sm:contents">
-          {/* The brand's own mark, which is the one place a colour outside the palette is allowed to
-              appear: the One Voice Rule governs our accents, not the customer's identity. It is also
-              why the disc is round in a system whose corners are square. */}
-          {/* The logo alone. No wordmark beside it: the mark already says OpenTable, and anything else
-              there would either repeat it or invent a product name that is not theirs. */}
+          {/* The mark alone. No wordmark beside it: the mark already says OpenTable, and anything else
+              there would either repeat it or invent a product name that is not theirs. It is also the
+              one place a colour outside the palette could appear — and does not need to, because the
+              palette's single accent was sampled from this file. */}
           <h1 className="shrink-0">
             <img
               src="/opentable-logo.png"
               alt="OpenTable restaurant search"
-              width={36}
-              height={36}
-              className="size-9"
+              width={38}
+              height={38}
+              className="size-[38px]"
             />
           </h1>
 
-          <LiveReadout />
+          {/* `sm:order-last` is load-bearing: `sm:contents` on the wrapper above dissolves it into the
+              masthead's flex row, which would otherwise put the location before the search field. */}
+          <LocationControl
+            choice={locationChoice}
+            onChoose={onChooseLocation}
+            notice={locationNotice}
+            className="sm:order-last"
+          />
         </div>
 
-        {/* Second in the source on a phone, but `sm:contents` above hoists the logo and readout back into
-            this flex row on wider screens, so the desktop order is logo → search → readout. */}
-        <FederatedSearch />
+        {/* Second in the source on a phone, but `sm:contents` above hoists the mark and the location
+            back into this row on wider screens, so the desktop order is mark → search → location. */}
+        <FederatedSearch centre={centre} />
       </div>
     </header>
-  );
-}
-
-/**
- * The results-and-timing readout, in Board Amber because it is the one genuinely live thing on the
- * strip. Rendering the processing time is not vanity: the prospect runs a ten-year-old stack, and
- * "5,000 restaurants, 1 ms" is the argument made without a slide.
- *
- * **The `~` is load-bearing.** With `distinct` on a broad query the engine stops counting exactly and
- * says so: `exhaustiveNbHits: false`. Measured, the grouped empty query with no location set reports
- * 181 where the true number of brands-plus-singletons is 4,554 — and the estimate even moves with
- * `hitsPerPage`. Pagination respects the estimate, so the board stays internally consistent, but
- * printing it as a fact would not be. `useStats` does not surface the flag, so it comes from `results`.
- *
- * `facetingAfterDistinct: true` makes the count exact and was rejected — see `grouping-toggle.tsx`.
- */
-function LiveReadout() {
-  const { nbHits, processingTimeMS } = useStats();
-  const { results } = useInstantSearch();
-  const estimated = results.exhaustiveNbHits === false;
-
-  return (
-    // `sm:order-last` is load-bearing: `sm:contents` on the wrapper above dissolves it into the header's
-    // flex row, which would otherwise put the readout before the search field on desktop.
-    <p className="shrink-0 font-mono text-xs tracking-[0.08em] text-amber uppercase sm:order-last">
-      {estimated && <span title="The engine reported this count as approximate">~</span>}
-      {nbHits.toLocaleString()} {nbHits === 1 ? 'result' : 'results'} · {processingTimeMS} ms
-    </p>
   );
 }

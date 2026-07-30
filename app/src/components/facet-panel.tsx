@@ -20,8 +20,12 @@ import type { ReactElement } from 'react';
  */
 export function FacetPanel({ title, children }: { title: string; children: ReactElement }) {
   return (
-    <section className="border-b border-hairline py-4 last:border-b-0 has-[.ais-RefinementList--noRefinement]:hidden has-[.ais-HierarchicalMenu--noRefinement]:hidden">
-      <h2 className="mb-2 font-mono text-[0.625rem] tracking-[0.08em] text-steel uppercase">{title}</h2>
+    // More space above the label than below it, which is the rhythm DESIGN.md asks for everywhere: the
+    // heading belongs to what follows it, not to what it follows.
+    <section className="border-t border-rule pt-5 pb-1 first:border-t-0 first:pt-0 has-[.ais-RefinementList--noRefinement]:hidden has-[.ais-HierarchicalMenu--noRefinement]:hidden">
+      <h2 className="mb-3 text-[0.6875rem] font-semibold tracking-[0.1em] text-ink uppercase">
+        {title}
+      </h2>
       {children}
     </section>
   );

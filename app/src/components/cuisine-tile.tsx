@@ -2,11 +2,17 @@ import { CuisinePictogram } from './cuisine-pictogram';
 import { cuisineVisual } from '../lib/cuisine-visuals';
 
 /**
- * The square that sits at the head of a board row, in place of a photograph.
+ * The cuisine symbol that sits at the head of an entry, in place of a photograph.
  *
- * Square rather than rounded, flat rather than shadowed, and sized off the row rather than the image
- * — it is a signage marker, not a thumbnail. The pictogram is drawn in Porcelain on the cuisine's
- * family colour, which is the highest-contrast pairing available and keeps the mark legible at 40px.
+ * A guide's symbol key: a single-weight drawn mark in graphite, on the paper. **No colored tile.**
+ * The previous system filled a 40px square with one of eight saturated cuisine colors, which put a
+ * column of confetti down the left edge of the results and fought the one accent the palette
+ * actually has. The mark carries the encoding perfectly well on its own, and the entry's meta line
+ * names the cuisine in words directly beside it — so the color was carrying nothing the reader did
+ * not already have twice.
+ *
+ * It inherits `currentColor`, which is what lets an entry tint its symbol on hover and lets the
+ * browse chips turn theirs to the accent when their cuisine is the applied refinement.
  */
 export function CuisineTile({
   group,
@@ -17,14 +23,11 @@ export function CuisineTile({
   size?: 'sm' | 'md';
   className?: string;
 }) {
-  const { mark, colorClass } = cuisineVisual(group);
-  const box = size === 'sm' ? 'size-8' : 'size-10';
-  const glyph = size === 'sm' ? 'size-5' : 'size-6';
+  const { mark } = cuisineVisual(group);
+  const glyph = size === 'sm' ? 'size-5' : 'size-7';
 
   return (
-    <span
-      className={`flex shrink-0 items-center justify-center ${box} ${colorClass} text-porcelain ${className}`}
-    >
+    <span className={`flex shrink-0 items-center justify-center ${className}`}>
       <CuisinePictogram mark={mark} className={glyph} />
     </span>
   );

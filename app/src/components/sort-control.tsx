@@ -16,7 +16,9 @@ import { indexName } from '../lib/search-client';
 export function SortControl() {
   return (
     <label className="flex items-center gap-2">
-      <span className="font-mono text-[0.625rem] tracking-[0.08em] text-steel uppercase">Sort</span>
+      <span className="shrink-0 text-[0.6875rem] font-semibold tracking-[0.1em] text-graphite uppercase">
+        Sort
+      </span>
       <SortBy
         items={[
           { value: indexName, label: 'Best match' },
@@ -26,7 +28,7 @@ export function SortControl() {
         ]}
         classNames={{
           select:
-            'min-h-11 rounded-sm border border-hairline bg-porcelain px-2 py-1 text-sm sm:min-h-9 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal',
+            'min-h-11 rounded-sm border border-rule-strong bg-card px-2.5 py-1 text-sm font-medium transition-colors duration-[120ms] hover:border-graphite focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-deep sm:min-h-9',
         }}
       />
     </label>

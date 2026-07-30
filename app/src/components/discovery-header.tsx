@@ -49,7 +49,7 @@ export function DiscoveryHeader() {
   }
 
   return (
-    <section className="mb-8 space-y-6" aria-label="Browse">
+    <section className="mb-9 space-y-7" aria-label="Browse">
       <CuisineChips />
       <MoodChips />
     </section>
@@ -95,9 +95,13 @@ function CuisineChips() {
             <button
               type="button"
               onClick={() => refine(item.value)}
-              className="flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-sm border border-hairline bg-porcelain py-1 pr-3 pl-1 text-sm hover:border-signal hover:text-signal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
+              className="group/chip flex min-h-11 shrink-0 snap-start items-center gap-2.5 rounded-sm border border-rule-strong bg-card px-3.5 text-sm font-medium transition-colors duration-[120ms] hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-deep"
             >
-              <CuisineTile group={item.value} size="sm" />
+              <CuisineTile
+                group={item.value}
+                size="sm"
+                className="text-graphite transition-colors duration-[120ms] group-hover/chip:text-brand-deep"
+              />
               {item.label}
             </button>
           </li>
@@ -141,7 +145,7 @@ function MoodChips() {
             <button
               type="button"
               onClick={() => refine(item.value)}
-              className="flex min-h-11 shrink-0 snap-start items-center rounded-sm border border-hairline bg-porcelain px-3 text-sm hover:border-signal hover:text-signal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
+              className="flex min-h-11 shrink-0 snap-start items-center rounded-sm border border-rule-strong bg-card px-3.5 text-sm font-medium transition-colors duration-[120ms] hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-deep"
             >
               {humanizeTag(item.label)}
             </button>
@@ -152,9 +156,11 @@ function MoodChips() {
   );
 }
 
-/** Tracked uppercase mono, with more space above than below it — the signage grammar for a section label. */
+/** Tracked uppercase, in ink, with more space above than below it — the guide's section label. */
 function SectionLabel({ children }: { children: string }) {
   return (
-    <h2 className="mb-3 font-mono text-[0.625rem] tracking-[0.08em] text-steel uppercase">{children}</h2>
+    <h2 className="mb-3 text-[0.6875rem] font-semibold tracking-[0.1em] text-ink uppercase">
+      {children}
+    </h2>
   );
 }

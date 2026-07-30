@@ -2,6 +2,8 @@ import { getAlgoliaFacets, getAlgoliaResults } from '@algolia/autocomplete-js';
 import type { AutocompleteSource } from '@algolia/autocomplete-js';
 import type { BaseItem } from '@algolia/autocomplete-core';
 
+import { geoQueryParameters } from './geo';
+import type { SearchCentre } from './geo';
 import { formatLocality } from './locality';
 import type { Restaurant } from './restaurant';
 import { indexName, searchClient } from './search-client';
@@ -35,17 +37,62 @@ export type AutocompleteActions = {
   applyFacet: (attribute: string, value: string) => void;
 };
 
+/**
+ * Where the dropdown searches from, read **at keystroke time rather than at creation time**.
+ *
+ * A getter rather than a value because the autocomplete instance is deliberately created once and
+ * never rebuilt — see `federated-search.tsx`. A plain `SearchCentre` argument would be captured in
+ * these closures on mount and the dropdown would go on searching from New York for the rest of the
+ * session, however many times the diner changed the location control. That failure is silent: the
+ * suggestions look perfectly reasonable, they are just for the wrong city.
+ */
+export type CentreReader = () => SearchCentre;
+
 /** A facet value as `getAlgoliaFacets` returns it. */
 type FacetItem = { label: string; count: number };
 
 /** Restaurants: the known-item path. Selecting one puts its name in the box and searches for it. */
-export function restaurantSource(actions: AutocompleteActions): AutocompleteSource<BaseItem> {
+export function restaurantSource(
+  actions: AutocompleteActions,
+  centre: CentreReader,
+): AutocompleteSource<BaseItem> {
   return {
     sourceId: 'restaurants',
     getItems({ query }) {
       return getAlgoliaResults<BaseItem>({
         searchClient,
-        queries: [{ indexName, params: { query, hitsPerPage: 5 } }],
+        queries: [
+          {
+            indexName,
+            params: {
+              query,
+              hitsPerPage: 5,
+              // Placed by the same centre as the board, for the reason in `geo.ts`: two surfaces
+              // answering one question from different cities is worse than either answer alone.
+              ...geoQueryParameters(centre()),
+              /**
+               * **Names only, and the geo parameters above are exactly why.**
+               *
+               * Geo is the second ranking criterion, so it runs *above* `attribute` — which means once
+               * a query is placed, a nearby match in any searchable attribute outranks a distant match
+               * in the name. The index makes `neighborhood,city,area,state` searchable, which is right
+               * for the board ("seafood portland" should work on text alone) and wrong here: measured
+               * from New York, "ruth" led with three restaurants in *Rutherford, NJ* — Cafe Matisse,
+               * Paisano's, Pink — before the first Ruth's Chris. Correct by the formula, useless in a
+               * dropdown whose one job is finding a restaurant by name.
+               *
+               * Restricting to `name` costs nothing that this dropdown was providing, because the
+               * federated design already covers the other intents: cuisine and city have their own
+               * sources below, and a neighborhood as famous as SoHo is in the restaurant names anyway
+               * ("Koi - Soho", "Sant Ambroeus SoHo" still lead the "soho" suggestions). Measured across
+               * eight test queries, this changed the result set for exactly two — "ruth", which it
+               * fixes, and "italian", which the Cuisine source answers better. Enter still searches
+               * everything: the board is unrestricted, so nothing is unreachable, only unsuggested.
+               */
+              restrictSearchableAttributes: ['name'],
+            },
+          },
+        ],
       });
     },
     getItemInputValue: ({ item }) => asRestaurant(item).name,
@@ -97,7 +144,21 @@ export function citySource(actions: AutocompleteActions): AutocompleteSource<Bas
   return facetSource({ sourceId: 'cities', attribute: 'city', title: 'City', actions });
 }
 
-/** Both facet sources differ only by which attribute they search, so they share one implementation. */
+/**
+ * Both facet sources differ only by which attribute they search, so they share one implementation.
+ *
+ * **These two are deliberately not placed by the diner's centre, and the reason is measured rather
+ * than assumed.** Sending the board's geo parameters here changes the returned facet values by
+ * nothing at all — `aroundRadius: "all"` keeps distance in the *ranking* and out of the *filtering*,
+ * and a facet search returns values ordered by count, not by rank. From New York, "por" returns
+ * `Portland (117) · Port Chester (2) · Port Jefferson (2) · La Porte (1)` with the geo parameters and
+ * without them, identically. Adding them would be dead code that looked like a feature.
+ *
+ * Making them genuinely local would take a real radius, and that is the wrong trade for both. The City
+ * source is *how a diner relocates* — from New York with a 50 km radius, "por" returns Port Chester and
+ * hides Portland, which breaks its only job. And a local cuisine count would stop matching the board:
+ * the dropdown would promise "American (198)" and open a board of 882.
+ */
 function facetSource({
   sourceId,
   attribute,

@@ -10,12 +10,12 @@ import { useBoard } from '../lib/board-context';
  * chose, and clicking shows the rest. That is the third pain point in the discovery notes answered
  * rather than demonstrated: a diner who searched a chain gets one row, then the branches.
  *
- * The dark Ink surface is spent here on purpose. DESIGN.md's One Board Rule reserves it for live
- * information and names chain platforms as one of the three places it is allowed, which is what makes
- * the marker read as part of the board rather than as another tag. The directional arrow is the design's
- * own platform motif, and it is only here because it now goes somewhere.
+ * The accent is spent here on purpose. DESIGN.md's One Accent Rule names a chain's location count as
+ * one of the four things OpenTable red is allowed to mark, because this is the one control on an entry
+ * that leads somewhere the diner cannot otherwise get to. The directional arrow is only here because
+ * it now goes somewhere.
  *
- * It leads the row's meta line rather than sitting beside the name. That was the second arrangement:
+ * It leads the entry's meta line rather than sitting beside the name. That was the second arrangement:
  * beside the name it took 90px from the one column that could least afford it, and the rows that carry a
  * marker are by definition the ones with the longest names — `McCormick & Schmick's Seafood - Pittsburgh
  * Downtown` lost its branch to make room, which is the exact information a diner searching a chain came
@@ -59,7 +59,7 @@ export function PlatformMarker({ brand, locations }: { brand: string; locations:
     <button
       type="button"
       onClick={showAllLocations}
-      className="flex shrink-0 items-center gap-1 rounded-sm bg-ink px-1.5 py-0.5 font-mono text-[0.625rem] tracking-[0.08em] text-amber uppercase hover:bg-signal-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
+      className="tabular flex shrink-0 items-center gap-1 rounded-sm border border-brand/40 bg-brand-wash px-2 py-0.5 text-xs font-semibold text-brand-deep transition-colors duration-[120ms] hover:border-brand-deep hover:bg-brand-deep hover:text-card focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-deep"
       aria-label={`Show all ${locations} ${brand} locations`}
     >
       {locations} locations <span aria-hidden="true">→</span>

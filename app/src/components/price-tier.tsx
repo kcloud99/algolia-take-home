@@ -2,7 +2,7 @@
  * Price as filled dollar glyphs.
  *
  * Always three glyphs wide, with the inactive ones dimmed rather than absent, so the column stays
- * aligned down the board — a price cell that changes width breaks the timetable read.
+ * aligned down the index — a price cell that changes width breaks the read.
  *
  * `price_tier` runs 2–4 rather than 1–3, because the source JSON never contains 1 and the pipeline
  * kept the source's numbering (see `docs/data-decisions.md` assumption 4). There are three bands, so
@@ -24,11 +24,15 @@ export function PriceTier({
   const filled = Math.min(GLYPHS, Math.max(1, tier - 1));
 
   return (
-    <p className={`w-[42px] shrink-0 font-mono text-sm ${className}`} title={band} aria-label={band}>
+    <span
+      className={`tabular shrink-0 text-sm font-semibold ${className}`}
+      title={band}
+      aria-label={band}
+    >
       <span aria-hidden="true">
-        <span>{'$'.repeat(filled)}</span>
-        <span className="text-hairline">{'$'.repeat(GLYPHS - filled)}</span>
+        <span className="text-ink">{'$'.repeat(filled)}</span>
+        <span className="text-rule-strong">{'$'.repeat(GLYPHS - filled)}</span>
       </span>
-    </p>
+    </span>
   );
 }

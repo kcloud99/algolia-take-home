@@ -5,7 +5,7 @@ become 5,000 Algolia records; the index configuration was measured rather than a
 InstantSearch front end serves the two diners in the discovery notes — the one who knows the
 restaurant name and cannot spell it, and the one who does not know what they want yet.
 
-**Live demo:** _added once the deploy is live_ · **Repo:** <https://github.com/kcloud99/algolia-take-home>
+**Live demo:** https://algolia-takehome-assessment.netlify.app/ · **Repo:** <https://github.com/kcloud99/algolia-take-home>
 
 ![The results board at 1440px — search, refinements, discovery chips, and one row per restaurant](docs/img/board-desktop.png)
 

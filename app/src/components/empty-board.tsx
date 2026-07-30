@@ -1,7 +1,7 @@
 import { useSearchBox } from 'react-instantsearch';
 
 /**
- * The zero-results state — "no departures" rather than a blank page.
+ * The zero-results state — an entry in the guide that says what to do next, rather than a blank page.
  *
  * This has a specific known case to serve. `fogodechao` returns nothing, and it is not a bug we can
  * settle in the index: Algolia splits a concatenated token into at most two words, so `meltingpot` and
@@ -9,20 +9,27 @@ import { useSearchBox } from 'react-instantsearch';
  * engine cannot rescue that query, so the interface has to — which is why the advice here is specific
  * and actionable rather than a shrug with a magnifying glass over it.
  *
- * Stop Red appears here and essentially nowhere else, which is what keeps it meaning something.
+ * Stop Red appears here and essentially nowhere else, which is what keeps it meaning something. It is
+ * spent on the label rather than on a rule or a panel: this is a dead end, not an error, and the page
+ * should not look alarmed about it.
+ *
+ * This is the one place the display size is used. Everywhere else DESIGN.md's Name-Dominates Rule gives
+ * the largest type to a restaurant, and here there are none — so the sentence that says so takes it.
  */
 export function EmptyBoard() {
   const { query, refine } = useSearchBox();
 
   return (
-    <section className="border-t-2 border-stop py-10" aria-label="No results">
-      <p className="font-mono text-[0.625rem] tracking-[0.08em] text-stop uppercase">No departures</p>
+    <section className="border-t border-ink py-12" aria-label="No results">
+      <p className="text-[0.6875rem] font-semibold tracking-[0.1em] text-stop uppercase">
+        No matches
+      </p>
 
-      <h2 className="mt-2 font-display text-2xl font-semibold">
+      <h2 className="mt-3 max-w-[20ch] text-[clamp(2rem,3.2vw,2.75rem)] leading-[1.05] font-semibold tracking-[-0.02em]">
         Nothing matched {query ? <>“{query}”</> : 'that search'}
       </h2>
 
-      <ul className="mt-4 max-w-[60ch] space-y-1.5 text-sm text-steel">
+      <ul className="mt-7 max-w-[62ch] space-y-3 text-[0.9375rem] leading-[1.55] text-graphite">
         <li>
           <strong className="font-semibold text-ink">Try fewer words.</strong> Searching a restaurant’s
           first word or two usually finds it faster than the full name.
@@ -41,7 +48,7 @@ export function EmptyBoard() {
         <button
           type="button"
           onClick={() => refine('')}
-          className="mt-6 min-h-11 rounded-sm bg-signal px-4 font-mono text-xs tracking-[0.08em] text-porcelain uppercase hover:bg-signal-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
+          className="mt-8 min-h-11 rounded-sm bg-brand-deep px-5 text-sm font-semibold text-card transition-colors duration-[120ms] hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-deep"
         >
           Clear search
         </button>

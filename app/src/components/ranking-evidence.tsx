@@ -35,7 +35,7 @@ export function RankingEvidence({ hit }: { hit: Hit<Restaurant> }) {
   const geoOrdinal = info.matchedGeoLocation ? info.geoDistance : null;
 
   return (
-    <dl className="order-8 basis-full overflow-x-auto border-l-2 border-amber bg-porcelain px-3 py-1.5 font-mono text-[0.625rem] whitespace-nowrap text-steel">
+    <dl className="tabular order-8 mt-1 basis-full overflow-x-auto rounded-sm border border-rule bg-card px-3 py-2 text-[0.6875rem] whitespace-nowrap text-graphite">
       <Criterion label="1 typo" value={info.nbTypos} />
       <Criterion
         label="2 geo"
@@ -64,8 +64,8 @@ export function RankingEvidence({ hit }: { hit: Hit<Restaurant> }) {
 function Criterion({ label, value }: { label: string; value: string | number }) {
   return (
     <span className="mr-4 inline-block">
-      <dt className="inline tracking-[0.08em] uppercase">{label}</dt>{' '}
-      <dd className="inline text-ink">{value}</dd>
+      <dt className="inline font-semibold tracking-[0.1em] uppercase">{label}</dt>{' '}
+      <dd className="inline font-medium text-ink">{value}</dd>
     </span>
   );
 }

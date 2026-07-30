@@ -16,10 +16,12 @@ import { indexName, searchClient } from './lib/search-client';
 import { useSearchCentre } from './lib/use-search-centre';
 
 /**
- * Searching 5,000 restaurants is a wayfinding problem — orientation and disambiguation. So the
- * results are a departure BOARD, the facets a signage PANEL, and a chain a PLATFORM: a bright cool
- * concourse, with a bounded dark board reserved for live information, one blue that owns every
- * interaction, and every number set in tabular mono so the columns align like a real timetable.
+ * A restaurant guide's index, on screen. Every result is a typeset ENTRY — score in the left margin,
+ * the restaurant's name the largest thing on the page, a drawn symbol for its cuisine — read down a
+ * paper ground with a single accent sampled from OpenTable's own mark. The guide is the one artifact
+ * in this category that ranks thousands of restaurants with no photography at all and makes them
+ * desirable anyway, which is exactly the constraint this dataset imposes: all 5,000 image URLs are
+ * dead. See `DESIGN.md`.
  *
  * The search root.
  *
@@ -79,21 +81,22 @@ export function App() {
           refinement would update the URL and change no results at all. */}
       <VirtualRefinement attribute="chain_name" />
 
-      <BoardStrip />
-      <RouteStrip
-        grouped={grouped}
-        onGroupedChange={setGrouped}
+      {/* `centre` goes down as well as into `<Configure>` above, because the search field's dropdown is
+          Autocomplete — a separate library issuing its own requests, which `<Configure>` cannot reach. */}
+      <BoardStrip
+        centre={centre}
         locationChoice={choice}
         onChooseLocation={choose}
         locationNotice={notice}
       />
+      <RouteStrip grouped={grouped} onGroupedChange={setGrouped} />
 
-      <div className="mx-auto flex max-w-[1240px] gap-8 px-4 py-6">
-        {/* The rail appears at `xl`, not `lg`, and the breakpoint was measured rather than picked. A
-            single-line board row needs 543px of fixed cells plus a readable name; at 1024px the rail
-            left the name column 137px wide, which is the same defect a phone had. Below `xl` the panel
-            lives in `FilterSheet` instead. */}
-        <aside className="hidden w-[280px] shrink-0 xl:block" aria-label="Refine results">
+      <div className="mx-auto flex max-w-[1180px] gap-10 px-4 py-7">
+        {/* The rail appears at `xl`, not `lg`, and the breakpoint was measured rather than picked. An
+            entry needs its fixed cells plus a readable name; at 1024px the rail left the name column
+            137px wide, which is the same defect a phone had. Below `xl` the rail lives in
+            `FilterSheet` instead. */}
+        <aside className="hidden w-[240px] shrink-0 xl:block" aria-label="Refine results">
           <SignagePanel />
         </aside>
 

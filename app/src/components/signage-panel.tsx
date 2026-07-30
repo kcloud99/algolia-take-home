@@ -46,35 +46,46 @@ function humanizeTagItems(items: RefinementListItem[]): RefinementListItem[] {
   return items.map((item) => ({ ...item, label: humanizeTag(item.label) }));
 }
 
+/**
+ * Ink rather than the accent, deliberately. DESIGN.md's One Accent Rule spends red on four things and
+ * "show more" is none of them — an unread control that is the loudest thing in the rail is exactly the
+ * inversion this redesign exists to fix.
+ */
+const SHOW_MORE =
+  'mt-3 min-h-11 text-[0.6875rem] font-semibold tracking-[0.1em] text-ink uppercase underline decoration-rule-strong underline-offset-4 transition-colors duration-[120ms] hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-deep xl:min-h-8';
+
 const FACET_CLASSES = {
-  list: 'space-y-0.5',
+  list: 'space-y-1',
   item: 'text-sm',
-  label: 'flex min-h-11 cursor-pointer items-center gap-2 xl:min-h-8',
-  checkbox:
-    'size-3.5 shrink-0 appearance-none border border-steel checked:border-signal checked:bg-signal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal',
-  labelText: 'min-w-0 flex-1 truncate',
-  count: 'font-mono text-xs text-steel',
-  selectedItem: 'font-medium text-signal',
-  showMore:
-    'mt-2 min-h-11 font-mono text-[0.625rem] tracking-[0.08em] text-signal uppercase hover:text-signal-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal',
+  label: 'flex min-h-11 cursor-pointer items-center gap-2.5 xl:min-h-8',
+  checkbox: 'facet-box',
+  labelText: 'min-w-0 flex-1 truncate text-graphite',
+  count: 'tabular text-xs text-graphite',
+  // The applied refinement is one of the four things the accent marks. It also goes to semibold, so
+  // the state survives for anyone who cannot separate the two colours. Scoped to the label rather than
+  // to every span, so the count beside it stays a neutral figure instead of turning red too.
+  selectedItem: 'font-semibold [&_.ais-RefinementList-labelText]:text-brand-deep',
+  showMore: SHOW_MORE,
   disabledShowMore: 'hidden',
-  noResults: 'text-sm text-steel',
+  noResults: 'text-sm text-graphite',
 };
 
 const LOCATION_CLASSES = {
-  list: 'space-y-0.5 text-sm',
-  childList: 'ml-2 border-l border-hairline pl-2',
-  link: 'flex min-h-11 items-center gap-2 xl:min-h-8 hover:text-signal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal',
+  list: 'space-y-1 text-sm',
+  childList: 'mt-1 ml-2 border-l border-rule pl-3',
+  link: 'flex min-h-11 items-center gap-2 text-graphite transition-colors duration-[120ms] hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-deep xl:min-h-8',
   label: 'min-w-0 flex-1 truncate',
-  selectedItem: 'font-medium text-signal',
-  count: 'font-mono text-xs text-steel',
-  showMore: FACET_CLASSES.showMore,
+  // Scoped to this item's own link, not to descendants: `selectedItem` also lands on every ancestor in
+  // the tree, and without the child combinator refining a neighborhood turned its whole city branch red.
+  selectedItem: 'font-semibold [&>a>.ais-HierarchicalMenu-label]:text-brand-deep',
+  count: 'tabular text-xs text-graphite',
+  showMore: SHOW_MORE,
   disabledShowMore: 'hidden',
 };
 
 export function SignagePanel() {
   return (
-    <div className="bg-porcelain px-4 py-2">
+    <div>
       <DynamicWidgets>
         <FacetPanel title="Cuisine">
           {/* 23 groups: enough to need a "show more", few enough not to need facet search. The precise
@@ -153,19 +164,34 @@ function RatingFilter({ attribute }: { attribute: string }) {
   const { items, refine } = useNumericMenu({ attribute, items: RATING_ITEMS });
 
   return (
-    <div className="space-y-0.5">
-      {items.map((item) => (
-        <label key={item.value} className="flex min-h-11 cursor-pointer items-center gap-2 text-sm xl:min-h-8">
-          <input
-            type="radio"
-            name={attribute}
-            checked={item.isRefined}
-            onChange={() => refine(item.value)}
-            className="size-3.5 shrink-0 appearance-none rounded-full border border-steel checked:border-4 checked:border-signal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
-          />
-          <span className={item.isRefined ? 'font-medium text-signal' : undefined}>{item.label}</span>
-        </label>
-      ))}
+    <div className="space-y-1">
+      {items.map((item, index) => {
+        /**
+         * The accent marks an *applied* refinement, and "Any rating" is the absence of one — it reports
+         * `isRefined` whenever nothing is selected, which is the default state of every arriving page.
+         * Rendering that in red put the loudest thing in the rail on the option that does nothing. The
+         * radio still shows which option is selected; only the colour is withheld.
+         */
+        const narrows = item.isRefined && index > 0;
+
+        return (
+          <label
+            key={item.value}
+            className="flex min-h-11 cursor-pointer items-center gap-2.5 text-sm xl:min-h-8"
+          >
+            <input
+              type="radio"
+              name={attribute}
+              checked={item.isRefined}
+              onChange={() => refine(item.value)}
+              className={`facet-radio ${index === 0 ? 'facet-radio--neutral' : ''}`}
+            />
+            <span className={narrows ? 'font-semibold text-brand-deep' : 'text-graphite'}>
+              {item.label}
+            </span>
+          </label>
+        );
+      })}
     </div>
   );
 }

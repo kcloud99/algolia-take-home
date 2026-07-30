@@ -36,7 +36,7 @@ export function RelevantSortNotice() {
   }
 
   return (
-    <p className="flex flex-wrap items-center gap-x-2 gap-y-1 border-l-2 border-amber bg-porcelain px-3 py-2 text-sm text-steel">
+    <p className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-sm border border-rule bg-card px-3.5 py-2.5 text-sm text-graphite">
       <span>
         {isRelevantSorted
           ? 'Sorted results hide the least relevant matches, so the count above can be higher than the list.'
@@ -46,7 +46,7 @@ export function RelevantSortNotice() {
         <button
           type="button"
           onClick={() => refine(isRelevantSorted ? 0 : undefined)}
-          className="font-mono text-[0.625rem] tracking-[0.08em] text-signal uppercase hover:text-signal-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
+          className="text-[0.6875rem] font-semibold tracking-[0.1em] text-brand-deep uppercase underline decoration-brand/40 underline-offset-4 transition-colors duration-[120ms] hover:decoration-brand-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-deep"
         >
           {isRelevantSorted ? 'See all results' : 'Show most relevant'}
         </button>

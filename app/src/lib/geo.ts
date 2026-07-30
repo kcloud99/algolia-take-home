@@ -1,3 +1,4 @@
+import type { SearchParamsObject } from 'algoliasearch/lite';
 import type { PlainSearchParameters } from 'algoliasearch-helper';
 import type { Hit } from 'instantsearch.js';
 
@@ -43,8 +44,14 @@ export const AROUND_PRECISION = [
   { from: 25000, value: 25000 }, // another city: 25 km rings, so quality orders the tail
 ];
 
+/** The four parameters that place a query. Everything else about a query is somebody else's business. */
+type GeoParameters = Pick<
+  SearchParamsObject,
+  'aroundLatLng' | 'aroundLatLngViaIP' | 'aroundRadius' | 'aroundPrecision'
+>;
+
 /**
- * The geo half of the search parameters, for `<Configure>`.
+ * Where a query searches from — for **any** query, not just the board's.
  *
  * These are query parameters rather than index settings on purpose: the centre changes per diner and
  * per session, and `distinct` and geo are the two things one index has to serve both personas with.
@@ -55,18 +62,18 @@ export const AROUND_PRECISION = [
  * three-restaurant market shows its three and then radiates outward — which is what graceful
  * degradation means here.
  *
- * `getRankingInfo` is **not** here, though the distance label needs it. It moved up to `App`, because a
- * second thing came to depend on it — the notice that says when nothing on the board is spelled the way
- * the diner typed it, which reads `nbTypos`. Requesting ranking evidence is an app-wide decision rather
- * than a geo detail, and tying it to the location control would have meant a notice that silently stopped
- * working when a diner chose "Anywhere in the US".
+ * **This is a shared function rather than part of `<Configure>` because Autocomplete is a separate
+ * library that issues its own requests.** `<Configure>` places the board and nothing else; the
+ * dropdown was searching the whole country from a board that was searching one metro, so typing
+ * "ruth" in New York offered Ruth's Chris in Honolulu. Anything that queries this index on the diner's
+ * behalf has to be placed by the same centre, or the two surfaces disagree in front of them.
  */
-export function geoSearchParameters(centre: SearchCentre): PlainSearchParameters {
+export function geoQueryParameters(centre: SearchCentre): GeoParameters {
   if (centre.kind === 'none') {
     return {};
   }
 
-  const around: PlainSearchParameters =
+  const around: GeoParameters =
     centre.kind === 'network'
       ? { aroundLatLngViaIP: true }
       : {
@@ -76,15 +83,26 @@ export function geoSearchParameters(centre: SearchCentre): PlainSearchParameters
               : `${centre.market.lat},${centre.market.lng}`,
         };
 
-  return {
-    ...around,
-    aroundRadius: 'all',
-    // `algoliasearch-helper`'s types still declare `aroundPrecision` as a single number; the graduated
-    // array has been part of the API for years and the engine applies it. Verified rather than
-    // assumed: `_rankingInfo.geoPrecision` comes back as 250 / 1000 / 5000 on the same page when the
-    // three-band form is sent, which is the engine reporting which band it used per record.
-    aroundPrecision: AROUND_PRECISION as unknown as number,
-  };
+  return { ...around, aroundRadius: 'all', aroundPrecision: AROUND_PRECISION };
+}
+
+/**
+ * The same parameters, for `<Configure>`.
+ *
+ * The cast is `algoliasearch-helper`'s fault rather than ours: its types still declare
+ * `aroundPrecision` as a single number, where the v5 client types the graduated array correctly. The
+ * array form has been part of the API for years and the engine applies it — verified rather than
+ * assumed: `_rankingInfo.geoPrecision` comes back as 1500 / 5000 / 25000 on the same page when the
+ * three-band form is sent, which is the engine reporting which band it used per record.
+ *
+ * `getRankingInfo` is **not** here, though the distance label needs it. It moved up to `App`, because a
+ * second thing came to depend on it — the notice that says when nothing on the board is spelled the way
+ * the diner typed it, which reads `nbTypos`. Requesting ranking evidence is an app-wide decision rather
+ * than a geo detail, and tying it to the location control would have meant a notice that silently stopped
+ * working when a diner chose "Anywhere in the US".
+ */
+export function geoSearchParameters(centre: SearchCentre): PlainSearchParameters {
+  return geoQueryParameters(centre) as PlainSearchParameters;
 }
 
 /**

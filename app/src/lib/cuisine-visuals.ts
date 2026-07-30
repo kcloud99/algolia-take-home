@@ -1,23 +1,23 @@
 /**
- * How a cuisine gets encoded visually: a colour family and a pictogram.
+ * How a cuisine gets encoded visually: a drawn pictogram, in the guide's symbol-key grammar.
  *
  * The source data has no photography at all — every one of the 5,000 `image_url` values redirects
  * to the same 2.2 KB placeholder. Rather than substitute stock photographs of food that belongs to
- * other restaurants, the board encodes cuisine directly, which is both honest and the thing
- * DESIGN.md actually asks for.
+ * other restaurants, the index encodes cuisine directly, which is both honest and the thing
+ * DESIGN.md asks for.
  *
- * Two levels, because one is not enough and 23 is too many:
+ * **Colour used to be the first level of this encoding and has been removed.** Each group also
+ * carried one of eight saturated "line" colours, filled into a 40px tile — which put a column of
+ * confetti down the left edge of the results and competed with the single accent the palette has.
+ * The mark alone distinguishes the groups, the entry's meta line names the cuisine in words
+ * directly beside it, and DESIGN.md's No-Confetti Rule now says so.
  *
- * - **Colour** is one of DESIGN.md's eight fixed line-bullet colours. Twenty-three distinguishable
- *   hues do not exist, so colour carries the *family* — the coarse "which part of the menu is this"
- *   signal a diner can scan down a column without reading.
- * - **The pictogram** distinguishes groups *within* a family. Japanese, Asian, Chinese, Thai and
- *   Vegetarian all read Jade; the mark is what separates them.
- *
- * That split is the whole reason the tile carries a mark rather than only a colour swatch.
+ * `family` survives as the grouping that decides which mark a new cuisine should borrow — Japanese,
+ * Asian, Chinese, Thai and Vegetarian are one family with five distinct marks — but it no longer
+ * resolves to a colour.
  */
 
-/** The eight line colours. Each maps 1:1 to a `--color-line-*` token in `index.css`. */
+/** The coarse grouping a mark belongs to. Kept as taxonomy; it no longer carries a colour. */
 export type CuisineFamily =
   | 'american'
   | 'italian'
@@ -52,21 +52,6 @@ export type CuisineMark =
   | 'skewer'
   | 'globe'
   | 'glass';
-
-/**
- * Literal Tailwind classes rather than a `bg-line-${family}` template, because Tailwind scans source
- * for complete class strings and never generates a utility it cannot see written out.
- */
-const FAMILY_CLASS: Record<CuisineFamily, string> = {
-  american: 'bg-line-american',
-  italian: 'bg-line-italian',
-  asian: 'bg-line-asian',
-  french: 'bg-line-french',
-  seafood: 'bg-line-seafood',
-  steak: 'bg-line-steak',
-  latin: 'bg-line-latin',
-  other: 'bg-line-other',
-};
 
 /**
  * All 23 `cuisine_group` values the pipeline emits, each assigned a family and a mark.
@@ -111,16 +96,11 @@ const CUISINE_VISUALS: Record<string, { family: CuisineFamily; mark: CuisineMark
 const UNKNOWN_CUISINE = { family: 'other', mark: 'globe' } as const;
 
 /**
- * Resolves a `cuisine_group` to its tile appearance.
+ * Resolves a `cuisine_group` to its symbol.
  *
  * Falls back rather than throwing, because the taxonomy belongs to the index: adding a cuisine group
- * upstream should degrade to a neutral tile, not break the results page.
+ * upstream should degrade to a neutral mark, not break the results page.
  */
-export function cuisineVisual(group: string): {
-  family: CuisineFamily;
-  mark: CuisineMark;
-  colorClass: string;
-} {
-  const visual = CUISINE_VISUALS[group] ?? UNKNOWN_CUISINE;
-  return { ...visual, colorClass: FAMILY_CLASS[visual.family] };
+export function cuisineVisual(group: string): { family: CuisineFamily; mark: CuisineMark } {
+  return CUISINE_VISUALS[group] ?? UNKNOWN_CUISINE;
 }
