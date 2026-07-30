@@ -84,20 +84,28 @@ chain-in-a-single-city, intent/mood, zero-result, and empty.
 Vite + React + TypeScript + Tailwind, with React InstantSearch v7. The design system is
 [`DESIGN.md`](../DESIGN.md) — "The Concourse Board" — and it is normative for anything visual.
 
-| Step | Deliverable |
-|---|---|
-| 3.1 | App shell wired to Algolia — working before pretty |
-| 3.1a | Cuisine encoding — drawn signage tiles instead of stock photography; must land before the cards below |
-| 3.2 | Restaurant card and results grid |
-| 3.3 | Refinements, sorting, and an always-visible summary of what is currently applied |
-| 3.4 | Federated autocomplete: restaurants, cuisines, cities, recent searches |
-| 3.5 | Location awareness, with a fallback chain that degrades gracefully |
-| 3.6 | Chain grouping toggle |
-| 3.7 | Discovery as the empty-query state of the board |
-| 3.8 | Mobile and touch pass |
-| 3.9 | Insights click and conversion events |
-| 3.10 | Map view — **cut**, see below |
-| 3.11 | "Why is this result here?" debug panel *(optional)* |
+| Step | Deliverable | |
+|---|---|---|
+| 3.1 | App shell wired to Algolia — working before pretty | ✅ |
+| 3.1a | Cuisine encoding — drawn signage tiles instead of stock photography; must land before the cards below | ✅ |
+| 3.2 | Restaurant card and results grid | ✅ |
+| 3.3 | Refinements, sorting, and an always-visible summary of what is currently applied | ✅ |
+| 3.4 | Federated autocomplete: restaurants, cuisines, cities, recent searches | ✅ |
+| 3.4a | Revert the hand-rolled facet lists to stock widgets — the "widgets first" rule below | ✅ |
+| 3.5 | Location awareness, with a fallback chain that degrades gracefully | ✅ |
+| 3.6 | Chain grouping toggle | ✅ |
+| 3.6a | The platform marker becomes the way into a brand's other locations | ✅ |
+| 3.7 | Discovery as the empty-query state of the board | ✅ |
+| 3.7a | Say when nothing on the board matched literally — the `michelin` affordance | ✅ |
+| 3.8 | Mobile and touch pass | ✅ |
+| 3.9 | Insights click and conversion events | ✅ |
+| 3.10 | Map view — **cut**, see below | ✂️ |
+| 3.11 | "Why is this result here?" debug panel *(optional — built)* | ✅ |
+
+Three smaller commits are not in the ladder because they are corrections rather than deliverables, and
+they are left in the history rather than squashed: `3.5a` brought four documents back in line with the
+geo parameters that measurement changed, `3.6b` stopped a facet panel drawing a heading over nothing,
+and `3.11a` fixed the discovery header appearing over a Rules-filtered board.
 
 **Three scope decisions taken at the start of the phase**, because the design brief and this plan
 disagreed and the disagreement was worth settling in writing rather than in code.
@@ -204,8 +212,14 @@ in sync.
 
 If time runs short, features are cut in this order: map view → relevance debug panel → mood
 tiles. Not cut under any circumstances: the mobile experience, the relevance testing record, the
-customer questions, and dashboard Support Access. *(The map view was cut at the start of Phase 3 —
-see the scope decisions above.)*
+customer questions, and dashboard Support Access.
+
+**How that turned out.** Only the first was cut, at the start of Phase 3 and for the reason in the scope
+decisions above. The relevance debug panel survived because by the time it came up it cost almost
+nothing: `getRankingInfo` was already requested on every query — the distance label and the
+no-exact-match notice had both come to depend on it — so the panel renders data the response already
+carried. It is also the artefact that best answers the one question an Elasticsearch team asks, which is
+not *what* ranked but *how*. The mood tiles shipped as half of the discovery arrival state.
 
 ---
 

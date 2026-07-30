@@ -89,7 +89,9 @@ export function FederatedSearch() {
        * rendered on desktop where an inline field belongs.
        *
        * Below 680px detached is the behaviour we want — a full-screen search overlay is better on a
-       * phone than a dropdown pinned under a sticky header. Styling that modal belongs to step 3.8.
+       * phone than a dropdown pinned under a sticky header. That modal is styled in `index.css` under
+       * "Detached mode" — its class names are a different set from the inline field's, which is why it
+       * rendered as unstyled body text next to a bare magnifier until somebody looked at a phone.
        */
       detachedMediaQuery: '(max-width: 680px)',
       // Deliberately not autofocused: on a phone this opens the keyboard, and in Autocomplete's
