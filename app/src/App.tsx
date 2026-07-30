@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { Configure, InstantSearch } from 'react-instantsearch';
 
 import { BoardStrip } from './components/board-strip';
+import { DiscoveryHeader } from './components/discovery-header';
 import { RelevantSortNotice } from './components/relevant-sort-notice';
 import { ResultsBoard } from './components/results-board';
 import { RouteStrip } from './components/route-strip';
@@ -78,6 +79,11 @@ export function App() {
 
         <main className="min-w-0 flex-1">
           <RelevantSortNotice />
+
+          {/* Discovery is a state of this board rather than a route: it draws two chip rows above the
+              same results and nothing else changes. It renders itself only on arrival. */}
+          <DiscoveryHeader />
+
           {/* Only the board needs to know how it is arranged, or to change it — see
               `grouping-context.tsx` for why this is a context rather than a prop. */}
           <GroupingProvider grouped={grouped} ungroup={ungroup}>
