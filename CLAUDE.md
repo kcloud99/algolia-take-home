@@ -79,7 +79,7 @@ Raw: `project-files/dataset/restaurants_list.json` (5,000 records) and `restaura
 | **Phones are dirty** | **50.6%** (2,532) of JSON `phone` values carry a trailing `x` fragment — 2,464 bare `x`, 68 with extension digits. **95** genuinely disagree with the CSV on the 10-digit number (160 if extension digits are counted as disagreement). The CSV is *cleaner but not clean*: **67** values end in a stray ` e` | Use CSV `phone_number`, keeping only the leading `(NNN) NNN-NNNN` |
 | **Cuisine taxonomy is messy** | 114 `food_type` values incl. composites (`Creole / Cajun / Southern`, `Global, International`) and near-dupes (`American` 865 / `Contemporary American` 649; `Steak` 123 / `Steakhouse` 328) | Split into multi-value `cuisines[]` + a `cuisine_group` rollup |
 | **Neighborhoods are ambiguous** | 1,062 distinct; top value is **`Downtown` (185)** across many cities. 6 values also arrive whitespace-padded (`" Noblesville"`), which would split one neighborhood into two facet values | Hierarchical facet `area > city > neighborhood`; trim every CSV field on load |
-| **Geo coverage is lopsided** | All 5,000 US with valid `_geoloc`. NY 1,086 · CA 722 · TX 433 · CO 360 · **OR 193** — but **IL 3 · WA 3**. No Chicago, no Seattle | "Near me" must degrade gracefully. `aroundRadius: "all"`. Default to a dense market |
+| **Geo coverage is lopsided** | All 5,000 US with valid `_geoloc`. By state: NY 1,086 · CA 722 · TX 433 · CO 360 · **OR 193** — but **IL 3 · WA 3**. No Chicago, no Seattle | "Near me" must degrade gracefully. `aroundRadius: "all"`. Default to New York (695 city / 1,414 metro). Demo degradation with **Fayetteville / NW Arkansas (3)** — *not* Chicago, which has no records at all; the 3 IL ones are Moline and Rock Island, filed under the `Iowa` area |
 | **Names are punctuation-heavy** | 942 apostrophes, 1,118 hyphens, 438 ampersands, 59 accented (`Wallsé`, `Tía Pol`, `Lüke`) | All match unaided — `separatorsToIndex` measured and dropped (`index-design.md` §8). Diacritic normalization is a free demo win |
 | Clean fields | `dining_style` 4 values · `price_range` 3 values · `payment_options` 9 (long tail: `Cash Only` = 7) · 62 ZIP+4 to normalize | Straightforward |
 
@@ -102,10 +102,13 @@ The ten things that must survive every session. Depth in `docs/kb/algolia-core.m
 3. **`customRanking` only breaks ties — it does not boost.** And if its first attribute has
    near-unique values, nothing after it ever fires. **Round and bucket deliberately** so records
    tie and later signals get to speak.
-4. **Geo is criterion 2, so it eats everything below it.** Default granularity is 10 m, which makes
-   it a strict distance sort. Without `aroundPrecision`, our custom ranking is inert. Bucketing
+4. **Geo is criterion 2, so it eats everything below it.** Default granularity is metre level, which
+   makes it a strict distance sort. Without `aroundPrecision`, our custom ranking is inert. Bucketing
    distance is what turns "nearest" into "nearby AND good." **This is our headline relevance
-   decision.**
+   decision.** Shipped as `1500 / 5000 / 25000` m — measured, because the 250 m first bucket the
+   design specified performs identically to no bucketing in a dense market. And
+   `_rankingInfo.geoDistance` is the bucket *ordinal*, not a distance: display
+   `matchedGeoLocation.distance`.
 5. **Don't reorder the default `ranking` array casually.** Legit reasons: `asc()`/`desc()` at the
    top for a standard replica. "One query looked wrong" is not a reason.
 6. **`objectID` must be a string; `_geoloc` lat/lng must be numbers.** Strings in `_geoloc` fail

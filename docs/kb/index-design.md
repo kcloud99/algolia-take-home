@@ -319,14 +319,16 @@ strictly-cheapest-first. Acceptable here; worth naming out loud.
 
 ## 4. Geo parameters (query-time, via `<Configure>`)
 
+As shipped, in `app/src/lib/geo.ts`:
+
 ```jsonc
 {
-  "aroundLatLng": "45.5152,-122.6784",
+  "aroundLatLng": "40.7562,-73.9840",
   "aroundRadius": "all",
   "aroundPrecision": [
-    { "from": 0,     "value": 250 },
-    { "from": 2000,  "value": 1000 },
-    { "from": 10000, "value": 5000 }
+    { "from": 0,     "value": 1500 },
+    { "from": 5000,  "value": 5000 },
+    { "from": 25000, "value": 25000 }
   ],
   "getRankingInfo": true
 }
@@ -334,16 +336,38 @@ strictly-cheapest-first. Acceptable here; worth naming out loud.
 
 - **`aroundRadius: "all"`** — no hard cutoff. Essential given the coverage skew: Illinois has 3
   records and Washington has 3. A fixed radius returns an empty page in most of the country.
-- **`aroundPrecision` graduated** — 250 m buckets while you're walking, 5 km buckets once you're
+- **`aroundPrecision` graduated** — 1.5 km buckets while you're walking, 25 km buckets once you're
   choosing between metros. Without this, geo (criterion 2) strict-sorts by distance and our entire
   custom ranking is inert. **This is the headline relevance decision of the build.**
-- **`getRankingInfo`** — gives `_rankingInfo.geoDistance` for the "0.4 mi away" label and for the
-  debug panel.
+- **`getRankingInfo`** — gives `_rankingInfo.matchedGeoLocation.distance` for the "0.4 mi away" label,
+  and `geoDistance` for the debug panel. **They are different numbers** — see below.
 
-**Fallback chain** — browser geolocation → `aroundLatLngViaIP` → explicit city picker → default
-market. `aroundLatLngViaIP` is IPv4-only and unreliable on VPN/localhost, so the city picker
-isn't a nicety, it's the load-bearing fallback. Default to Portland (117 city / 197 metro) or
-NYC (695 / 1,414).
+**The bucket sizes were measured, and the measurement replaced the ones this section used to
+specify** (250 / 2,000 / 10,000 thresholds at 250 / 1,000 / 5,000 m). Against the live index those
+returned *the same ten restaurants as no bucketing at all* from New York: 250 m is one Midtown block,
+so the records inside it never tie and geo still decides the page. Widening the first band to 1.5 km —
+a 15-to-20 minute walk — moves the top ten's mean adjusted rating from 4.16 to 4.56. The coarse outer
+bands are kept because they are what orders a sparse market's tail by quality rather than by raw
+distance. Full evidence, seven configurations across two markets, in
+[`relevance-testing.md`](../relevance-testing.md).
+
+**`geoDistance` is the bucket ordinal, not a distance.** Once `aroundPrecision` is set,
+`_rankingInfo.geoDistance` reports the value the geo criterion sorted on: from New York with the
+shipped buckets, the Pittsburgh Ruth's Chris — 509 km away — comes back as `10099`. Any UI printing it
+as a distance says "6 mi" beside a restaurant in another state. `matchedGeoLocation.distance` stays the
+true distance under every bucketing tested, agreeing with an independent haversine check to within
+0.1%.
+
+**Fallback chain** — the design here was browser geolocation → `aroundLatLngViaIP` → explicit city
+picker → default market. What shipped is shorter, and `app/src/lib/use-search-centre.ts` carries the
+reasoning: an already-granted browser position → New York, with the network estimate, eight markets and
+"no location" all offered explicitly in the control. Nothing prompts for permission on load. The IP
+step is offered rather than automatic because Algolia documents it as IPv4-only and VPN-unreliable, so
+a silent network guess can relocate the board without saying so. The fourth link turned out to be
+unnecessary: with `aroundRadius: "all"` no centre ever produces an empty board, so there is no failure
+for a default market to rescue. New York is the default anchor — 695 city, 1,414 metro, 1,086 in the
+state — because it is the densest market in the data and it makes every figure in these documents
+reproducible from the deployed link.
 
 ---
 

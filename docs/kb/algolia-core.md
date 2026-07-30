@@ -45,7 +45,7 @@ The `ranking` setting. Default, exactly:
 | # | Criterion | What it sorts by | Notes |
 |---|---|---|---|
 | 1 | **typo** | Fewest typos first | Exact → 1 typo → 2 typos. |
-| 2 | **geo** | Distance, nearest first | Only active when a geo param is set. Default granularity 10 m — tune with `aroundPrecision`. |
+| 2 | **geo** | Distance, nearest first | Only active when a geo param is set. Granularity defaults to metre level — tune with `aroundPrecision`. |
 | 3 | **words** | Most matching optional words first | Only active when `optionalWords` / `removeWordsIfNoResults: allOptional` is in play. Counts *distinct* query words matched, not term frequency. |
 | 4 | **filters** | Most matching `optionalFilters` first | Zero matched filters scores 0. Scores tunable via filter scoring. |
 | 5 | **proximity** | Query words closest together first | "George Clooney" (distance 1) beats "George Timothy Clooney" (distance 2). Capped by `minProximity`. |
@@ -258,13 +258,15 @@ Multiple positions per record (a chain with many branches in ONE record) is an a
 | `minimumAroundRadius` | filter | Floor on the auto-computed radius. Useful in dense areas. |
 | `insideBoundingBox` | filter only | Rectangle. Does **not** affect ranking. |
 | `insidePolygon` | filter only | Polygon. Does **not** affect ranking. Ignored if bounding box is also set. |
-| `getRankingInfo: true` | debug | Returns `matchedGeoLocation` + distance per hit. Use this to *prove* tuning worked. |
+| `getRankingInfo: true` | debug | Returns `matchedGeoLocation` + distance per hit. Use this to *prove* tuning worked. Read the **distance to display** from `matchedGeoLocation.distance`, not from `geoDistance` — see below. |
 
 ### `aroundPrecision` — the high-leverage setting
 
-Default geo granularity is **10 m**, which means the geo criterion is effectively a strict
-distance sort. Since geo is criterion 2, everything below it — proximity, attribute, exact, and
-all your custom ranking — is dead. You get "nearest," not "best nearby."
+Algolia's reference gives the default as **10 m**; measured against a live index,
+`_rankingInfo.geoPrecision` comes back as **1** and `geoDistance` equals the true distance to the
+metre. Either way it is metre level, which means the geo criterion is effectively a strict distance
+sort. Since geo is criterion 2, everything below it — words, proximity, attribute, exact, and all your
+custom ranking — is dead. You get "nearest," not "best nearby."
 
 Setting `aroundPrecision: 2000` buckets all records within the same 2 km ring as **tied** on
 geo, so the remaining criteria decide the order inside each ring. The result is
@@ -274,18 +276,31 @@ It also accepts a graduated array — tight buckets close in, loose buckets far 
 
 ```json
 "aroundPrecision": [
-  { "from": 0,     "value": 250 },
-  { "from": 2000,  "value": 1000 },
-  { "from": 10000, "value": 5000 }
+  { "from": 0,     "value": 1500 },
+  { "from": 5000,  "value": 5000 },
+  { "from": 25000, "value": 25000 }
 ]
 ```
 
-Read: within 2 km use 250 m buckets; from 2–10 km use 1 km buckets; beyond that 5 km. This is
-the correct default for "restaurants near me" — precision matters when you're walking, not when
-you're deciding between neighborhoods.
+Read: within 5 km use 1.5 km buckets; from 5–25 km use 5 km buckets; beyond that 25 km.
+
+**Size the first bucket to contain a choice, not a block.** This is the part that is easy to get
+wrong, and we did: an earlier version of this note recommended a 250 m first bucket, which in a dense
+market performs identically to no bucketing at all — 250 m is one Midtown block, and a handful of
+records do not tie. The first bucket has to be wide enough that quality has something to sort. 1.5 km
+is a 15-to-20 minute walk, and it is where the measured lift appeared. Evidence, for our dataset, in
+[`../relevance-testing.md`](../relevance-testing.md).
+
+Coarse *outer* bands are what the graduation actually buys over a single flat bucket: distant records
+tie with each other, so quality orders them instead of raw distance doing it.
 
 **Pair with `aroundRadius: "all"`** so sparse markets degrade to "here's the nearest thing,
 even if it's 40 miles away" instead of an empty result set.
+
+**`geoDistance` is not a distance once you bucket.** With `aroundPrecision` set it reports the bucket
+ordinal the criterion sorted on — a record 509 km away came back as `10099` under the array above.
+Display `matchedGeoLocation.distance`, which stays the true value; keep `geoDistance` for explaining
+the ranking.
 
 ---
 

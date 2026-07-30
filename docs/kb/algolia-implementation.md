@@ -180,8 +180,21 @@ Two distinct patterns — don't mix them up:
   *filter*; it does **not** rank by distance. This is "search as I move the map."
 
 To display distance, set `getRankingInfo: true` via `Configure` and read
-`hit._rankingInfo.geoDistance` (meters). Cleaner than recomputing haversine client-side, and it
-reports the distance the *engine* used — which is the number you want when explaining ranking.
+`hit._rankingInfo.matchedGeoLocation.distance` (meters). Cleaner than recomputing haversine
+client-side, and it is still the engine's own number.
+
+**Not `geoDistance`** — this note used to say otherwise and it was wrong. As soon as
+`aroundPrecision` is set, `geoDistance` becomes the *bucket ordinal* the geo criterion sorted on, not
+a distance: with graduated buckets, a record 509 km away reported `geoDistance: 10099`. Printing that
+puts "6 mi" beside a restaurant in another state. `matchedGeoLocation.distance` stays true under every
+bucketing we tested (haversine agreement within 0.1%); keep `geoDistance` for a "why is this result
+here?" panel, where the ranking key is exactly what you want to show.
+
+**Two typing gaps to expect** if you write this in TypeScript. `algoliasearch-helper` declares
+`aroundPrecision?: number`, so the graduated array — which the API reference documents and the engine
+applies — needs a cast at the one place you build the parameters. And a `Hits` `hitComponent` receives `Hit<T>`, not `T`;
+`_rankingInfo` lives on the wrapper, so a component typed against your own record shape will not see
+it.
 
 ---
 

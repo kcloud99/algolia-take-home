@@ -218,7 +218,7 @@ conversation with OpenTable, not papered over in the demo.
 
 ## 4. Which attributes we indexed, and what each one does
 
-35 fields per record. Largest record is 1,281 bytes, mean 1,099 — comfortably inside the 10 KB
+34 fields per record. Largest record is 1,236 bytes, mean 1,055 — comfortably inside the 10 KB
 limit, with room to enrich further.
 
 | Purpose | Attributes |

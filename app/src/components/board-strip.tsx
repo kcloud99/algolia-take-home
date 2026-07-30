@@ -11,9 +11,8 @@ import { FederatedSearch } from './federated-search';
  *
  * Sticky, because the search field is the one control that must never be more than a glance away.
  *
- * `SearchBox` rather than a hook-built input: it ships the reset button, the ARIA wiring and the
- * debounce, and step 3.4 replaces the whole thing with Autocomplete anyway. The submit button is
- * hidden because results arrive as you type, so there is nothing to submit.
+ * The field itself is `FederatedSearch` — Autocomplete, which owns the input and must be the only thing
+ * that does. `SearchBox` stood here until step 3.4 and was removed rather than kept alongside it.
  */
 export function BoardStrip() {
   return (
