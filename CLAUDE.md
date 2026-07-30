@@ -36,8 +36,9 @@ are unusual enough that guessing produces confident, wrong code.
 | `docs/kb/algolia-core.md` | Ranking formula, settings catalogue, typo tolerance, geo, faceting, distinct, replicas, synonyms, Rules, Insights, limits, and a relevance-debugging playbook |
 | `docs/kb/index-design.md` | Our actual record schema, every derived field with its rationale, the full index settings JSON, synonyms, Rules, geo params |
 | `docs/kb/algolia-implementation.md` | algoliasearch **v5** client API, React InstantSearch v7, Autocomplete, geo UI, Insights events, and 12 gotchas |
-| `docs/relevance-testing.md` | *(to be written during the build)* Test queries with before/after observations |
-| `docs/data-decisions.md` | *(to be written during the build)* Join, transforms, assumptions |
+| `docs/relevance-testing.md` | Test queries with before/after observations, and what is still wrong |
+| `docs/data-decisions.md` | The join, every transform, every derived field, every assumption |
+| `docs/approach.md` | The submission narrative — the argument over the top of the two evidence docs |
 
 ---
 
