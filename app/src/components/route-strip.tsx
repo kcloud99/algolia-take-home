@@ -1,4 +1,9 @@
-import { ClearRefinements, CurrentRefinements, useCurrentRefinements } from 'react-instantsearch';
+import {
+  ClearRefinements,
+  CurrentRefinements,
+  useCurrentRefinements,
+  useInstantSearch,
+} from 'react-instantsearch';
 import type { CurrentRefinementsConnectorParamsItem } from 'instantsearch.js/es/connectors/current-refinements/connectCurrentRefinements';
 
 import { FilterSheet } from './filter-sheet';
@@ -98,6 +103,8 @@ export function RouteStrip({
   locationNotice: string | null;
 }) {
   const { items } = useCurrentRefinements();
+  const { indexUiState } = useInstantSearch();
+  const typedQuery = (indexUiState.query ?? '').trim();
 
   return (
     <div className="border-b border-hairline bg-concourse">
@@ -117,8 +124,12 @@ export function RouteStrip({
               />
             </>
           ) : (
+            /* "No filters applied" was a false statement on two of the demo queries. The intent Rules
+               apply a `filters` string rather than a facet refinement, so `romantic` and `cheap eats`
+               genuinely are filtered and produce no chip to say so. Naming the query instead is true in
+               every case, and more use than a claim about filters nobody set. */
             <p className="font-mono text-[0.625rem] tracking-[0.08em] text-steel uppercase">
-              All restaurants · no filters applied
+              {typedQuery === '' ? 'All restaurants' : `Results for “${typedQuery}”`}
             </p>
           )}
         </div>

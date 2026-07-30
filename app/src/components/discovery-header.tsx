@@ -1,4 +1,4 @@
-import { useCurrentRefinements, useRefinementList, useStats } from 'react-instantsearch';
+import { useCurrentRefinements, useInstantSearch, useRefinementList } from 'react-instantsearch';
 
 import { CuisineTile } from './cuisine-tile';
 import { humanizeTag } from '../lib/labels';
@@ -18,6 +18,11 @@ import { humanizeTag } from '../lib/labels';
  * **Shown only on arrival** — an empty query with nothing refined. Once a diner has typed or refined, they
  * have a direction, and a row of alternatives above their results is clutter competing with the signage
  * panel that already offers the same values.
+ *
+ * "Empty" means the query the *diner* typed, read from `indexUiState`, not the one the engine ran. Those
+ * differ, and reading the wrong one was a real bug: the intent Rules strip their trigger words, so
+ * `romantic` reaches Algolia as `""` plus a `vibe_tags` filter. `useStats().query` reported empty and this
+ * header appeared over a mood-filtered board, offering the diner a way in to a journey they had started.
  */
 
 /**
@@ -32,10 +37,12 @@ import { humanizeTag } from '../lib/labels';
 const CUISINE_CHIPS = 8;
 
 export function DiscoveryHeader() {
-  const { query } = useStats();
+  const { indexUiState } = useInstantSearch();
   const { items: refinements } = useCurrentRefinements();
 
-  const isArrival = query.trim() === '' && refinements.length === 0;
+  const typedQuery = indexUiState.query ?? '';
+
+  const isArrival = typedQuery.trim() === '' && refinements.length === 0;
 
   if (!isArrival) {
     return null;
