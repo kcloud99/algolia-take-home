@@ -15,12 +15,16 @@ import type { Restaurant } from '../lib/restaurant';
  *
  * The order runs quality → cuisine → identity → price → volume → action, so the two signals a diner
  * uses to reject a row fast sit at the left edge where the eye already is.
+ *
+ * Rendered as the `hitComponent` of the `Hits` widget, which owns the list and the `<li>` around each
+ * row — so this returns the row's contents, and the row's own layout classes live on the widget's
+ * `item` class name.
  */
 export function BoardRow({ hit }: { hit: Restaurant }) {
   const locality = formatLocality(hit);
 
   return (
-    <li className="flex items-center gap-4 border-b border-hairline py-3">
+    <>
       <RatingGauge corrected={hit.bayesian_rating} raw={hit.stars_count} />
 
       <CuisineTile group={hit.cuisine_group} />
@@ -50,6 +54,6 @@ export function BoardRow({ hit }: { hit: Restaurant }) {
       >
         Reserve <span aria-hidden="true">→</span>
       </a>
-    </li>
+    </>
   );
 }

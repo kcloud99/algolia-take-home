@@ -91,9 +91,21 @@
     outline-offset: 2px;
   }
 
-  .aa-Input {
+  /**
+   * The growing element is the *wrapper*, not the input.
+   *
+   * Autocomplete's structure is `.aa-Form > .aa-InputWrapperPrefix + .aa-InputWrapper > .aa-Input`, so
+   * `flex: 1` on the input only grows it inside its wrapper — and the wrapper sizes to content. The
+   * field measured 168px inside a 957px box: the visible border was full width, the placeholder was
+   * clipped mid-word, and clicking the right-hand four-fifths of the box did not focus anything.
+   */
+  .aa-InputWrapper {
     flex: 1;
     min-width: 0;
+  }
+
+  .aa-Input {
+    width: 100%;
     padding-block: calc(var(--spacing) * 2);
     color: var(--color-ink);
   }

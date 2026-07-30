@@ -116,6 +116,36 @@ disagreed and the disagreement was worth settling in writing rather than in code
    dropdown that spans restaurants, cuisines and cities earns its place. It is also the first thing
    to trade if hours run short — typo tolerance already lands `ruths cris` without it.
 
+### Widgets first; hooks only where the library leaves a gap
+
+Added after step 3.4, when the balance had drifted the wrong way.
+
+The frontend uses the stock InstantSearch widgets — `InstantSearch`, `Configure`, `DynamicWidgets`,
+`RefinementList`, `HierarchicalMenu`, `Hits`, `Pagination`, `SortBy`, `CurrentRefinements`,
+`ClearRefinements` — customised through their `classNames` props. Custom rendering is reserved for
+three cases, and each has to earn it:
+
+| Case | Why |
+|---|---|
+| **The widget does not exist** | `react-instantsearch@7.41` ships no `NumericMenu`, no `RelevantSort` and no `useRelevantSort`. The rating filter uses `useNumericMenu`; the Relevant Sort notice uses `useConnector` with `connectRelevantSort` from `instantsearch.js`. |
+| **There is no widget for the job** | Reading the query to write empty-state copy, or the result count and timing for the board readout, is what `useSearchBox` and `useStats` are for. |
+| **Autocomplete** | A separate library whose documented contract is that you render all the markup. There are no prebuilt UI widgets to opt out of. |
+
+**What this reversed.** An earlier version of the facet rail rendered `RefinementList` and
+`HierarchicalMenu` from their hooks — 156 lines of hand-written facet UI — to put thousands
+separators in the counts, which the widgets render raw (`1697`). That is a bad trade twice over: the
+brief explicitly scores avoiding over-engineering, and "I reimplemented the refinement list so the
+counts had commas" is a poor answer to a customer asking why they should adopt a library that
+already solves disjunctive facet counts, URL state, and keyboard and ARIA behaviour. The widgets are
+back and the counts are unformatted.
+
+**The related lesson, from the same step.** Autocomplete's classic theme was skipped because the
+design language is signage rather than the library's rounded default. Three defects followed, because
+that stylesheet carries *structural* rules and not only appearance: `position: absolute` on the
+panel, the flex chain that lets the input fill its form, and the CSS variable its
+`detachedMediaQuery` default reads from. Opting out of a stylesheet means replacing what it *did*,
+not just what it looked like.
+
 ### Phase 4 — Deliverables
 
 | Step | Deliverable |
