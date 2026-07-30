@@ -1,7 +1,6 @@
 import { deriveChainFields } from './chain.js';
 import type { CuisineGroup } from './cuisine.js';
 import { deriveCuisineFields } from './cuisine.js';
-import { deriveImageUrl } from './image.js';
 import { deriveLocationFields } from './location.js';
 import { normalizeScalars } from './normalize-scalars.js';
 import type { PriceTier } from './normalize-scalars.js';
@@ -62,7 +61,9 @@ export type RestaurantRecord = {
   phone_e164: string;
   reserve_url: string;
   mobile_reserve_url: string;
-  image_url: string;
+  // No image field. Every one of the 5,000 source `image_url` values redirects to the same 2.2 KB
+  // placeholder, so there is nothing to carry — and the app draws a cuisine tile rather than
+  // substitute a stock photograph of a restaurant that is not this one.
   payment_options: string[];
   cash_only: boolean;
 };
@@ -120,7 +121,6 @@ export function buildRecord(joined: JoinedRestaurant, context: RecordContext): R
     phone_e164: scalars.phone_e164,
     reserve_url: json.reserve_url,
     mobile_reserve_url: json.mobile_reserve_url,
-    image_url: deriveImageUrl(cuisine.cuisine_group, objectID),
     payment_options: json.payment_options,
     // Only 7 restaurants, but it is the one payment fact that changes whether you can eat there.
     cash_only: json.payment_options.includes('Cash Only'),

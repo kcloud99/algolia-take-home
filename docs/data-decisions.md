@@ -79,7 +79,7 @@ That costs nothing and turns an invisible data problem into a countable one.
 
 ## 3. What we derived
 
-Nine fields that do not exist in the source data. Each is one small function, and each earns its
+Eight fields that do not exist in the source data. Each is one small function, and each earns its
 place by answering a specific need from the discovery notes.
 
 ### `chain_name`, `location_label`, `is_chain`, `chain_location_count`
@@ -187,32 +187,32 @@ vibe, and inventing one for it would make all six tags meaningless.
 The build enforces that no tag covers more than 40% or less than 1% of the index — a tag on
 two-fifths of the data distinguishes nothing, and a tag under 1% is a dead facet value.
 
-### `image_url`
+### Imagery — the field we removed
 
-Every one of the 5,000 source URLs redirects to the same 2.2 KB generic placeholder. There is no
-usable photography in this dataset at all.
+**Every one of the 5,000 `image_url` values redirects to the same 2.2 KB generic placeholder.**
+There is no usable photography in this dataset at all.
 
-The pipeline emits a deterministic path per record — a cuisine-group slug plus a stable hash of
-`objectID`, so a restaurant keeps the same asset across rebuilds, where random assignment would
-reshuffle the grid on every reindex and read as a bug.
+The record carries **no image field**, and arriving there took two passes worth recording.
 
-**What fills that slot changed during the app phase, and the reasoning is worth keeping.** The
-original plan was to source ~62 cuisine-keyed photographs and bundle them locally rather than
-hotlink, so a live demo could not be rate-limited mid-presentation. Step 3.1a replaced them with
-**drawn signage tiles**: one geometric pictogram per cuisine group, on that group's line colour.
+The first plan was to substitute a small set of cuisine-keyed stock photographs, bundled locally
+rather than hotlinked so a live demo could not be rate-limited mid-presentation. The pipeline emitted
+a deterministic path per record — a cuisine slug plus a stable hash of `objectID`, so a restaurant
+kept the same asset across rebuilds, where random assignment would reshuffle the grid on every
+reindex and read as a bug.
 
-Two reasons. It is more honest — a stock photograph of somebody else's steak, sitting where a
-restaurant's own photo should be, is the one element on screen pretending to be data. And it is what
-the interface actually needs: a photo thumbnail per row is the generic-results-page look the design
-system explicitly refuses, whereas a coloured mark encodes cuisine as a scannable signal.
+That was dropped in favour of **drawn cuisine tiles** in the application: one geometric pictogram per
+cuisine group, on that group's line colour, with colour carrying the cuisine *family* and the mark
+separating the 23 groups within it.
 
-The tiles carry a second decision. Colour comes from a fixed eight-value palette and carries the
-cuisine *family*; the pictogram distinguishes the 23 groups *within* a family. Twenty-three
-distinguishable hues do not exist, so colour alone would be decoration — the mark is what makes it
-information.
+Two reasons, and they are the reasons worth defending. A stock photograph of somebody else's steak,
+sitting where a restaurant's own photo belongs, is the one element on screen pretending to be data —
+and it is precisely the kind of thing a diner would notice before a reviewer did. It is also what the
+interface actually needs: a coloured mark encodes cuisine as something scannable down a column, where
+a photograph carries no information about the restaurant it sits beside.
 
-The mechanism is described here rather than dropped, because the finding it exists to work around is
-real and belongs in the conversation with OpenTable: **their entire image feed is dead.**
+Once nothing consumed the paths, the field went too. A record pointing at 62 image files that do not
+exist is worse than a record that admits the gap, and **the gap is the finding**: it belongs in the
+conversation with OpenTable, not papered over in the demo.
 
 ---
 
@@ -228,10 +228,10 @@ limit, with room to enrich further.
 | **Filter-only** | `payment_options`, `price_conflict`, `objectID` — filterable but never shown as a facet list |
 | **Ranking** | `bayesian_rating` then `popularity_score` as custom ranking; `_geoloc` for distance |
 | **Grouping** | `chain_name` as `attributeForDistinct`, so chain collapsing is a per-query toggle |
-| **Display only** | `stars_count`, `reviews_count`, `phone`, `phone_e164`, `reserve_url`, `mobile_reserve_url`, `image_url`, `postal_code`, `country`, `cash_only`, `is_chain`, `location_label`, `chain_location_count` |
+| **Display only** | `stars_count`, `reviews_count`, `phone`, `phone_e164`, `reserve_url`, `mobile_reserve_url`, `postal_code`, `country`, `cash_only`, `is_chain`, `location_label`, `chain_location_count` |
 
-Deliberately **not** searchable: URLs, image paths, postal codes and the numeric ranking fields.
-They add index size and produce bizarre matches.
+Deliberately **not** searchable: URLs, postal codes and the numeric ranking fields. They add index
+size and produce bizarre matches.
 
 ### Why the searchable attributes are in that order
 

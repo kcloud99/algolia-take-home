@@ -61,7 +61,7 @@ One record per restaurant, 5,000 total. Flat — no nesting beyond `_geoloc` and
   "phone_e164": "+18084407910",              // for tel: links
   "reserve_url": "https://www.opentable.com/single.aspx?rid=101422",
   "mobile_reserve_url": "http://mobile.opentable.com/opentable/?restId=101422",
-  "image_url": "/img/cuisine/steakhouse-03.jpg",   // enriched — source URLs are dead
+  // no image field — every source URL is dead, see below
   "payment_options": ["AMEX", "Discover", "MasterCard", "Visa"],
   "cash_only": false
 }
@@ -193,10 +193,16 @@ data, review text, or an LLM enrichment pass.
 CSV `phone_number` is the display value; the JSON `phone` field is dropped (52% carry a trailing
 `x`/`x27` fragment). `phone_e164` is digits-only with a `+1` prefix for `tel:` links.
 
-### `image_url`
-All 5,000 source URLs 302 to a 2.2 KB placeholder. Map deterministically from `cuisine_group` to
-a small bundled image set — bundled, not hotlinked, so the live demo has no rate limits or
-third-party failure mode. Cheap, honest, and a good thing to flag to the prospect.
+### Imagery — no field at all
+All 5,000 source URLs 302 to a 2.2 KB placeholder. The original design mapped `cuisine_group`
+deterministically onto a small bundled photo set, bundled rather than hotlinked so a live demo had no
+rate limit or third-party failure mode.
+
+**Reversed in step 3.1a.** The app draws a cuisine pictogram tile instead, so nothing consumed the
+paths and the field was removed. Substituted photography is the only thing on a results page that
+pretends to be data, and a record pointing at image files that do not exist is worse than one that
+admits the gap. The gap itself is a finding worth raising with the prospect — see
+[`data-decisions.md`](../data-decisions.md) §3.
 
 ---
 

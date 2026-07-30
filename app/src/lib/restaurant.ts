@@ -57,6 +57,5 @@ export type Restaurant = {
   phone_e164: string;
   reserve_url: string;
   mobile_reserve_url: string;
-  image_url: string;
   cash_only: boolean;
 };

@@ -212,7 +212,7 @@ they split back into two rules with distinct scored boosts.
 
 **The occasion rule hard-filters where it should boost.** `optionalFilters` inside Rules is a paid
 feature; Build returns a 402. A hard filter is defensible only because the tags are broad (1,509 and
-480 restaurants), so a diner still gets a full page. It does mean an untagged restaurant is excluded
+478 restaurants), so a diner still gets a full page. It does mean an untagged restaurant is excluded
 rather than merely ranked lower, and `vibe_tags` are our inference, not ground truth.
 
 **`cheap eats` returns 3,125 restaurants** — 62% of the index, because the price distribution is

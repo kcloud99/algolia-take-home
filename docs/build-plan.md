@@ -59,7 +59,7 @@ reviewed and explained on its own.
 | 1.4 | Chain identity: derive `chain_name` / `location_label` from restaurant names |
 | 1.5 | Quality signals: Bayesian-smoothed rating, log-scaled popularity, rating bucket |
 | 1.6 | Location hierarchy (`area > city > neighborhood`) and discovery vibe tags |
-| 1.7 | Imagery enrichment and final record emission to `data/out/records.json` |
+| 1.7 | Imagery enrichment and final record emission to `data/out/records.json` *(the imagery half was later reversed — see 3.1a)* |
 | 1.8 | `docs/data-decisions.md` — the join, every transformation, every assumption |
 
 ### Phase 2 — Index and relevance
@@ -87,7 +87,7 @@ Vite + React + TypeScript + Tailwind, with React InstantSearch v7. The design sy
 | Step | Deliverable |
 |---|---|
 | 3.1 | App shell wired to Algolia — working before pretty |
-| 3.1a | Source and bundle the cuisine image set — must land before the cards below |
+| 3.1a | Cuisine encoding — drawn signage tiles instead of stock photography; must land before the cards below |
 | 3.2 | Restaurant card and results grid |
 | 3.3 | Refinements, sorting, and an always-visible summary of what is currently applied |
 | 3.4 | Federated autocomplete: restaurants, cuisines, cities, recent searches |
