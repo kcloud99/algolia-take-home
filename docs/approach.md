@@ -191,27 +191,37 @@ evidence in [`kb/index-design.md` § 8](kb/index-design.md).
 
 ## 6. The interface
 
-**The thesis.** Searching 5,000 restaurants is a wayfinding problem — orientation and
-disambiguation — so the interface is a departure board: results are a *board*, facets a *signage
-panel*, a chain a *platform*. A bounded dark surface is spent only on live information, one blue owns
-every interaction, and every number is set in tabular mono so columns align down the page like a real
-timetable. The full system is [`DESIGN.md`](../DESIGN.md); what matters here is that it is a system,
-so each decision is a lookup rather than an opinion.
+**The thesis.** A diner opens a restaurant guide to the index and reads down it, so a result here is
+an **entry** rather than a row in a table: score · symbol · name · meta line · price · distance ·
+Reserve, hairline-separated, never a card. The printed guide is the one artefact in this category
+that solved our exact problem before the web existed — it ranks thousands of restaurants, carries no
+photography at all, and makes them desirable anyway using type, space, a score and a symbol key.
+That constraint is not theoretical, because every image URL in this dataset is dead. There is one
+accent and it is the customer's own red, sampled from the mark they supplied — the system names the
+four things it is allowed to mark and refuses the rest; every figure is tabular and column-aligned,
+set in the text face rather than a monospace costume. The full system is
+[`DESIGN.md`](../DESIGN.md); what matters here is that it is a system, so each decision is a lookup
+rather than an opinion.
 
-That register also does information work rather than decoration. Every row shows the *adjusted*
-rating on a ten-segment gauge running 3.0–5.0 with the floor printed in the column header, because
-`bayesian_rating` spans 3.3 to 4.9 with 77% of restaurants between 4.2 and 4.5 — on a 0-to-5 bar
-every row in the index renders 84–92% full, and the chart would be decoration in the shape of a
-chart. An undisclosed non-zero baseline is how a bar lies; a disclosed one is an instrument scale.
-The review meter is literally `popularity_score`, the same value `customRanking` ranks on, so the bar
-a diner sees is the signal the engine used.
+That register does information work rather than decoration. Every entry leads with the *corrected*
+rating as a large tabular figure over a rule that carries its position on a disclosed 3.0–5.0 range,
+with the raw star value beneath it. The floor is not arbitrary: `bayesian_rating` spans 3.3 to 4.9
+with 77% of restaurants between 4.2 and 4.5, so on a 0-to-5 scale every entry in the index renders
+84–92% full and the chart would be decoration in the shape of a chart. An undisclosed non-zero
+baseline is how a bar lies; a disclosed one is an instrument scale, and the raw value sitting under
+the corrected one keeps the correction visible *as* a correction. An earlier version printed that
+number three times — figure, ten-segment meter, raw value — which made it the densest cell on the
+page and the lowest in information gain. The review meter is literally `popularity_score`, the same
+value `customRanking` ranks on, so the bar a diner sees is the signal the engine used.
 
 **Cuisine is drawn, not photographed.** All 5,000 image URLs are dead, and the first plan was to
 substitute cuisine-keyed stock photography. That was reversed: a photograph of somebody else's steak,
 sitting where a restaurant's own photo belongs, is the one element on screen pretending to be data.
-23 pictograms on eight line colours encode cuisine as something *scannable down a column*, which a
-photograph cannot do. The data gap becomes a signal instead of a lie, and it stays a finding to raise
-with the customer.
+23 single-weight pictograms on one geometric grid encode cuisine as something *scannable down a
+column*, which a photograph cannot do. Colour was the first version of that encoding and was removed:
+eight saturated tiles down the left edge read as confetti and competed with the single accent, where
+the mark alone separates the groups and the meta line names the cuisine in words beside it. The data
+gap becomes a signal instead of a lie, and it stays a finding to raise with the customer.
 
 **Discovery is a state, not a page.** An empty query already returns the 24 best-ranked restaurants
 in the country — that is what the Bayesian rating was built for — so the board is already a good
@@ -236,14 +246,18 @@ toggle prints all eight ranking criteria under every row, which is the one quest
 team asks that nothing else answers — not *what* ranked, but *how*. Two adjacent rows and the first
 column where they differ is the criterion that decided them.
 
-**Mobile was built, not promised.** The starting state was not unpolished, it was broken: at 390px
-the row's fixed cells sum to 543px against a 358px row, so every phone row rendered a rating, a tile,
-a distance, a price and a review count for a restaurant it never named. The row now restacks, the
+**Mobile was built, not promised.** The starting state was not unpolished, it was broken: the entry's
+fixed cells summed to 543px against a 358px row, so every phone entry rendered a rating, a symbol, a
+distance, a price and a review count for a restaurant it never named. The entry now restacks, the
 facet rail becomes a bottom sheet with the applied-refinement count on its trigger, and Autocomplete's
-detached overlay — which *is* the mobile search experience and was entirely unstyled — is styled.
-Both breakpoints were measured rather than picked from a device list: the row un-stacks at 880px and
-the rail appears at 1280px, because at 1024px a 280px rail left the name column 137px wide and
-reproduced the phone defect on a laptop.
+detached overlay — which *is* the mobile search experience and was entirely unstyled — is styled. Both
+breakpoints were measured rather than picked from a device list: at 880px the score moves out of the
+last reading line into its own left column, where the figures align down the page, and the rail
+appears at 1280px because at 1024px it left the name 137px wide and reproduced the phone defect on a
+laptop. Re-swept after the visual system was rebuilt: **zero horizontal overflow at 390 / 430 / 680 /
+768 / 1024 / 1280 / 1440px**, the rail present at exactly the top two and the Filters trigger at
+exactly the other five, and no label or control under 44px — the only smaller elements are the 16px
+checkbox marks inside them.
 
 **Nine defects in this phase were found only by rendering the page or watching the network**, which
 is the practice worth carrying rather than the list. Two are worth naming because they are

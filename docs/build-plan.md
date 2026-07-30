@@ -84,7 +84,14 @@ chain-in-a-single-city, intent/mood, zero-result, and empty.
 ### Phase 3 — Search experience
 
 Vite + React + TypeScript + Tailwind, with React InstantSearch v7. The design system is
-[`DESIGN.md`](../DESIGN.md) — "The Concourse Board" — and it is normative for anything visual.
+[`DESIGN.md`](../DESIGN.md) — "The Guide" — and it is normative for anything visual.
+
+The phase was built against an earlier system, "The Concourse Board", and every step below shipped
+under it. A visual pass in Phase 4 replaced it: the dark board and its condensed-plus-monospace type
+pairing became a printed guide's entry index in one typeface, the eight cuisine tile colours came out,
+and the score became a single figure over a disclosed scale rather than a ten-segment meter. Nothing
+about the data, the index or the query behaviour moved with it — the ladder below is the same work,
+typeset differently.
 
 | Step | Deliverable | |
 |---|---|---|

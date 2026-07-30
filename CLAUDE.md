@@ -21,7 +21,7 @@ several measured-but-unjustifiable ideas were removed rather than kept.
 2. `docs/kb/algolia-core.md` — before touching any index setting or debating relevance.
 3. `docs/kb/index-design.md` — before writing the pipeline or the config script.
 4. `docs/kb/algolia-implementation.md` — before writing any client or UI code.
-5. `DESIGN.md` — the design system ("The Concourse Board"). Normative for anything visual.
+5. `DESIGN.md` — the design system ("The Guide"). Normative for anything visual.
 6. `docs/build-plan.md` — the step ladder, the scope decisions, and the "widgets first" rule.
 
 ---
@@ -215,12 +215,12 @@ npm run build           # production build
 
 ## Submission checklist
 
-- [ ] Live demo URL (Netlify)
-- [ ] Repo link
-- [ ] Written explanation of approach (`README.md` + `docs/approach.md`)
-- [ ] Data prep + import script in the repo
-- [ ] Evidence of relevance testing (`docs/relevance-testing.md`)
-- [ ] Answers to the three customer questions (`docs/customer-questions.md`)
-- [ ] **Algolia dashboard → Settings → Support Access → "Allow Algolia employees to access my
-      account" enabled** — explicitly required, easy to forget
-- [ ] Honest hours figure ready
+- [x] Live demo URL — <https://algolia-takehome-assessment.netlify.app/>, Netlify, config in `netlify.toml`
+- [x] Repo link — <https://github.com/kcloud99/algolia-take-home>, public
+- [x] Written explanation of approach (`README.md` + `docs/approach.md`)
+- [x] Data prep + import script in the repo (`scripts/`, reproducible from a clean clone)
+- [x] Evidence of relevance testing (`docs/relevance-testing.md`, plus both generated runs)
+- [x] Answers to the three customer questions (`docs/customer-questions.md`)
+- [x] **Algolia dashboard → Settings → Support Access → "Allow Algolia employees to access my
+      account" enabled** — confirmed done
+- [x] Honest hours figure ready — ~20, derived in `README.md` § Hours

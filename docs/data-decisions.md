@@ -200,15 +200,22 @@ a deterministic path per record — a cuisine slug plus a stable hash of `object
 kept the same asset across rebuilds, where random assignment would reshuffle the grid on every
 reindex and read as a bug.
 
-That was dropped in favour of **drawn cuisine tiles** in the application: one geometric pictogram per
-cuisine group, on that group's line colour, with colour carrying the cuisine *family* and the mark
-separating the 23 groups within it.
+That was dropped in favour of **drawn cuisine marks** in the application: one single-weight pictogram
+per cuisine group, all on one geometric grid, in graphite — a guide's symbol key rather than a
+photograph.
 
 Two reasons, and they are the reasons worth defending. A stock photograph of somebody else's steak,
 sitting where a restaurant's own photo belongs, is the one element on screen pretending to be data —
 and it is precisely the kind of thing a diner would notice before a reviewer did. It is also what the
-interface actually needs: a coloured mark encodes cuisine as something scannable down a column, where
-a photograph carries no information about the restaurant it sits beside.
+interface actually needs: a mark encodes cuisine as something scannable down a column, where a
+photograph carries no information about the restaurant it sits beside.
+
+**Colour was the first version of this encoding, and it was removed.** Each group also carried one of
+eight saturated line colours filled into a 40px tile, so that colour named the cuisine *family* and
+the mark separated the groups inside it. Down a column of 24 entries that reads as confetti, and it
+competes with the one accent the palette is allowed. The mark alone separates the groups, and the
+entry's meta line names the cuisine in words directly beside it — `cuisine_visuals.ts` keeps `family`
+as the taxonomy that decides which mark a new cuisine borrows, and it no longer resolves to a colour.
 
 Once nothing consumed the paths, the field went too. A record pointing at 62 image files that do not
 exist is worse than a record that admits the gap, and **the gap is the finding**: it belongs in the

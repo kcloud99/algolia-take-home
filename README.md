@@ -7,13 +7,13 @@ restaurant name and cannot spell it, and the one who does not know what they wan
 
 **Live demo:** https://algolia-takehome-assessment.netlify.app/ · **Repo:** <https://github.com/kcloud99/algolia-take-home>
 
-![The results board at 1440px — search, refinements, discovery chips, and one row per restaurant](docs/img/board-desktop.png)
+![The results index at 1440px — search, refinements, discovery chips, and one typeset entry per restaurant](docs/img/board-desktop.png)
 
-<img src="docs/img/board-mobile.png" alt="The same board on a 390px phone" width="290">
+<img src="docs/img/board-mobile.png" alt="The same index on a 390px phone" width="290">
 
-*The arrival state, and the same board at 390px: the row restacks, the facet rail becomes a bottom
-sheet, and touch targets go to 44px. Zero horizontal overflow, measured at 390 / 430 / 680 / 768 /
-1024 / 1280 / 1440px.*
+*The arrival state, and the same index at 390px: the entry restacks with the score joining its last
+reading line, the facet rail becomes a bottom sheet, and no label or control falls under 44px. Zero
+horizontal overflow, measured at 390 / 430 / 680 / 768 / 1024 / 1280 / 1440px.*
 
 ---
 
@@ -72,7 +72,9 @@ cities. Splitting names on a whitespace-padded dash reveals **158 brands across 
 113 brands with two or more locations in one metro**, which is the third pain point in the discovery
 notes. `attributeForDistinct: chain_name` plus `distinct` as a *query* parameter means one index
 serves both diners — and because the surviving row is chosen by the full ranking formula, geo makes
-it the *nearest* branch automatically.
+it the *nearest* branch automatically. The autocomplete dropdown had the same pain and did **not**
+have that fix: Autocomplete issues its own requests, so `<Configure>` never reached them and typing
+`ruth` in New York offered Ruth's Chris in Honolulu. Found by driving the UI, not by reading it.
 → [`relevance-testing.md` § Chains](docs/relevance-testing.md#chains-in-one-metro--no-change-and-that-is-the-point)
 
 **4. The relevance work is a record, not a claim.**
