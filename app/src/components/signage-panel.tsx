@@ -49,14 +49,14 @@ function humanizeTagItems(items: RefinementListItem[]): RefinementListItem[] {
 const FACET_CLASSES = {
   list: 'space-y-0.5',
   item: 'text-sm',
-  label: 'flex min-h-8 cursor-pointer items-center gap-2',
+  label: 'flex min-h-11 cursor-pointer items-center gap-2 xl:min-h-8',
   checkbox:
     'size-3.5 shrink-0 appearance-none border border-steel checked:border-signal checked:bg-signal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal',
   labelText: 'min-w-0 flex-1 truncate',
   count: 'font-mono text-xs text-steel',
   selectedItem: 'font-medium text-signal',
   showMore:
-    'mt-2 min-h-8 font-mono text-[0.625rem] tracking-[0.08em] text-signal uppercase hover:text-signal-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal',
+    'mt-2 min-h-11 font-mono text-[0.625rem] tracking-[0.08em] text-signal uppercase hover:text-signal-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal',
   disabledShowMore: 'hidden',
   noResults: 'text-sm text-steel',
 };
@@ -64,7 +64,7 @@ const FACET_CLASSES = {
 const LOCATION_CLASSES = {
   list: 'space-y-0.5 text-sm',
   childList: 'ml-2 border-l border-hairline pl-2',
-  link: 'flex min-h-8 items-center gap-2 hover:text-signal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal',
+  link: 'flex min-h-11 items-center gap-2 xl:min-h-8 hover:text-signal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal',
   label: 'min-w-0 flex-1 truncate',
   selectedItem: 'font-medium text-signal',
   count: 'font-mono text-xs text-steel',
@@ -155,7 +155,7 @@ function RatingFilter({ attribute }: { attribute: string }) {
   return (
     <div className="space-y-0.5">
       {items.map((item) => (
-        <label key={item.value} className="flex min-h-8 cursor-pointer items-center gap-2 text-sm">
+        <label key={item.value} className="flex min-h-11 cursor-pointer items-center gap-2 text-sm xl:min-h-8">
           <input
             type="radio"
             name={attribute}

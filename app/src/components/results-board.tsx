@@ -16,9 +16,21 @@ import type { Restaurant } from '../lib/restaurant';
  * `Hits` has no empty state of its own — `emptyComponent` is a prop it manages internally — so the
  * zero-results board is switched in here off `nbHits`.
  */
+/**
+ * The row wraps below `sm` and does not above it.
+ *
+ * At 390px the fixed cells add up to 543px against 358px of row, so the single line silently squeezed the
+ * one cell that is allowed to shrink — the name — down to nothing. Every phone row rendered a rating, a
+ * tile, a distance, a price and a review count for a restaurant it never named.
+ *
+ * `flex-wrap` plus `order` on the cells restacks it into three reading lines without a second component:
+ * tile and name first, then the meta line inside that block, then the gauge, distance, price and Reserve.
+ * DESIGN.md asks for two lines and was written before the distance column and the platform marker existed;
+ * three keeps its actual requirement, which is that each line stays column-aligned across rows.
+ */
 const HITS_CLASSES = {
   list: '',
-  item: 'flex items-center gap-4 border-b border-hairline py-3',
+  item: 'flex flex-wrap items-center gap-x-2 gap-y-2 border-b border-hairline py-3 min-[880px]:flex-nowrap min-[880px]:gap-4',
 };
 
 export function ResultsBoard() {
@@ -59,7 +71,7 @@ function BoardHeader() {
   return (
     <div
       aria-hidden="true"
-      className="hidden items-center gap-4 border-b border-ink py-2 font-mono text-[0.625rem] tracking-[0.08em] text-steel uppercase sm:flex"
+      className="hidden items-center gap-4 border-b border-ink py-2 font-mono text-[0.625rem] tracking-[0.08em] text-steel uppercase min-[880px]:flex"
     >
       {/* The gauge's non-zero baseline is stated here, once. A bar with an undisclosed floor overstates
           differences; disclosed, it is an instrument scale. */}

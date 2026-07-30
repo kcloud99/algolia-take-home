@@ -58,6 +58,10 @@
      corners are square to barely-softened. Tailwind's default `sm` is 4px, which is too soft. */
   --radius-sm: 2px;
 
+  /* The only shadow in the system. DESIGN.md's Flat Concourse Rule allows exactly one exception, and
+     it is functional: the mobile filter sheet has to read as floating above the board it covers. */
+  --shadow-sheet-lift: 0 -8px 32px rgb(20 24 27 / 0.18);
+
   /* Three faces, three jobs. The condensed grotesque carries restaurant names at board density; the
      normal-width sibling carries prose; the mono carries every number and every signage label. */
   --font-display: 'Barlow Semi Condensed', 'Arial Narrow', sans-serif;
@@ -238,6 +242,107 @@
     font-variant-numeric: tabular-nums;
     font-size: 0.75rem;
     color: var(--color-steel);
+  }
+
+  /**
+   * Detached mode — the mobile search experience, and until now entirely unstyled.
+   *
+   * Below 680px Autocomplete swaps the inline field for a *button* that opens a full-screen overlay.
+   * That is the right behaviour on a phone: a dropdown pinned under a sticky dark header has almost no
+   * room, while an overlay gets the whole screen and lifts the keyboard away from the results. But it is
+   * a different set of class names, none of which the desktop rules above touch, so on a phone the
+   * search read as unstyled body text next to a bare magnifier.
+   *
+   * The button has to look like the field it stands in for, or nobody presses it.
+   */
+  .aa-DetachedSearchButton {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: calc(var(--spacing) * 2);
+    border: 1px solid var(--color-steel);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-porcelain);
+    padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 3);
+    color: var(--color-steel);
+    /* 44px, the minimum touch target, and this is the most important target on the page. */
+    min-height: calc(var(--spacing) * 11);
+  }
+
+  .aa-DetachedSearchButtonIcon {
+    display: flex;
+    flex-shrink: 0;
+    color: var(--color-steel);
+  }
+
+  .aa-DetachedSearchButtonPlaceholder {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.9375rem;
+  }
+
+  /* The overlay owns the whole screen. `--aa-…` custom properties are how the library positions itself. */
+  .aa-DetachedOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background-color: var(--color-concourse);
+  }
+
+  .aa-DetachedContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--color-concourse);
+  }
+
+  /* The search row inside the overlay: the field, and a way back out of it. */
+  .aa-DetachedFormContainer {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: calc(var(--spacing) * 2);
+    border-bottom: 1px solid var(--color-hairline);
+    background-color: var(--color-ink);
+    padding: calc(var(--spacing) * 3);
+  }
+
+  .aa-DetachedFormContainer .aa-Form {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .aa-DetachedCancelButton {
+    flex-shrink: 0;
+    min-height: calc(var(--spacing) * 11);
+    padding-inline: var(--spacing);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-porcelain);
+  }
+
+  /* Inside the overlay the panel is the page, so it scrolls rather than floating over anything. */
+  .aa-DetachedContainer .aa-Panel,
+  .aa-DetachedPanel {
+    position: static;
+    flex: 1;
+    overflow-y: auto;
+    border: 0;
+    background-color: var(--color-concourse);
+  }
+
+  .aa-DetachedContainer .aa-Item,
+  .aa-DetachedPanel .aa-Item {
+    /* Touch rows, not mouse rows. */
+    min-height: calc(var(--spacing) * 12);
+  }
+
+  /* Autocomplete puts this on <body> while detached mode is open; without it the board scrolls behind. */
+  body.aa-Detached {
+    overflow: hidden;
   }
 }
 

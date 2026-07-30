@@ -34,7 +34,7 @@ export function LocationControl({
         <select
           value={choice}
           onChange={(event) => onChoose(event.target.value)}
-          className="min-h-9 max-w-[15rem] rounded-sm border border-hairline bg-porcelain px-2 py-1 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
+          className="min-h-11 max-w-[15rem] rounded-sm border border-hairline bg-porcelain px-2 py-1 text-sm sm:min-h-9 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
         >
           <option value={DEVICE}>Your location</option>
           <option value={NETWORK}>Wherever your network says</option>

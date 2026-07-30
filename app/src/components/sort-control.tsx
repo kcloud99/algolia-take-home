@@ -26,7 +26,7 @@ export function SortControl() {
         ]}
         classNames={{
           select:
-            'min-h-9 rounded-sm border border-hairline bg-porcelain px-2 py-1 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal',
+            'min-h-11 rounded-sm border border-hairline bg-porcelain px-2 py-1 text-sm sm:min-h-9 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal',
         }}
       />
     </label>

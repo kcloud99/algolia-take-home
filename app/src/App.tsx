@@ -76,9 +76,11 @@ export function App() {
       />
 
       <div className="mx-auto flex max-w-[1240px] gap-8 px-4 py-6">
-        {/* The rail is desktop-only for now. Step 3.8 moves it behind a bottom sheet rather than
-            leaving a 280px column to collapse badly on a phone. */}
-        <aside className="hidden w-[280px] shrink-0 lg:block" aria-label="Refine results">
+        {/* The rail appears at `xl`, not `lg`, and the breakpoint was measured rather than picked. A
+            single-line board row needs 543px of fixed cells plus a readable name; at 1024px the rail
+            left the name column 137px wide, which is the same defect a phone had. Below `xl` the panel
+            lives in `FilterSheet` instead. */}
+        <aside className="hidden w-[280px] shrink-0 xl:block" aria-label="Refine results">
           <SignagePanel />
         </aside>
 

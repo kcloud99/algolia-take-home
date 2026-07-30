@@ -36,7 +36,7 @@ export function GroupingToggle({
 }) {
   return (
     <label
-      className="flex min-h-9 shrink-0 cursor-pointer items-center gap-2"
+      className="flex min-h-11 shrink-0 cursor-pointer items-center gap-2 sm:min-h-9"
       title="Show one row per restaurant brand, choosing the best-ranked location"
     >
       <input

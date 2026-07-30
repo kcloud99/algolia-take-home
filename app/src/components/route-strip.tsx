@@ -1,6 +1,7 @@
 import { ClearRefinements, CurrentRefinements, useCurrentRefinements } from 'react-instantsearch';
 import type { CurrentRefinementsConnectorParamsItem } from 'instantsearch.js/es/connectors/current-refinements/connectCurrentRefinements';
 
+import { FilterSheet } from './filter-sheet';
 import { GroupingToggle } from './grouping-toggle';
 import { LocationControl } from './location-control';
 import { SortControl } from './sort-control';
@@ -100,7 +101,9 @@ export function RouteStrip({
 
   return (
     <div className="border-b border-hairline bg-concourse">
-      <div className="mx-auto flex max-w-[1240px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2">
+      {/* Chips take their own line on a phone and share one with the controls from `lg` up, where the rail
+          also appears. Below that there are four controls and no room to put them beside a chip run. */}
+      <div className="mx-auto flex max-w-[1240px] flex-col gap-2 px-4 py-2 xl:flex-row xl:flex-wrap xl:items-center xl:gap-x-4">
         <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
           {items.length > 0 ? (
             <>
@@ -120,15 +123,21 @@ export function RouteStrip({
           )}
         </div>
 
-        <GroupingToggle grouped={grouped} onChange={onGroupedChange} />
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 xl:contents">
+          {/* Only below `lg`, where the rail is gone. It carries the refinement count, so the sheet is
+              never the only place a filter is visible. */}
+          <FilterSheet />
 
-        <LocationControl
-          choice={locationChoice}
-          onChoose={onChooseLocation}
-          notice={locationNotice}
-        />
+          <GroupingToggle grouped={grouped} onChange={onGroupedChange} />
 
-        <SortControl />
+          <LocationControl
+            choice={locationChoice}
+            onChoose={onChooseLocation}
+            notice={locationNotice}
+          />
+
+          <SortControl />
+        </div>
       </div>
     </div>
   );

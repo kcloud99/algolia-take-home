@@ -14,9 +14,9 @@ import { formatDistance } from '../lib/geo';
  * location set there is no distance to report and it renders an em dash — which is the truthful answer,
  * since geo is then not in the ranking either.
  */
-export function Distance({ metres }: { metres: number | null }) {
+export function Distance({ metres, className = '' }: { metres: number | null; className?: string }) {
   return (
-    <p className="w-[68px] shrink-0 font-mono text-xs text-steel">
+    <p className={`w-[68px] shrink-0 font-mono text-xs text-steel ${className}`}>
       {metres === null ? '—' : formatDistance(metres)}
     </p>
   );

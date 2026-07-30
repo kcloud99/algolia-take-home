@@ -26,11 +26,19 @@ function litSegments(rating: number): number {
   return Math.min(SEGMENTS, Math.max(0, Math.round(position * SEGMENTS)));
 }
 
-export function RatingGauge({ corrected, raw }: { corrected: number; raw: number }) {
+export function RatingGauge({
+  corrected,
+  raw,
+  className = '',
+}: {
+  corrected: number;
+  raw: number;
+  className?: string;
+}) {
   const lit = litSegments(corrected);
 
   return (
-    <div className="w-[104px] shrink-0">
+    <div className={`w-[104px] shrink-0 ${className}`}>
       <div className="flex items-baseline gap-1.5">
         <span className="font-mono text-xl leading-none font-medium">{corrected.toFixed(1)}</span>
         <span className="font-mono text-[0.625rem] tracking-[0.08em] text-steel uppercase">adj</span>

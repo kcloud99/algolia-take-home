@@ -12,11 +12,19 @@
  */
 const GLYPHS = 3;
 
-export function PriceTier({ tier, band }: { tier: number; band: string }) {
+export function PriceTier({
+  tier,
+  band,
+  className = '',
+}: {
+  tier: number;
+  band: string;
+  className?: string;
+}) {
   const filled = Math.min(GLYPHS, Math.max(1, tier - 1));
 
   return (
-    <p className="w-[42px] shrink-0 font-mono text-sm" title={band} aria-label={band}>
+    <p className={`w-[42px] shrink-0 font-mono text-sm ${className}`} title={band} aria-label={band}>
       <span aria-hidden="true">
         <span>{'$'.repeat(filled)}</span>
         <span className="text-hairline">{'$'.repeat(GLYPHS - filled)}</span>

@@ -17,19 +17,31 @@ import { FederatedSearch } from './federated-search';
 export function BoardStrip() {
   return (
     <header className="sticky top-0 z-10 bg-ink text-porcelain">
-      <div className="mx-auto flex max-w-[1240px] flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:gap-6">
-        {/* The brand's own mark, which is the one place a colour outside the palette is allowed to
-            appear: the One Voice Rule governs our accents, not the customer's identity. It is also
-            why the disc is round in a system whose corners are square. */}
-        {/* The logo alone. No wordmark beside it: the mark already says OpenTable, and anything else
-            there would either repeat it or invent a product name that is not theirs. */}
-        <h1 className="shrink-0">
-          <img src="/opentable-logo.png" alt="OpenTable restaurant search" width={36} height={36} className="size-9" />
-        </h1>
+      <div className="mx-auto flex max-w-[1240px] flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:gap-6">
+        {/* On a phone the identity and the readout share a line, so the sticky strip costs one row of
+            height instead of three. A sticky header that eats 40% of a 844px viewport is not a header. */}
+        <div className="flex items-center justify-between gap-4 sm:contents">
+          {/* The brand's own mark, which is the one place a colour outside the palette is allowed to
+              appear: the One Voice Rule governs our accents, not the customer's identity. It is also
+              why the disc is round in a system whose corners are square. */}
+          {/* The logo alone. No wordmark beside it: the mark already says OpenTable, and anything else
+              there would either repeat it or invent a product name that is not theirs. */}
+          <h1 className="shrink-0">
+            <img
+              src="/opentable-logo.png"
+              alt="OpenTable restaurant search"
+              width={36}
+              height={36}
+              className="size-9"
+            />
+          </h1>
 
+          <LiveReadout />
+        </div>
+
+        {/* Second in the source on a phone, but `sm:contents` above hoists the logo and readout back into
+            this flex row on wider screens, so the desktop order is logo → search → readout. */}
         <FederatedSearch />
-
-        <LiveReadout />
       </div>
     </header>
   );
@@ -54,7 +66,9 @@ function LiveReadout() {
   const estimated = results.exhaustiveNbHits === false;
 
   return (
-    <p className="shrink-0 font-mono text-xs tracking-[0.08em] text-amber uppercase">
+    // `sm:order-last` is load-bearing: `sm:contents` on the wrapper above dissolves it into the header's
+    // flex row, which would otherwise put the readout before the search field on desktop.
+    <p className="shrink-0 font-mono text-xs tracking-[0.08em] text-amber uppercase sm:order-last">
       {estimated && <span title="The engine reported this count as approximate">~</span>}
       {nbHits.toLocaleString()} {nbHits === 1 ? 'result' : 'results'} · {processingTimeMS} ms
     </p>

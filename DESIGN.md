@@ -87,7 +87,12 @@ A strict signage grid on a centered concourse (max content width ~1240px). Top t
 
 Density is timetable-tight but never cramped: board rows are compact and baseline-aligned, separated by **hairline keylines** (not cards, not gaps-as-dividers), with generous gutter between the panel and the board. Spacing rhythm is a 4px base (steps 4 / 8 / 12 / 16 / 24 / 32 / 48), always more space above a section label than below it.
 
-**Responsive.** At ≤640px the board strip stays sticky at the top; the signage panel collapses behind a **"Filters" bottom-sheet** trigger; board rows stack to two lines (rating gauge + name, then meta), keeping tabular alignment within each line. All touch targets ≥44px; the search field remains reachable at all times.
+**Responsive.** The board strip stays sticky at every width, with the identity and the live readout sharing its first line on a phone. Two breakpoints matter, and both were measured against the row rather than taken from a device size:
+
+- **Below 880px the board row stacks.** Its fixed cells total 543px, so anything narrower starves the one cell allowed to shrink — the name. It stacks to three reading lines, not the two this section first specified: tile + name, then the meta line, then gauge · distance · price with **Reserve** pinned right. Two lines was written before the distance column and the platform marker existed; three keeps the requirement that actually matters, which is that each line stays column-aligned across rows. The review-volume meter is the one cell a phone does without.
+- **The signage panel appears at 1280px, not 1024px.** A 280px rail plus a 543px row needs the width; at 1024px the rail left the name column 137px wide, the same defect a phone had. Below that the panel moves behind a **"Filters" bottom-sheet** trigger carrying the applied-refinement count.
+
+Below 680px the search field becomes a full-screen overlay rather than a dropdown — a panel pinned under a sticky dark strip has almost no room on a phone, and the overlay lifts the keyboard away from the results. Discovery's chip rows become single swipeable rails that scroll inside themselves; wrapped, they cost more than 900px before the first result. All touch targets are ≥44px below the desktop breakpoint, and the search field remains reachable at all times.
 
 ## Elevation & Depth
 

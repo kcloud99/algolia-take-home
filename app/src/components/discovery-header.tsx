@@ -72,13 +72,23 @@ function CuisineChips() {
     <div>
       <SectionLabel>Browse by cuisine</SectionLabel>
 
-      <ul className="flex flex-wrap gap-2">
+      {/* One scrolling line on a phone, wrapping from `sm` up. Wrapped, the two rows cost over 900px
+          before a single result — two full screens of chips on a 844px phone. DESIGN.md's own answer for
+          content wider than the viewport is a container that scrolls inside itself rather than a page that
+          scrolls sideways, and a swipeable chip rail is what a phone expects here anyway. The chip clipped
+          at the right edge is the affordance; overlay scrollbars are transient and take no layout space.
+
+          The rail deliberately does not bleed to the screen edge. A `-mx-4 px-4` version measured with its
+          first chip at x=0 — a horizontally scrolling flex container drops the leading padding — so the
+          first chip lost its left border to the viewport edge. Staying inside the content box is correct
+          and one rule shorter than fighting it. */}
+      <ul className="flex snap-x gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
         {items.map((item) => (
-          <li key={item.value}>
+          <li key={item.value} className="shrink-0">
             <button
               type="button"
               onClick={() => refine(item.value)}
-              className="flex min-h-11 items-center gap-2 rounded-sm border border-hairline bg-porcelain py-1 pr-3 pl-1 text-sm hover:border-signal hover:text-signal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
+              className="flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-sm border border-hairline bg-porcelain py-1 pr-3 pl-1 text-sm hover:border-signal hover:text-signal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
             >
               <CuisineTile group={item.value} size="sm" />
               {item.label}
@@ -108,13 +118,23 @@ function MoodChips() {
     <div>
       <SectionLabel>In the mood for</SectionLabel>
 
-      <ul className="flex flex-wrap gap-2">
+      {/* One scrolling line on a phone, wrapping from `sm` up. Wrapped, the two rows cost over 900px
+          before a single result — two full screens of chips on a 844px phone. DESIGN.md's own answer for
+          content wider than the viewport is a container that scrolls inside itself rather than a page that
+          scrolls sideways, and a swipeable chip rail is what a phone expects here anyway. The chip clipped
+          at the right edge is the affordance; overlay scrollbars are transient and take no layout space.
+
+          The rail deliberately does not bleed to the screen edge. A `-mx-4 px-4` version measured with its
+          first chip at x=0 — a horizontally scrolling flex container drops the leading padding — so the
+          first chip lost its left border to the viewport edge. Staying inside the content box is correct
+          and one rule shorter than fighting it. */}
+      <ul className="flex snap-x gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
         {items.map((item) => (
-          <li key={item.value}>
+          <li key={item.value} className="shrink-0">
             <button
               type="button"
               onClick={() => refine(item.value)}
-              className="flex min-h-11 items-center rounded-sm border border-hairline bg-porcelain px-3 text-sm hover:border-signal hover:text-signal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
+              className="flex min-h-11 shrink-0 snap-start items-center rounded-sm border border-hairline bg-porcelain px-3 text-sm hover:border-signal hover:text-signal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
             >
               {humanizeTag(item.label)}
             </button>

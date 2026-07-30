@@ -14,11 +14,19 @@
 /** The observed maximum, so the busiest restaurant in the index fills the meter exactly. */
 const MAX_POPULARITY = 41;
 
-export function ReviewVolume({ reviews, popularity }: { reviews: number; popularity: number }) {
+export function ReviewVolume({
+  reviews,
+  popularity,
+  className = '',
+}: {
+  reviews: number;
+  popularity: number;
+  className?: string;
+}) {
   const filled = Math.min(100, Math.max(2, (popularity / MAX_POPULARITY) * 100));
 
   return (
-    <div className="w-[88px] shrink-0">
+    <div className={`w-[88px] shrink-0 ${className}`}>
       <p className="font-mono text-xs">{reviews.toLocaleString()}</p>
       <div
         className="mt-1 h-1 bg-hairline"

@@ -35,12 +35,21 @@ export function BoardRow({ hit }: { hit: Hit<Restaurant> }) {
 
   return (
     <>
-      <RatingGauge corrected={hit.bayesian_rating} raw={hit.stars_count} />
+      {/* `order` is what restacks the row below 880px; above it the row does not wrap and order is inert.
+          880px is measured, not chosen: the fixed cells come to 543px, so anything narrower leaves the
+          name — the only cell allowed to shrink — unreadable. It was 105px at a 680px viewport.
 
-      <CuisineTile group={hit.cuisine_group} />
+          Reading order on a phone is name first, then what it is, then the numbers and the action, because
+          a diner scrolling a list decides on the name and rejects on the distance. */}
+      <RatingGauge corrected={hit.bayesian_rating} raw={hit.stars_count} className="order-3 min-[880px]:order-none" />
 
-      {/* min-w-0 is what lets the name truncate instead of forcing the row wider. */}
-      <div className="min-w-0 flex-1">
+      <CuisineTile group={hit.cuisine_group} className="order-1 min-[880px]:order-none" />
+
+      {/* min-w-0 is what lets the name truncate instead of forcing the row wider. The basis takes the rest
+          of the first line on a phone — 100% less the 40px tile, its 8px gap and a little slack — so the
+          name gets ~306px instead of the nothing it was left with. Measured: at 2.75rem the sum came to
+          362px against a 358px row and the name wrapped to a line of its own, leaving the tile stranded. */}
+      <div className="order-2 min-w-0 flex-1 basis-[calc(100%-3.25rem)] min-[880px]:order-none min-[880px]:basis-auto">
         {/* h2, not h3: the strip's logo is the page's h1 and there is no level between them. `title`
             because the longest names here are chain branches, whose suffix is the whole point. */}
         <h2
@@ -67,11 +76,18 @@ export function BoardRow({ hit }: { hit: Hit<Restaurant> }) {
 
       {/* Beside the locality rather than in its own place further right: distance qualifies *where*
           a restaurant is, and a diner rejects a row on how far it is before anything else here. */}
-      <Distance metres={hitDistance(hit)} />
+      <Distance metres={hitDistance(hit)} className="order-4 min-[880px]:order-none" />
 
-      <PriceTier tier={hit.price_tier} band={hit.price_range} />
+      <PriceTier tier={hit.price_tier} band={hit.price_range} className="order-5 min-[880px]:order-none" />
 
-      <ReviewVolume reviews={hit.reviews_count} popularity={hit.popularity_score} />
+      {/* The one cell a phone does without. The second line already carries the corrected rating and its
+          raw sub-label, which is the quality story; the volume meter is desktop context, and keeping it
+          would have pushed Reserve onto a fourth line. */}
+      <ReviewVolume
+        reviews={hit.reviews_count}
+        popularity={hit.popularity_score}
+        className="order-6 hidden min-[880px]:block"
+      />
 
       {/* Deep-link out: there is no live inventory behind this, and pretending otherwise would be the
           one dishonest thing on the page. The Insights conversion event attaches in step 3.9. */}
@@ -79,7 +95,7 @@ export function BoardRow({ hit }: { hit: Hit<Restaurant> }) {
         href={hit.reserve_url}
         target="_blank"
         rel="noreferrer"
-        className="flex min-h-11 shrink-0 items-center gap-1.5 rounded-sm bg-signal px-4 font-mono text-xs tracking-[0.08em] text-porcelain uppercase hover:bg-signal-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
+        className="order-7 ml-auto flex min-h-11 shrink-0 items-center gap-1.5 rounded-sm bg-signal px-4 font-mono text-xs tracking-[0.08em] text-porcelain uppercase hover:bg-signal-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal min-[880px]:ml-0"
       >
         Reserve <span aria-hidden="true">→</span>
       </a>
