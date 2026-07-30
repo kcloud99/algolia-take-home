@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Configure, InstantSearch } from 'react-instantsearch';
 
 import { BoardStrip } from './components/board-strip';
@@ -6,6 +7,7 @@ import { ResultsBoard } from './components/results-board';
 import { RouteStrip } from './components/route-strip';
 import { SignagePanel } from './components/signage-panel';
 import { geoSearchParameters } from './lib/geo';
+import { GroupingProvider } from './lib/grouping-context';
 import { indexName, searchClient } from './lib/search-client';
 import { useSearchCentre } from './lib/use-search-centre';
 
@@ -24,16 +26,20 @@ import { useSearchCentre } from './lib/use-search-centre';
  * discards refinements another widget is still reading. That bites as soon as the same facet renders
  * in both a sidebar and a mobile sheet, which is where this build is heading.
  *
- * `<Configure>` carries the geo parameters and nothing else. `hitsPerPage` stays an index setting,
- * because repeating it here would give two places to change one number; the geo parameters belong here
- * precisely because they are not settings — the centre changes per diner and per session.
+ * `<Configure>` carries the two parameters that are properties of the *diner* rather than of the index —
+ * where they are and whether they want one row per brand. `hitsPerPage` stays an index setting, because
+ * repeating it here would give two places to change one number.
  *
- * Note that geo does *not* round-trip through the URL, and this is the library's decision rather than
- * ours: both of InstantSearch's routing state mappings strip `configure` from the route on the way out.
- * So a shared link carries the query and the refinements, and resolves the location fresh.
+ * Note that neither round-trips through the URL, and this is the library's decision rather than ours:
+ * both of InstantSearch's routing state mappings strip `configure` from the route on the way out. So a
+ * shared link carries the query and the refinements, and resolves location and grouping fresh.
  */
 export function App() {
   const { centre, choice, choose, notice } = useSearchCentre();
+
+  // Off by default, matching `distinct: false` on the index. Browsing is the more common arrival, and
+  // collapsing a brand to one row is the deliberate act of someone who already knows which brand.
+  const [grouped, setGrouped] = useState(false);
 
   return (
     <InstantSearch
@@ -42,10 +48,12 @@ export function App() {
       routing
       future={{ preserveSharedStateOnUnmount: true }}
     >
-      <Configure {...geoSearchParameters(centre)} />
+      <Configure {...geoSearchParameters(centre)} distinct={grouped} />
 
       <BoardStrip />
       <RouteStrip
+        grouped={grouped}
+        onGroupedChange={setGrouped}
         locationChoice={choice}
         onChooseLocation={choose}
         locationNotice={notice}
@@ -60,7 +68,11 @@ export function App() {
 
         <main className="min-w-0 flex-1">
           <RelevantSortNotice />
-          <ResultsBoard />
+          {/* Only the board needs to know how it is arranged — see `grouping-context.tsx` for why this
+              is a context rather than a prop. */}
+          <GroupingProvider grouped={grouped}>
+            <ResultsBoard />
+          </GroupingProvider>
         </main>
       </div>
     </InstantSearch>

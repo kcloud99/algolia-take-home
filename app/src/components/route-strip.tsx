@@ -1,6 +1,7 @@
 import { ClearRefinements, CurrentRefinements, useCurrentRefinements } from 'react-instantsearch';
 import type { CurrentRefinementsConnectorParamsItem } from 'instantsearch.js/es/connectors/current-refinements/connectCurrentRefinements';
 
+import { GroupingToggle } from './grouping-toggle';
 import { LocationControl } from './location-control';
 import { SortControl } from './sort-control';
 import { humanizeTag } from '../lib/labels';
@@ -75,16 +76,20 @@ const CLEAR_TRANSLATIONS = { resetButtonText: 'Clear all' };
  * experience that is simple to understand, and the fastest way to fail that is a refinement a diner
  * cannot see and therefore cannot undo. Each chip removes itself; the clear-all removes the lot.
  *
- * Location sits here, next to sort, because both answer "how is this board arranged" rather than
- * "which restaurants are on it" — and because where the board searches from is exactly the kind of
- * state that must not be invisible. The centre itself is owned by `App`, which needs it for
- * `<Configure>` too.
+ * Grouping, location and sort all sit here together because all three answer "how is this board
+ * arranged" rather than "which restaurants are on it" — and because each is state that must not be
+ * invisible. None of them produces a chip, so the strip is the only place a diner can see them. Both
+ * values are owned by `App`, which needs them for `<Configure>` too.
  */
 export function RouteStrip({
+  grouped,
+  onGroupedChange,
   locationChoice,
   onChooseLocation,
   locationNotice,
 }: {
+  grouped: boolean;
+  onGroupedChange: (grouped: boolean) => void;
   locationChoice: CentreChoice;
   onChooseLocation: (choice: CentreChoice) => void;
   locationNotice: string | null;
@@ -112,6 +117,8 @@ export function RouteStrip({
             </p>
           )}
         </div>
+
+        <GroupingToggle grouped={grouped} onChange={onGroupedChange} />
 
         <LocationControl
           choice={locationChoice}

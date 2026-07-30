@@ -1,4 +1,4 @@
-import { useStats } from 'react-instantsearch';
+import { useInstantSearch, useStats } from 'react-instantsearch';
 
 import { FederatedSearch } from './federated-search';
 
@@ -39,12 +39,23 @@ export function BoardStrip() {
  * The results-and-timing readout, in Board Amber because it is the one genuinely live thing on the
  * strip. Rendering the processing time is not vanity: the prospect runs a ten-year-old stack, and
  * "5,000 restaurants, 1 ms" is the argument made without a slide.
+ *
+ * **The `~` is load-bearing.** With `distinct` on a broad query the engine stops counting exactly and
+ * says so: `exhaustiveNbHits: false`. Measured, the grouped empty query with no location set reports
+ * 181 where the true number of brands-plus-singletons is 4,554 — and the estimate even moves with
+ * `hitsPerPage`. Pagination respects the estimate, so the board stays internally consistent, but
+ * printing it as a fact would not be. `useStats` does not surface the flag, so it comes from `results`.
+ *
+ * `facetingAfterDistinct: true` makes the count exact and was rejected — see `grouping-toggle.tsx`.
  */
 function LiveReadout() {
   const { nbHits, processingTimeMS } = useStats();
+  const { results } = useInstantSearch();
+  const estimated = results.exhaustiveNbHits === false;
 
   return (
     <p className="shrink-0 font-mono text-xs tracking-[0.08em] text-amber uppercase">
+      {estimated && <span title="The engine reported this count as approximate">~</span>}
       {nbHits.toLocaleString()} {nbHits === 1 ? 'result' : 'results'} · {processingTimeMS} ms
     </p>
   );

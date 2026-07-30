@@ -153,8 +153,47 @@ are Mount Lebanon, Wexford, Gibsonia, McMurray and Murrysville. `area` is no bet
 compound strings like `"Denver / Colorado"`. So the rule detects cuisine only, and location stays
 as text where the searchable-attribute tiers already handle it.
 
-With `distinct: true` these collapse to a single row per brand, and because the survivor is chosen
-by the full ranking formula, geo makes the *nearest* branch the representative automatically.
+With `distinct: true` these collapse to a single row per brand, and because the survivor is chosen by
+the full ranking formula, geo makes the *nearest* branch the representative automatically. Verified
+rather than predicted: `atrias` from Pittsburgh returns **Atria's — PNC Park** (0.5 mi, adjusted 4.1)
+with a location set and **Atria's — Pleasant Hills** (7.3 mi, adjusted 4.3) without one. Grouping does
+not pick a favourite branch; the ranking does, and the ranking answers to whatever the diner asked for.
+
+Ungrouped records are not swept together, which is the thing to check before trusting `distinct` at
+all: 5,000 records become **4,554** rows, exactly the 4,396 restaurants with no brand plus the 158
+brands. A missing `attributeForDistinct` value is its own group, not a shared one.
+
+**Two things grouping does to the rest of the board.** Both are Algolia behaviours rather than bugs, and
+the UI discloses both rather than hiding them.
+
+*Facet counts stay counts of records.* The engine computes faceting before de-duplication, so a grouped
+`atrias` reads "1 result" beside a rail offering "Casual Elegant 6". `facetingAfterDistinct: true` fixes
+the count and was measured and rejected: Algolia's own note says it is only correct when every record in
+a group shares the group's facet values, and Atria's is six Casual Elegant and two Casual Dining. With
+it on the rail offers `{Casual Dining: 1}` and stops offering Casual Elegant at all — even though
+refining to Casual Elegant works and returns a different, closer branch. A usable facet value that has
+vanished from the rail is worse than a count that needs context.
+
+*`nbHits` becomes an estimate on broad queries.* With `distinct` and no location set, the empty query
+reports **181** where the true group count is 4,554, and the estimate moves with `hitsPerPage` (159 at
+one per page, 181 at 24). The engine flags it: `exhaustiveNbHits: false`. Pagination respects the
+estimate, so the board stays internally consistent, and the readout renders a `~` when the flag is set
+rather than presenting a guess as a fact. With a location set the same query counts exactly — 4,554,
+`exhaustiveNbHits: true` — because geo forces the full pass.
+
+**What the conservative chain rule costs, now visible.** A grouped `mccormick` does not return one row.
+The fifteen records whose *name* contains "McCormick" collapse to **five**: `McCormick & Schmick's
+Seafood` (10 locations), `McCormick's Fish House` (2 — a genuinely different restaurant), and three
+ungrouped singletons, the Tigard *Grill*, the Portland *Harborside* and Houston's *Town & Country
+Village*, none of which carry the whitespace-padded location suffix the chain rule requires. That is the
+deliberate under-counting from [`data-decisions.md`](data-decisions.md) §3 showing up on screen: we would
+rather split one brand across five rows than merge two restaurants that merely share a name.
+
+The live query returns **seven** rows, and the extra two are the searchable-attribute tiers behaving
+exactly as designed. *Chart House Restaurant - Scottsdale* is at 7255 McCormick Parkway and *Palm Court
+at The Scottsdale Resort* at 7700 E. McCormick Pkwy — street-name coincidences, caught by `address` on
+the lowest tier, and ranked third and fourth rather than displacing a real name match. The whole reason
+`address` sits last is on screen in one query.
 
 ---
 

@@ -2,10 +2,12 @@ import type { Hit } from 'instantsearch.js';
 
 import { CuisineTile } from './cuisine-tile';
 import { Distance } from './distance';
+import { PlatformMarker } from './platform-marker';
 import { PriceTier } from './price-tier';
 import { RatingGauge } from './rating-gauge';
 import { ReviewVolume } from './review-volume';
 import { hitDistance } from '../lib/geo';
+import { useIsGrouped } from '../lib/grouping-context';
 import { formatLocality } from '../lib/locality';
 import type { Restaurant } from '../lib/restaurant';
 
@@ -29,6 +31,7 @@ import type { Restaurant } from '../lib/restaurant';
  */
 export function BoardRow({ hit }: { hit: Hit<Restaurant> }) {
   const locality = formatLocality(hit);
+  const grouped = useIsGrouped();
 
   return (
     <>
@@ -38,12 +41,27 @@ export function BoardRow({ hit }: { hit: Hit<Restaurant> }) {
 
       {/* min-w-0 is what lets the name truncate instead of forcing the row wider. */}
       <div className="min-w-0 flex-1">
-        {/* h2, not h3: the strip's logo is the page's h1 and there is no level between them. */}
-        <h2 className="truncate font-display text-[1.375rem] leading-tight font-semibold">
+        {/* h2, not h3: the strip's logo is the page's h1 and there is no level between them. `title`
+            because the longest names here are chain branches, whose suffix is the whole point. */}
+        <h2
+          className="truncate font-display text-[1.375rem] leading-tight font-semibold"
+          title={hit.name}
+        >
           {hit.name}
         </h2>
-        <p className="truncate text-sm text-steel">
-          {hit.cuisine_group} · {locality} · {hit.dining_style}
+
+        {/* The platform marker leads the meta line rather than sitting beside the name, and rendering it
+            the other way is what showed why: chain branch names are the longest in the dataset, and
+            `McCormick & Schmick's Seafood - Pittsburgh Downtown` lost its branch — the disambiguation
+            the diner came for — to make room. The meta line was already the one designed to truncate,
+            and leading it means the marker is the last thing to go rather than the first. */}
+        <p className="flex min-w-0 items-center gap-2 text-sm text-steel">
+          {grouped && hit.is_chain && hit.chain_name && (
+            <PlatformMarker brand={hit.chain_name} locations={hit.chain_location_count} />
+          )}
+          <span className="truncate">
+            {hit.cuisine_group} · {locality} · {hit.dining_style}
+          </span>
         </p>
       </div>
 
