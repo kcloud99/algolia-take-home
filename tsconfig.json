@@ -15,5 +15,7 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["scripts/**/*.ts"]
+  // The pipeline and the Vite config both run in Node. The browser app compiles against different
+  // `lib` and module settings and has its own config in `app/tsconfig.json`.
+  "include": ["scripts/**/*.ts", "vite.config.ts"]
 }

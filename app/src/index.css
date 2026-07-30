@@ -1,0 +1,52 @@
+@import 'tailwindcss';
+
+/**
+ * The design system's palette, as tokens. Transcribed from DESIGN.md — "The Concourse Board":
+ * a bright signage concourse read against a dark, live departure board.
+ *
+ * Tailwind v4 takes its theme from CSS rather than a JS config, so this file is the design system.
+ * Declaring the palette as tokens means a colour used anywhere in the app is a colour named here.
+ *
+ * Tailwind's default spacing scale is already the 4px rhythm the design calls for
+ * (4/8/12/16/24/32/48 = space-1/2/3/4/6/8/12), so no spacing tokens are needed.
+ */
+@theme {
+  /* Neutrals — the concourse and the board it faces */
+  --color-ink: #14181b; /* board material and primary text — anthracite, not black */
+  --color-concourse: #ebede8; /* page ground — cool pale tile, explicitly not cream */
+  --color-porcelain: #fbfbf9; /* facet panel and any raised reading surface */
+  --color-steel: #59636c; /* secondary text, pictograms, metadata */
+  --color-hairline: #d7dad3; /* keylines, row dividers, input strokes */
+
+  /* The single interactive voice: active facets, links, focus, the primary action */
+  --color-signal: #0b4fa0;
+  --color-signal-deep: #083e7e;
+
+  /* "Live" information only, and only on or beside the dark board */
+  --color-amber: #f5a623;
+
+  /* Semantic, sparing */
+  --color-stop: #c8352c; /* zero results and errors */
+  --color-go: #1e7a46; /* available / go affordances */
+
+  /* Cuisine line bullets — data encoding keyed to `cuisine_group`, never decoration */
+  --color-line-american: #1f5fbf;
+  --color-line-italian: #d24a2c;
+  --color-line-asian: #1e8e6a;
+  --color-line-french: #6a3b8f;
+  --color-line-seafood: #167a86;
+  --color-line-steak: #8a2d34;
+  --color-line-latin: #c98a12;
+  --color-line-other: #6b7680;
+
+  /* The Square Corner Rule, enforced by the token rather than by discipline: this is signage, so
+     corners are square to barely-softened. Tailwind's default `sm` is 4px, which is too soft. */
+  --radius-sm: 2px;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-concourse);
+    color: var(--color-ink);
+  }
+}

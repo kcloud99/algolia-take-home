@@ -1,0 +1,24 @@
+{
+  // The app compiles for a browser and the pipeline compiles for Node, so they need different
+  // `lib`, `types` and module resolution. Two configs is cheaper to explain than one that has to
+  // be true for both. `npm run typecheck` runs each in turn.
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    // Gives `import.meta.env` its type. The three variables we read are declared in vite-env.d.ts.
+    "types": ["vite/client"],
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["src"]
+}
