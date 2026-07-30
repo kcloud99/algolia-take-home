@@ -81,7 +81,8 @@ chain-in-a-single-city, intent/mood, zero-result, and empty.
 
 ### Phase 3 — Search experience
 
-Vite + React + TypeScript + Tailwind, with React InstantSearch v7.
+Vite + React + TypeScript + Tailwind, with React InstantSearch v7. The design system is
+[`DESIGN.md`](../DESIGN.md) — "The Concourse Board" — and it is normative for anything visual.
 
 | Step | Deliverable |
 |---|---|
@@ -92,11 +93,28 @@ Vite + React + TypeScript + Tailwind, with React InstantSearch v7.
 | 3.4 | Federated autocomplete: restaurants, cuisines, cities, recent searches |
 | 3.5 | Location awareness, with a fallback chain that degrades gracefully |
 | 3.6 | Chain grouping toggle |
-| 3.7 | Discovery home for the empty query |
+| 3.7 | Discovery as the empty-query state of the board |
 | 3.8 | Mobile and touch pass |
 | 3.9 | Insights click and conversion events |
-| 3.10 | Map view *(optional)* |
+| 3.10 | Map view — **cut**, see below |
 | 3.11 | "Why is this result here?" debug panel *(optional)* |
+
+**Three scope decisions taken at the start of the phase**, because the design brief and this plan
+disagreed and the disagreement was worth settling in writing rather than in code.
+
+1. **Geo stays; the map is cut.** The brief proposed dropping geo altogether. Graduated
+   `aroundPrecision` is the headline relevance decision of the build — it is what stops criterion 2
+   from strict-sorting by distance and silently disabling the custom ranking — and it costs a
+   `<Configure>` block rather than a new surface. It is also what makes the chain demo work, since
+   the `distinct` survivor is then the *nearest* branch. The **live map** is the expensive half and
+   is genuinely optional, so cutting it satisfies most of the brief's objection at almost no cost to
+   the story.
+2. **Discovery is a state, not a page.** The empty query renders the same board with cuisine chips
+   and a small `vibe_tags` mood row above it. No second route, no landing page. The explorer persona
+   is half the assignment, so it could not be dropped; but it did not need a surface of its own.
+3. **Federated autocomplete stays.** Persona 1's stated pain is typing the name badly, so the
+   dropdown that spans restaurants, cuisines and cities earns its place. It is also the first thing
+   to trade if hours run short — typo tolerance already lands `ruths cris` without it.
 
 ### Phase 4 — Deliverables
 
@@ -156,7 +174,8 @@ in sync.
 
 If time runs short, features are cut in this order: map view → relevance debug panel → mood
 tiles. Not cut under any circumstances: the mobile experience, the relevance testing record, the
-customer questions, and dashboard Support Access.
+customer questions, and dashboard Support Access. *(The map view was cut at the start of Phase 3 —
+see the scope decisions above.)*
 
 ---
 

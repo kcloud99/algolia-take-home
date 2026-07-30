@@ -26,7 +26,8 @@ separately penalizes over-engineering — efficiency is scored, heroics are not)
 2. `docs/kb/algolia-core.md` — before touching any index setting or debating relevance.
 3. `docs/kb/index-design.md` — before writing the pipeline or the config script.
 4. `docs/kb/algolia-implementation.md` — before writing any client or UI code.
-5. `.claude/strategy.md` — rubric mapping, demo narrative, build order. *(gitignored, private)*
+5. `DESIGN.md` — the design system ("The Concourse Board"). Normative for anything visual.
+6. `.claude/strategy.md` — rubric mapping, demo narrative, build order. *(gitignored, private)*
 
 ---
 
@@ -133,7 +134,7 @@ anyway; they may probe it.
 |---|---|
 | Runtime | Node 22, TypeScript, ESM |
 | Pipeline | `tsx` scripts, `algoliasearch` v5 |
-| Frontend | Vite + React 18 + TypeScript + Tailwind |
+| Frontend | Vite 7 + React 19 + TypeScript + Tailwind v4 |
 | Search UI | `react-instantsearch` v7 + `@algolia/autocomplete-js` |
 | Map | MapLibre or react-leaflet (no API key required) |
 | Deploy | Vercel |
@@ -180,7 +181,9 @@ npm run build           # production build
 
 ## Code conventions
 
-- **TypeScript everywhere**, ESM, `.js` extensions on relative imports.
+- **TypeScript everywhere**, ESM. `scripts/` uses `.js` extensions on relative imports because it
+  resolves as NodeNext; `app/` omits them because Vite resolves as a bundler. Each side follows its
+  own tsconfig, and `npm run typecheck` runs both.
 - **File naming:** kebab-case — `build-records.ts`, `restaurant-card.tsx`.
 - **Pipeline shape:** small pure functions, one per derived field, each independently testable and
   independently explainable. `deriveChainName(name, counts)` beats a 200-line transform.

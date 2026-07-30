@@ -14,3 +14,8 @@ dist/
 .claude/phase-2-handoff.md
 .claude/phase-3-handoff.md
 docs/algolia-primer.md
+# Product framing and the phase 3 surface spec. Both discuss the scorecard and the interview panel,
+# which is working context rather than something a reviewer should be reading. DESIGN.md is
+# committed, because a design system is a legitimate part of the deliverable.
+PRODUCT.md
+docs/search-ui-build-contract.md
