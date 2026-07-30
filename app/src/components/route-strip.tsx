@@ -1,8 +1,10 @@
 import { ClearRefinements, CurrentRefinements, useCurrentRefinements } from 'react-instantsearch';
 import type { CurrentRefinementsConnectorParamsItem } from 'instantsearch.js/es/connectors/current-refinements/connectCurrentRefinements';
 
+import { LocationControl } from './location-control';
 import { SortControl } from './sort-control';
 import { humanizeTag } from '../lib/labels';
+import type { CentreChoice } from '../lib/use-search-centre';
 
 /** Facet attribute → the word a diner would use for it. */
 const ATTRIBUTE_LABELS: Record<string, string> = {
@@ -72,8 +74,21 @@ const CLEAR_TRANSLATIONS = { resetButtonText: 'Clear all' };
  * Always visible, and that is a requirement rather than a preference — the scorecard asks for a search
  * experience that is simple to understand, and the fastest way to fail that is a refinement a diner
  * cannot see and therefore cannot undo. Each chip removes itself; the clear-all removes the lot.
+ *
+ * Location sits here, next to sort, because both answer "how is this board arranged" rather than
+ * "which restaurants are on it" — and because where the board searches from is exactly the kind of
+ * state that must not be invisible. The centre itself is owned by `App`, which needs it for
+ * `<Configure>` too.
  */
-export function RouteStrip() {
+export function RouteStrip({
+  locationChoice,
+  onChooseLocation,
+  locationNotice,
+}: {
+  locationChoice: CentreChoice;
+  onChooseLocation: (choice: CentreChoice) => void;
+  locationNotice: string | null;
+}) {
   const { items } = useCurrentRefinements();
 
   return (
@@ -97,6 +112,12 @@ export function RouteStrip() {
             </p>
           )}
         </div>
+
+        <LocationControl
+          choice={locationChoice}
+          onChoose={onChooseLocation}
+          notice={locationNotice}
+        />
 
         <SortControl />
       </div>

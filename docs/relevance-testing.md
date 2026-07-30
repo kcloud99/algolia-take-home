@@ -228,9 +228,107 @@ Relevant Sort's relevancy cutoff: `michelin` reports 3 hits and returns 1.
 
 ---
 
-## Not tested here
+## Geo — tested separately, and the measurement changed the design
 
-**Geo.** Distance is the second criterion in the ranking formula, so switching it on would have
-confounded every before/after comparison above. `aroundLatLng`, `aroundRadius` and the graduated
-`aroundPrecision` buckets are query parameters, not index settings, and are exercised in the
-application phase where the UI supplies a centre point.
+Geo is deliberately absent from the 27-query table above. Distance is the *second* criterion in the
+ranking formula, so switching it on would have confounded every before/after comparison — it reorders
+results by a parameter the manifest does not control. `aroundLatLng`, `aroundRadius` and
+`aroundPrecision` are query parameters rather than index settings, so they belong to the application,
+and they were measured on their own terms once the UI could supply a centre.
+
+**The claim being tested.** At Algolia's default granularity the geo criterion is effectively a strict
+distance sort, and because it sits above `words`, `proximity`, `attribute`, `exact` and all of
+`customRanking`, everything below it is inert — including the Bayesian rating the pipeline exists to
+produce. Bucketing distance with `aroundPrecision` makes nearby restaurants *tie* on geo so quality
+decides inside the bucket: "nearby **and** good" rather than "nearest at any cost."
+
+That claim held. The three numbers the design specified did not.
+
+### Seven configurations, two markets, the empty query
+
+Top 10, ranked from the coordinate-wise median of each market's records. "Spread" is the true distance
+of the furthest of the ten.
+
+| `aroundPrecision` | New York — adj rating | reviews | spread | Opens on | Portland — adj rating |
+|---|---|---|---|---|---|
+| *(unset — the default)* | 4.16 | 619 | 0.21 km | The Long Room, 4.2 | 4.30 |
+| flat 500 | 4.31 | 1,308 | 0.48 km | Oceana, 4.4 | 4.43 |
+| flat 2,000 | 4.56 | 2,021 | 1.91 km | Le Bernardin, 4.7 | 4.60 |
+| flat 5,000 | 4.59 | 2,425 | 4.90 km | Le Bernardin, 4.7 | 4.65 |
+| **250 / 1,000 / 5,000** *(as designed)* | **4.16** | **619** | **0.21 km** | STK Midtown, 4.3 | 4.33 |
+| **1,500 / 5,000 / 25,000** *(shipped)* | **4.56** | **1,998** | **1.38 km** | Le Bernardin, 4.7 | 4.56 |
+| 2,000 / 10,000 / 50,000 | 4.56 | 2,021 | 1.91 km | Le Bernardin, 4.7 | 4.60 |
+
+**The documented buckets did nothing.** 250 / 1,000 / 5,000 returned *the same ten restaurants* as no
+bucketing at all in the densest market — same mean adjusted rating, same mean review count, same 210 m
+spread — merely reordered among themselves. The reason is scale: 250 m in Midtown Manhattan is one
+block, and the records inside one block do not tie, so the geo criterion still decided the page. The
+first bucket has to be wide enough to contain a *choice* before quality has anything to break.
+
+Widening it to 1,500 m — a 15-to-20 minute walk, which is what "walking distance" actually means —
+moves the top 10's mean adjusted rating from 4.16 to 4.56 and its mean review count from 619 to 1,998,
+while keeping every result inside 1.4 km. The empty query from New York opens on Le Bernardin (4.7 from
+4,232 reviews) instead of The Long Room (4.2 from 126). The idea in the design was right and the number
+was wrong by an order of magnitude.
+
+**What graduation buys, as opposed to one flat bucket**, shows up at the other end — and this is why the
+shipped value is still three bands rather than a flat 1,500. Coarsening to 25 km rings far out means
+distant restaurants tie with *each other*, so quality orders them. From the three-restaurant Arkansas
+market, the Little Rock cluster 220–240 km away comes back best-rated first (4.4 · **4.6** · 4.3 · 4.3
+· 4.3) where a flat bucket returns it in raw distance order (4.4 · 4.3 · **4.6** · 4.2 · 4.3), burying
+the best restaurant in the cluster behind two closer, worse ones. Visible on the board as a distance
+column reading 138 · 143 · 141 mi — out of order by distance, in order by quality, which is the whole
+point.
+
+### `aroundRadius: "all"` is what makes a thin market work
+
+Coverage is lopsided: whole states hold three records. With a fixed radius those markets return an
+empty page. With `"all"` the distance cutoff is removed while distance stays in the ranking, so the
+three-restaurant Arkansas market shows its three — 0.6 mi, 12 mi, 55 mi — and then radiates outward
+through Hot Springs and Little Rock. Same board, no special case, nothing to detect.
+
+One correction to this project's own notes while testing it: **the planned sparse-market demo does not
+exist.** There is no Chicago in this dataset — not a thin Chicago, none at all. Its three Illinois
+records are in Moline and Rock Island, which the data files under the `Iowa` area, and its three
+Washington records are Camas, Vancouver and Washougal, filed under `Portland / Oregon`.
+`Fayetteville / Northwest Arkansas` (3 records) is the real equivalent and is in the app's market list
+for that reason.
+
+### `geoDistance` is not a distance
+
+The per-row "0.4 mi" reads `_rankingInfo.matchedGeoLocation.distance`, not `_rankingInfo.geoDistance`,
+and the difference is not cosmetic. Once `aroundPrecision` is set, `geoDistance` becomes the **bucket
+ordinal the geo criterion sorted on**. Measured from New York with the shipped buckets:
+
+| Restaurant | `geoDistance` | `matchedGeoLocation.distance` | true (haversine) |
+|---|---|---|---|
+| Ruth's Chris — Parsippany, NJ | 10,006 | 40,715 | 40.7 km |
+| Ruth's Chris — Pittsburgh, PA | 10,099 | 509,458 | 509.3 km |
+| Ruth's Chris — River Walk, San Antonio | 10,507 | 2,548,657 | 2,547.9 km |
+
+Printing `geoDistance` would have put "6 mi" beside a restaurant in another state.
+`matchedGeoLocation.distance` agreed with an independent haversine check to within 0.1% under every
+bucketing tested. The ordinal is still the more interesting number — it is literally the ranking key —
+but it belongs in a "why is this result here?" panel rather than in a row a diner reads. Both of the
+knowledge-base notes that recommended `geoDistance` for the label are corrected.
+
+Also worth stating precisely, since it gets said out loud: Algolia's reference gives the default
+`aroundPrecision` as 10 m, but measured, `_rankingInfo.geoPrecision` comes back as **1** and
+`geoDistance` equals the true distance to the metre. Either way it is a metre-level strict distance
+sort, which is the point.
+
+### Residual costs, stated
+
+- **A far-flung last row.** On page 1 of `steakhouse` from Portland, row 24 is a restaurant in Florida
+  4,050 km away with a worse geo ordinal than several nearer records that did not make the page. Flat
+  bucketing put a Sacramento restaurant there instead. The returned set is monotone in the reported
+  ordinal in every case tested, so this is the tail of Algolia's geo retrieval rather than a ranking
+  inversion — but it is the one visible cost of the coarse outer bands, and it is confined to the
+  bottom row.
+- **Distances that look mis-sorted.** 143 mi above 141 mi is the feature working, and a diner has no way
+  to know that. The affordance for it is the debug panel, not a footnote.
+- **`aroundLatLngViaIP` works and is still not the default.** Measured from this machine it resolved to
+  the right city and returned restaurants 2.1–2.8 mi away. It is offered in the location control rather
+  than applied automatically: Algolia documents it as IPv4-only and unreliable behind a VPN, so a silent
+  network guess can relocate the board without saying so, and every figure in these documents is quoted
+  from New York.

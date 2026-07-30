@@ -1,7 +1,11 @@
+import type { Hit } from 'instantsearch.js';
+
 import { CuisineTile } from './cuisine-tile';
+import { Distance } from './distance';
 import { PriceTier } from './price-tier';
 import { RatingGauge } from './rating-gauge';
 import { ReviewVolume } from './review-volume';
+import { hitDistance } from '../lib/geo';
 import { formatLocality } from '../lib/locality';
 import type { Restaurant } from '../lib/restaurant';
 
@@ -19,8 +23,11 @@ import type { Restaurant } from '../lib/restaurant';
  * Rendered as the `hitComponent` of the `Hits` widget, which owns the list and the `<li>` around each
  * row — so this returns the row's contents, and the row's own layout classes live on the widget's
  * `item` class name.
+ *
+ * Takes `Hit<Restaurant>` rather than `Restaurant` because the distance lives in `_rankingInfo`, which
+ * InstantSearch's `Hit` wrapper types and the index's own record shape does not.
  */
-export function BoardRow({ hit }: { hit: Restaurant }) {
+export function BoardRow({ hit }: { hit: Hit<Restaurant> }) {
   const locality = formatLocality(hit);
 
   return (
@@ -39,6 +46,10 @@ export function BoardRow({ hit }: { hit: Restaurant }) {
           {hit.cuisine_group} · {locality} · {hit.dining_style}
         </p>
       </div>
+
+      {/* Beside the locality rather than in its own place further right: distance qualifies *where*
+          a restaurant is, and a diner rejects a row on how far it is before anything else here. */}
+      <Distance metres={hitDistance(hit)} />
 
       <PriceTier tier={hit.price_tier} band={hit.price_range} />
 

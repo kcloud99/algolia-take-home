@@ -68,6 +68,7 @@ function BoardHeader() {
       </span>
       <span className="w-10 shrink-0">Type</span>
       <span className="min-w-0 flex-1">Restaurant</span>
+      <span className="w-[68px] shrink-0">Away</span>
       <span className="w-[42px] shrink-0">Price</span>
       <span className="w-[88px] shrink-0">Reviews</span>
       <span className="w-[104px] shrink-0" />
