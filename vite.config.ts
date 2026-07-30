@@ -11,7 +11,7 @@ export default defineConfig({
   // would look for it inside `app/` and every `VITE_` variable would be silently undefined.
   envDir: '..',
 
-  // Build to `dist/` at the repo root, which is where a Vercel deploy expects to find it.
+  // Build to `dist/` at the repo root, which is what `netlify.toml` publishes.
   build: { outDir: '../dist', emptyOutDir: true },
 
   plugins: [react(), tailwindcss()],

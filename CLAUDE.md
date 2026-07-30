@@ -136,8 +136,8 @@ either way, since InstantSearch is built on it.
 | Pipeline | `tsx` scripts, `algoliasearch` v5 |
 | Frontend | Vite 7 + React 19 + TypeScript + Tailwind v4 |
 | Search UI | `react-instantsearch` v7 + `@algolia/autocomplete-js` |
-| Map | MapLibre or react-leaflet (no API key required) |
-| Deploy | Vercel |
+| Map | ✂️ cut at the start of Phase 3 — geo *ranking* stayed, the surface did not (`docs/build-plan.md`) |
+| Deploy | Netlify — `netlify.toml`, committed |
 | Plan | Algolia Build (free): 1M records, 10k searches/mo — 5,000 records is trivial |
 
 ```
@@ -215,7 +215,7 @@ npm run build           # production build
 
 ## Submission checklist
 
-- [ ] Live demo URL (Vercel)
+- [ ] Live demo URL (Netlify)
 - [ ] Repo link
 - [ ] Written explanation of approach (`README.md` + `docs/approach.md`)
 - [ ] Data prep + import script in the repo

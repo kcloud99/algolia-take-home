@@ -5,7 +5,7 @@ become 5,000 Algolia records; the index configuration was measured rather than a
 InstantSearch front end serves the two diners in the discovery notes — the one who knows the
 restaurant name and cannot spell it, and the one who does not know what they want yet.
 
-**Live demo:** _added with the Vercel deploy_ · **Repo:** <https://github.com/kcloud99/algolia-take-home>
+**Live demo:** _added once the deploy is live_ · **Repo:** <https://github.com/kcloud99/algolia-take-home>
 
 ![The results board at 1440px — search, refinements, discovery chips, and one row per restaurant](docs/img/board-desktop.png)
 
@@ -127,6 +127,7 @@ Full table, with scale and business consequence: [`data-decisions.md` § 6](docs
 | [`app/`](app/) | Vite + React + TypeScript + Tailwind search experience — 39 files |
 | [`data/raw/`](data/raw/) · [`data/out/`](data/out/) | Untouched source copies, and the generated records — both committed, so the index is reviewable |
 | [`DESIGN.md`](DESIGN.md) · [`CLAUDE.md`](CLAUDE.md) | The design system, and the project context the work was directed from |
+| [`netlify.toml`](netlify.toml) | The deploy as code — build command, publish directory, and the two environment-variable traps |
 
 One index plus three virtual replicas. No backend, no Next.js, no auth, no state library, no monorepo
 tooling — the scope of this problem does not require them, and unnecessary architecture is harder to

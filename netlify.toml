@@ -1,0 +1,36 @@
+# Netlify build configuration, committed for the same reason the index settings are: a deploy that
+# lives only in a dashboard is one nobody can review, diff, or reproduce.
+#
+# No `base` is set, so it stays the repository root — which is where it has to be. `vite.config.ts`
+# and `package.json` are here, and the config sets `root: 'app'` and `envDir: '..'` itself, so the
+# site's source is `app/` while its build lives at the root. If Netlify's UI has a base directory
+# set to `app/`, this file will not even be read: Netlify looks for `netlify.toml` inside the base.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Netlify resolves the Node version from `.nvmrc`, `.node-version`, or this variable — it does not
+  # read `engines` from `package.json`. Pinned to the major the build was verified on.
+  NODE_VERSION = "22"
+
+# The three variables the app needs — VITE_ALGOLIA_APP_ID, VITE_ALGOLIA_SEARCH_KEY and
+# VITE_ALGOLIA_INDEX_NAME — are deliberately *not* here. They belong in the Netlify UI, and two
+# things about them are worth writing down where the next person will look:
+#
+#   1. Vite inlines every `VITE_` variable into the bundle at build time, so a missing one does not
+#      fail the build. It ships a site that throws `VITE_ALGOLIA_APP_ID is missing` on load. Set
+#      them before the first deploy, and redeploy after changing any of them — a rebuild is what
+#      picks them up, not a restart.
+#   2. `ALGOLIA_ADMIN_KEY` must never be set on this site at all. Nothing in the browser bundle
+#      reads it, and `scripts/` — the only thing that does — never runs here.
+#
+# If Netlify's secret scanning fails the build because the search-only key appears in the bundle,
+# that is smart detection doing its job on a value that is public by design. The fix is
+# `SECRETS_SCAN_OMIT_KEYS=VITE_ALGOLIA_SEARCH_KEY,VITE_ALGOLIA_APP_ID` in the UI, not here: Netlify
+# documents the secret-scanning variables as UI/CLI-only, so setting them in this file would look
+# right and do nothing.
+#
+# No SPA catch-all redirect, deliberately. InstantSearch's router keeps every state in the query
+# string on `/`, so there are no client-side paths to rewrite, and a blanket `/* -> /index.html`
+# would turn a genuine 404 — a mistyped asset, say — into a page that looks like it worked.
