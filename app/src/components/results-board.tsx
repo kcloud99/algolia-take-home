@@ -1,5 +1,6 @@
 import { useHits, useStats } from 'react-instantsearch';
 
+import { CuisineTile } from './cuisine-tile';
 import type { Restaurant } from '../lib/restaurant';
 
 /**
@@ -28,12 +29,15 @@ export function ResultsBoard() {
 
       <ol>
         {items.map((hit) => (
-          <li key={hit.objectID} className="border-b border-hairline py-3">
-            <span className="font-medium">{hit.name}</span>{' '}
-            <span className="text-sm text-steel">
-              {hit.cuisine_group} · {hit.neighborhood}, {hit.city} · {hit.price_range} ·{' '}
-              {hit.bayesian_rating.toFixed(1)} corrected ({hit.stars_count} raw,{' '}
-              {hit.reviews_count.toLocaleString()} reviews)
+          <li key={hit.objectID} className="flex items-center gap-3 border-b border-hairline py-3">
+            <CuisineTile group={hit.cuisine_group} />
+            <span>
+              <span className="font-medium">{hit.name}</span>{' '}
+              <span className="text-sm text-steel">
+                {hit.cuisine_group} · {hit.neighborhood}, {hit.city} · {hit.price_range} ·{' '}
+                {hit.bayesian_rating.toFixed(1)} corrected ({hit.stars_count} raw,{' '}
+                {hit.reviews_count.toLocaleString()} reviews)
+              </span>
             </span>
           </li>
         ))}

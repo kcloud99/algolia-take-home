@@ -51,7 +51,7 @@ Six independent cleanups, each a named function in `scripts/lib/`.
 | **Malformed phone numbers** | see below | Take the CSV number and keep only the leading `(NNN) NNN-NNNN`. |
 | **Price disagreements** | 220 records | Treat the CSV band as canonical, derive the numeric tier from it, flag the conflict. |
 | **Composite cuisine values** | 8 values, 210 records | Split on `/` and `,` into atomic cuisines. |
-| **Dead image URLs** | **all 5,000** | Substitute a bundled image keyed by cuisine group. |
+| **Dead image URLs** | **all 5,000** | Encode cuisine as a drawn signage tile instead of substituting stock photography. |
 
 ### Phones, in detail
 
@@ -190,16 +190,29 @@ two-fifths of the data distinguishes nothing, and a tag under 1% is a dead facet
 ### `image_url`
 
 Every one of the 5,000 source URLs redirects to the same 2.2 KB generic placeholder. There is no
-usable photography in this dataset. We substitute a small bundled image set keyed by cuisine group,
-selected by a stable hash of `objectID` so a restaurant keeps the same photo across rebuilds —
-random assignment would reshuffle the grid on every reindex and read as a bug.
+usable photography in this dataset at all.
 
-Bundled, not hotlinked: a live demo must not depend on a third party that can rate-limit us or go
-down mid-presentation.
+The pipeline emits a deterministic path per record — a cuisine-group slug plus a stable hash of
+`objectID`, so a restaurant keeps the same asset across rebuilds, where random assignment would
+reshuffle the grid on every reindex and read as a bug.
 
-*Build order note:* the pipeline emits the image **paths**; the image files themselves are
-sourced and bundled during the app phase (step 3.1a). The records are complete either way — the
-paths are deterministic and stable.
+**What fills that slot changed during the app phase, and the reasoning is worth keeping.** The
+original plan was to source ~62 cuisine-keyed photographs and bundle them locally rather than
+hotlink, so a live demo could not be rate-limited mid-presentation. Step 3.1a replaced them with
+**drawn signage tiles**: one geometric pictogram per cuisine group, on that group's line colour.
+
+Two reasons. It is more honest — a stock photograph of somebody else's steak, sitting where a
+restaurant's own photo should be, is the one element on screen pretending to be data. And it is what
+the interface actually needs: a photo thumbnail per row is the generic-results-page look the design
+system explicitly refuses, whereas a coloured mark encodes cuisine as a scannable signal.
+
+The tiles carry a second decision. Colour comes from a fixed eight-value palette and carries the
+cuisine *family*; the pictogram distinguishes the 23 groups *within* a family. Twenty-three
+distinguishable hues do not exist, so colour alone would be decoration — the mark is what makes it
+information.
+
+The mechanism is described here rather than dropped, because the finding it exists to work around is
+real and belongs in the conversation with OpenTable: **their entire image feed is dead.**
 
 ---
 
@@ -283,8 +296,9 @@ differently.
    2–4 rather than being renumbered 1–3. This keeps our values comparable to the source system.
 5. **Chains are inferred from names.** There is no brand ID in this data. If OpenTable has one, we
    would use it and the inference disappears entirely.
-6. **Imagery is substituted.** None of the photographs shown belong to the restaurants displayed.
-   This is a demo artifact, and it is the one thing on screen that is not real.
+6. **There is no imagery, and the interface says so by not inventing any.** Every source URL is
+   dead, so the board shows a drawn cuisine tile rather than a photograph. Nothing on screen claims
+   to be a picture of the restaurant. Real photography is OpenTable's to supply.
 7. **The dataset is US-only.** All 5,000 records are US, so `country` is constant and no
    internationalisation decisions were made. Multi-market would change language settings and
    possibly the index topology.
