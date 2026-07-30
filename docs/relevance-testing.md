@@ -232,6 +232,21 @@ matter more. The real lesson belongs to the customer: a reported no-results rate
 problem, because the engine papers over it with near-matches. The fix is a UI affordance — "no
 exact match, showing similar" — not a setting.
 
+That affordance is now built, and the rule behind it is worth recording because the obvious one is
+wrong. It fires when **every hit on the page needed at least one typo to match**, read from
+`_rankingInfo.nbTypos`. The first attempt keyed on `nbExactWords === 0` and had to be thrown away:
+measured across the manifest it fires on `ruths cris`, `benihanna`, `atrias` *and* `meltingpot`,
+because `nbExactWords` counts something narrower than "the word appears here" — `meltingpot` splits to
+*melting* + *pot* and scores 0 exact words at 0 typos, while `melting pott` scores 1.
+
+The typo rule still fires on the misspellings that work, and that is accepted rather than worked
+around: `michelin` and `benihanna` are indistinguishable from the engine's side, so the copy states a
+fact — *nothing here is spelled "michelin"* — and takes no position on whether the diner made a
+mistake. It is true and mildly useful on `benihanna`, and it is the honest disclosure on `michelin`.
+Separating the two would need a threshold on `nbHits`, which is a magic number dressed as a rule.
+Verified live: fires on `michelin`, `ruths cris`, `benihanna`, `atrias`, `melting pott`; stays away on
+`meltingpot`, `sushi`, `wallse`, the empty query and `asdfgh`.
+
 **`vegan ramen` degrades, but weakly.** It returns 94 hits where it returned 0. The top hit, *Axe*,
 is genuinely the one Vegan restaurant in the dataset. Positions 2–5 are typo matches of "vegan"
 against **Las Vegas**. Worth stating plainly: there are **no ramen restaurants at all** in this

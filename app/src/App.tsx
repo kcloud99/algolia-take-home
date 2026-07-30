@@ -3,6 +3,7 @@ import { Configure, InstantSearch } from 'react-instantsearch';
 
 import { BoardStrip } from './components/board-strip';
 import { DiscoveryHeader } from './components/discovery-header';
+import { NoExactMatchNotice } from './components/no-exact-match-notice';
 import { RelevantSortNotice } from './components/relevant-sort-notice';
 import { ResultsBoard } from './components/results-board';
 import { RouteStrip } from './components/route-strip';
@@ -54,7 +55,11 @@ export function App() {
       routing
       future={{ preserveSharedStateOnUnmount: true }}
     >
-      <Configure {...geoSearchParameters(centre)} distinct={grouped} />
+      {/* `getRankingInfo` is app-wide rather than part of the geo parameters, because two things read it:
+          the per-row distance, and the notice that says when nothing on the board is spelled the way the
+          diner typed it. Tying it to geo would have meant the second one silently stopped working
+          whenever a diner chose "Anywhere in the US". */}
+      <Configure {...geoSearchParameters(centre)} distinct={grouped} getRankingInfo />
 
       {/* Refined by the platform marker on a grouped row, and by nothing else — 158 brands is not a list
           anyone scrolls, so it has no place in the signage panel. Without the widget mounted the
@@ -79,6 +84,7 @@ export function App() {
 
         <main className="min-w-0 flex-1">
           <RelevantSortNotice />
+          <NoExactMatchNotice />
 
           {/* Discovery is a state of this board rather than a route: it draws two chip rows above the
               same results and nothing else changes. It renders itself only on arrival. */}

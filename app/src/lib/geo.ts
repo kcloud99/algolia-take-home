@@ -55,8 +55,11 @@ export const AROUND_PRECISION = [
  * three-restaurant market shows its three and then radiates outward — which is what graceful
  * degradation means here.
  *
- * `getRankingInfo` is requested only when geo is on, because that is the only thing reading it: it is
- * what carries the per-row distance. It inflates the response, so it is not left on for free.
+ * `getRankingInfo` is **not** here, though the distance label needs it. It moved up to `App`, because a
+ * second thing came to depend on it — the notice that says when nothing on the board is spelled the way
+ * the diner typed it, which reads `nbTypos`. Requesting ranking evidence is an app-wide decision rather
+ * than a geo detail, and tying it to the location control would have meant a notice that silently stopped
+ * working when a diner chose "Anywhere in the US".
  */
 export function geoSearchParameters(centre: SearchCentre): PlainSearchParameters {
   if (centre.kind === 'none') {
@@ -81,7 +84,6 @@ export function geoSearchParameters(centre: SearchCentre): PlainSearchParameters
     // assumed: `_rankingInfo.geoPrecision` comes back as 250 / 1000 / 5000 on the same page when the
     // three-band form is sent, which is the engine reporting which band it used per record.
     aroundPrecision: AROUND_PRECISION as unknown as number,
-    getRankingInfo: true,
   };
 }
 
