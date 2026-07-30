@@ -1,4 +1,5 @@
 import type { Hit } from 'instantsearch.js';
+import type { SendEventForHits } from 'instantsearch.js/es/lib/utils';
 
 import { CuisineTile } from './cuisine-tile';
 import { Distance } from './distance';
@@ -27,9 +28,10 @@ import type { Restaurant } from '../lib/restaurant';
  * `item` class name.
  *
  * Takes `Hit<Restaurant>` rather than `Restaurant` because the distance lives in `_rankingInfo`, which
- * InstantSearch's `Hit` wrapper types and the index's own record shape does not.
+ * InstantSearch's `Hit` wrapper types and the index's own record shape does not. `sendEvent` comes from the
+ * same place — `Hits` hands it to each row, already carrying the `queryID` and the row's position.
  */
-export function BoardRow({ hit }: { hit: Hit<Restaurant> }) {
+export function BoardRow({ hit, sendEvent }: { hit: Hit<Restaurant>; sendEvent: SendEventForHits }) {
   const locality = formatLocality(hit);
   const { grouped } = useGrouping();
 
@@ -90,11 +92,24 @@ export function BoardRow({ hit }: { hit: Hit<Restaurant> }) {
       />
 
       {/* Deep-link out: there is no live inventory behind this, and pretending otherwise would be the
-          one dishonest thing on the page. The Insights conversion event attaches in step 3.9. */}
+          one dishonest thing on the page.
+
+          **Both events fire from this one action, and that is the honest mapping for this prototype.**
+          There is no restaurant detail page here, so pressing Reserve is simultaneously the only
+          engagement signal and the only booking intent. `click` is what Click Analytics, Dynamic
+          Re-Ranking and Personalization all learn from; `conversion` named `Reservation Started` is the
+          number the CPO actually asked about. In a real OpenTable flow they would separate — the click
+          would be opening the restaurant, the conversion a completed booking — and until they do,
+          click-through rate and conversion rate being identical here is a fact about the prototype rather
+          than a distortion of the data. Worth saying out loud rather than letting someone find it. */}
       <a
         href={hit.reserve_url}
         target="_blank"
         rel="noreferrer"
+        onClick={() => {
+          sendEvent('click', hit, 'Restaurant Clicked');
+          sendEvent('conversion', hit, 'Reservation Started');
+        }}
         className="order-7 ml-auto flex min-h-11 shrink-0 items-center gap-1.5 rounded-sm bg-signal px-4 font-mono text-xs tracking-[0.08em] text-porcelain uppercase hover:bg-signal-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal min-[880px]:ml-0"
       >
         Reserve <span aria-hidden="true">→</span>

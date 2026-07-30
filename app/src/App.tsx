@@ -11,6 +11,7 @@ import { SignagePanel } from './components/signage-panel';
 import { VirtualRefinement } from './components/virtual-refinement';
 import { geoSearchParameters } from './lib/geo';
 import { GroupingProvider } from './lib/grouping-context';
+import { insightsClient } from './lib/insights';
 import { indexName, searchClient } from './lib/search-client';
 import { useSearchCentre } from './lib/use-search-centre';
 
@@ -36,6 +37,12 @@ import { useSearchCentre } from './lib/use-search-centre';
  * Note that neither round-trips through the URL, and this is the library's decision rather than ours:
  * both of InstantSearch's routing state mappings strip `configure` from the route on the way out. So a
  * shared link carries the query and the refinements, and resolves location and grouping fresh.
+ *
+ * `insights` takes an explicit client rather than `true`, which would fetch `search-insights` from
+ * jsDelivr at runtime — see `lib/insights.ts`. It sends `view` events by itself; `clickAnalytics` on the
+ * search is what mints the `queryID` that attributes a later click or conversion back to the query that
+ * produced it. Without it the events still train Personalization and Recommend, but per-query
+ * click-through and conversion rate are simply not computable, which is the number the CPO asked for.
  */
 export function App() {
   const { centre, choice, choose, notice } = useSearchCentre();
@@ -53,13 +60,14 @@ export function App() {
       searchClient={searchClient}
       indexName={indexName}
       routing
+      insights={{ insightsClient }}
       future={{ preserveSharedStateOnUnmount: true }}
     >
       {/* `getRankingInfo` is app-wide rather than part of the geo parameters, because two things read it:
           the per-row distance, and the notice that says when nothing on the board is spelled the way the
           diner typed it. Tying it to geo would have meant the second one silently stopped working
           whenever a diner chose "Anywhere in the US". */}
-      <Configure {...geoSearchParameters(centre)} distinct={grouped} getRankingInfo />
+      <Configure {...geoSearchParameters(centre)} distinct={grouped} getRankingInfo clickAnalytics />
 
       {/* Refined by the platform marker on a grouped row, and by nothing else — 158 brands is not a list
           anyone scrolls, so it has no place in the signage panel. Without the widget mounted the

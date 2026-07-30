@@ -38,6 +38,7 @@
     "instantsearch.js": "^4.108.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-instantsearch": "^7.41.0"
+    "react-instantsearch": "^7.41.0",
+    "search-insights": "^2.17.3"
   }
 }
