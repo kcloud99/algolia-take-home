@@ -17,12 +17,14 @@ export function BoardStrip() {
   return (
     <header className="sticky top-0 z-10 bg-ink text-porcelain">
       <div className="mx-auto flex max-w-[1240px] flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:gap-6">
-        <p className="flex shrink-0 items-center gap-2">
-          <span aria-hidden="true" className="size-4 bg-signal" />
-          <span className="font-display text-lg leading-none font-semibold tracking-wide uppercase">
-            OpenTable
-          </span>
-        </p>
+        {/* The brand's own mark, which is the one place a colour outside the palette is allowed to
+            appear: the One Voice Rule governs our accents, not the customer's identity. It is also
+            why the disc is round in a system whose corners are square. */}
+        {/* The logo alone. No wordmark beside it: the mark already says OpenTable, and anything else
+            there would either repeat it or invent a product name that is not theirs. */}
+        <h1 className="shrink-0">
+          <img src="/opentable-logo.png" alt="OpenTable restaurant search" width={36} height={36} className="size-9" />
+        </h1>
 
         <SearchBox
           placeholder="Search restaurants, cuisines, neighborhoods"

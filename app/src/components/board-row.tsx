@@ -27,9 +27,10 @@ export function BoardRow({ hit }: { hit: Restaurant }) {
 
       {/* min-w-0 is what lets the name truncate instead of forcing the row wider. */}
       <div className="min-w-0 flex-1">
-        <h3 className="truncate font-display text-[1.375rem] leading-tight font-semibold">
+        {/* h2, not h3: the strip's logo is the page's h1 and there is no level between them. */}
+        <h2 className="truncate font-display text-[1.375rem] leading-tight font-semibold">
           {hit.name}
-        </h3>
+        </h2>
         <p className="truncate text-sm text-steel">
           {hit.cuisine_group} · {locality} · {hit.dining_style}
         </p>
